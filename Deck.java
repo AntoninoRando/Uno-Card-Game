@@ -1,7 +1,12 @@
+import java.util.List;
 import java.util.Collections;
 
 public class Deck extends CardGroup {
     public Deck(Card... cards) {
+        super(cards);
+    }
+
+    public Deck(List<Card> cards) {
         super(cards);
     }
 

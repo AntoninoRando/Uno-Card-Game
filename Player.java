@@ -7,6 +7,10 @@ public class Player {
         this.hand = new Hand(cards);
     }
 
+    public Hand getHand() {
+        return hand;
+    }
+
     public Card getCard(int index) {
         return hand.getCard(index);
     }

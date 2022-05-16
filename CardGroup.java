@@ -1,12 +1,20 @@
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class CardGroup {
     protected int size;
-    protected List<Card> cards;
+    // !Non sono sicuro vada usato ArrayList
+    protected ArrayList<Card> cards = new ArrayList<Card>();
 
     public CardGroup(Card... cards) {
-        this.cards = List.of(cards);
+        Collections.addAll(this.cards, cards);
         size = cards.length;
+    }
+
+    public CardGroup(List<Card> cards) {
+        this.cards.addAll(cards);
+        size = cards.size();
     }
 
     public boolean add(Card card) {

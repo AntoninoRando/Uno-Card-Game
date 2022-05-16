@@ -7,6 +7,11 @@ public class Card {
         this.value = value;
     }
 
+    public boolean isPlayable() {
+        // !Non so se sia giusto cosi' perche' sarebbe come fare ==
+        return suit.equals(GameManager.getTerrainCard().getSuit());
+    }
+
     public Suit getSuit() {
         return suit;
     }
@@ -15,9 +20,9 @@ public class Card {
         return value;
     }
 
-    public boolean isPlayable() {
-        // !Non so se sia giusto cosi' perche' sarebbe come fare ==
-        return suit.equals(GameManager.getTerrainCard().getSuit());
+    public String toString() {
+        // !Andrebbe fatto con StringBuilder
+        return suit + " " + value;
     }
 }
 
