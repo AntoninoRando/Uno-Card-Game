@@ -1,12 +1,12 @@
-import java.util.Arrays;
+import java.util.List;
+import java.util.Collections;
 
 public class Deck {
     private int size;
-    // !Non so se sia più conveniente fare una List o un array dove rimpiazziamo le carte pescate con null
-    private Card[] cards;
+    private List<Card> cards;
 
-    public Deck(Card[] cards) {
-        this.cards = cards;
+    public Deck(Card... cards) {
+        this.cards = List.of(cards);
         size = cards.length;
     }
 
@@ -15,23 +15,11 @@ public class Deck {
     }
 
     public void shuffleDeck() {
-        Arrays.sort(cards);
+        Collections.shuffle(cards);
     }
 
-    public Card deal(int index) throws Exception {
-        // We handle the IndexOutOfBoundsException
-        if (index > size)
-            index = size;
-        else if (index < 0)
-            index = 0;
-        
-        Card cardDrawn = cards[index];
-
-        // !Dovrei definire una custom exception
-        if (cardDrawn == null)
-            throw new Exception("There is no card at this position");
-            
-        cards[index] = null;
-        return cardDrawn;
+    public Card deal(int index) {
+        size--;
+        return cards.remove(index);
     }
 }
