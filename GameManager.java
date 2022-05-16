@@ -6,6 +6,10 @@ public class GameManager {
         return terrainCard;
     }
 
+    public static void setTerrainCard(Card card) {
+        terrainCard = card;
+    }
+
     public int getTurns() {
         return turns;
     }

@@ -23,6 +23,10 @@ public class CardGroup {
         return size;
     }
 
+    public Card getCard(int index) {
+        return cards.get(index);
+    }
+
     public String toString() {
         return cards.toString();
     }

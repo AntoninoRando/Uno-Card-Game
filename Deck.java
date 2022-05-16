@@ -1,12 +1,16 @@
 import java.util.Collections;
 
 public class Deck extends CardGroup {
+    public Deck(Card... cards) {
+        super(cards);
+    }
+
     public void shuffle() {
         Collections.shuffle(cards);
     }
 
     public void deal(int index, CardGroup to) {
-        size--;
-        to.add(cards.remove(index));
+        to.add(this.remove(index));
+        // !Non biosgna fare size-- perche' gia' ci pensa il metodo remove
     }
 }
