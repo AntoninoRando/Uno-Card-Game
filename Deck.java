@@ -1,25 +1,12 @@
-import java.util.List;
 import java.util.Collections;
 
-public class Deck {
-    private int size;
-    private List<Card> cards;
-
-    public Deck(Card... cards) {
-        this.cards = List.of(cards);
-        size = cards.length;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void shuffleDeck() {
+public class Deck extends CardGroup {
+    public void shuffle() {
         Collections.shuffle(cards);
     }
 
-    public Card deal(int index) {
+    public void deal(int index, CardGroup to) {
         size--;
-        return cards.remove(index);
+        to.add(cards.remove(index));
     }
 }
