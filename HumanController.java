@@ -16,7 +16,7 @@ public class HumanController extends Controller {
 
         if (!card.isPlayable(game)) {
             // !Usare StringBuilder
-            System.out.println("Can't play " + card.toString() + " now!");
+            System.out.println("Can't play " + card.toString() + " now! Try different.");
             return false;
         }
 
@@ -42,26 +42,28 @@ public class HumanController extends Controller {
                 bringer.getNickname() + ", select cards to play over " + game.getTerrainCard().toString()
                         + " or \"draw\" - " + bringer.getHand().toString() + ": ");
 
-        String line = selection.nextLine();
-
-        if (line.equals("draw")) {
-            drawCard(0, game);
-            selection.close();
-            return;
-        }
-
-        // !Non so perche' ma while (selection.hasNextInt()) { \* ... *\ } funziona per
-        // iterare su tutti gli interi (anche senza l'uso di selection.nextLine()) ma
-        // continua a prendere input anche dopo l'invio.
-        // while (selection.hasNextInt()) {
-        // int index = selection.nextInt();
-        // playCard(index, game);
-        // }
         int shift = 0;
-        for (String position : line.split(" ")) {
-            int index = Integer.parseInt(position) - shift;
-            if (playCard(index, game)) // If card was played shift the index digited by 1
-                shift++;
+        // If no card was played
+        while (shift == 0) {
+            String line = selection.nextLine();
+
+            if (line.equals("draw")) {
+                drawCard(0, game);
+                return;
+            }
+
+            // !Non so perche' ma while (selection.hasNextInt()) { \* ... *\ } funziona per
+            // iterare su tutti gli interi (anche senza l'uso di selection.nextLine()) ma
+            // continua a prendere input anche dopo l'invio.
+            // while (selection.hasNextInt()) {
+            // int index = selection.nextInt();
+            // playCard(index, game);
+            // }
+            for (String position : line.split(" ")) {
+                int index = Integer.parseInt(position) - shift;
+                if (playCard(index, game)) // If card was played shift the index digited by 1
+                    shift++;
+            }
         }
     }
 }

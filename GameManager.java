@@ -30,6 +30,12 @@ public class GameManager {
         turns++;
     }
 
+    public void playGame() {
+        while (!controllers.isEmpty()) {
+            playTurns();
+        }
+    }
+
     // GETTERS AND SETTERS
     public Deck getDrawingDeck() {
         return drawingDeck;
@@ -56,6 +62,7 @@ public class GameManager {
                 smallCardSet.add(new Card(suit, i));
         }
         Deck smallDeck = new Deck(smallCardSet);
+        smallDeck.shuffle(); //!Shufflo perchè i giocatori devono avere carte casuali
 
         // New players with their controller
         Player p1 = new Player("Antonino",
@@ -69,6 +76,6 @@ public class GameManager {
         HumanController controllerP2 = new HumanController(p2);
 
         GameManager g1 = new GameManager(smallDeck, List.of(controllerP1, controllerP2));
-        g1.playTurns();
+        g1.playGame();
     }
 }
