@@ -7,6 +7,10 @@ public class Player {
         this.hand = new Hand(cards);
     }
 
+    public String getNickname() {
+        return nickname;
+    }
+
     public Hand getHand() {
         return hand;
     }
@@ -17,5 +21,9 @@ public class Player {
 
     public Card removeCard(int index) {
         return hand.remove(index);
+    }
+
+    public void addCard(Card card) {
+        hand.add(card);
     }
 }

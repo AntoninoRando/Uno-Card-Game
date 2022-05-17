@@ -1,20 +1,36 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
- * This class is one game.
+ * This class manage the game. A game is an istance of GameManager.
  */
 public class GameManager {
+    // VARIABLES
     private Deck drawingDeck;
     private Card terrainCard;
     private int turns;
 
-    public GameManager(Deck drawingDeck) {
+    // We use LinkedList to define the order in which players play.
+    private List<Controller> controllers = new LinkedList<Controller>();
+
+    // CONSTRUCTORS
+    public GameManager(Deck drawingDeck, List<Controller> controllers) {
         this.drawingDeck = drawingDeck.shuffle();
         terrainCard = this.drawingDeck.remove(0);
         turns = 1;
+
+        this.controllers = controllers;
     }
 
+    // METHODS
+    public void playTurns() {
+        for (Controller controller : controllers)
+            controller.playCardsFromInput(this);
+        turns++;
+    }
+
+    // GETTERS AND SETTERS
     public Deck getDrawingDeck() {
         return drawingDeck;
     }
@@ -31,6 +47,7 @@ public class GameManager {
         return turns;
     }
 
+    // MAIN
     public static void main(String[] args) {
         // Creating the deck and shuffling it
         List<Card> smallCardSet = new ArrayList<Card>();
@@ -40,24 +57,18 @@ public class GameManager {
         }
         Deck smallDeck = new Deck(smallCardSet);
 
-        // Set the first card
-        GameManager g1 = new GameManager(smallDeck);
-
-        // New player with its controller
-        Player p1 = new Player("Human",
-                smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
-                smallDeck.remove(0));
-
+        // New players with their controller
+        Player p1 = new Player("Antonino",
+        smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
+        smallDeck.remove(0));
         HumanController controllerP1 = new HumanController(p1);
 
-        // Print before playing one card
-        System.out.println(p1.getHand().toString());
-        System.out.println(g1.getTerrainCard().toString());
+        Player p2 = new Player("Alice",
+        smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
+        smallDeck.remove(0));
+        HumanController controllerP2 = new HumanController(p2);
 
-        controllerP1.playCardsFromInput(g1);
-
-        // Print after 
-        System.out.println(p1.getHand().toString());
-        System.out.println(g1.getTerrainCard().toString());
+        GameManager g1 = new GameManager(smallDeck, List.of(controllerP1, controllerP2));
+        g1.playTurns();
     }
 }
