@@ -1,4 +1,4 @@
-import java.util.List;
+import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -12,7 +12,7 @@ public class CardGroup {
         size = cards.length;
     }
 
-    public CardGroup(List<Card> cards) {
+    public CardGroup(Collection<Card> cards) {
         this.cards.addAll(cards);
         size = cards.size();
     }

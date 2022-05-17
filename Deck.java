@@ -10,8 +10,9 @@ public class Deck extends CardGroup {
         super(cards);
     }
 
-    public void shuffle() {
+    public Deck shuffle() {
         Collections.shuffle(cards);
+        return this;
     }
 
     public void deal(int index, CardGroup to) {

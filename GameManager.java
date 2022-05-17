@@ -1,48 +1,63 @@
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * This class is one game.
+ */
 public class GameManager {
-    private static Card terrainCard;
-    private static int turns;
+    private Deck drawingDeck;
+    private Card terrainCard;
+    private int turns;
 
-    public static Card getTerrainCard() {
+    public GameManager(Deck drawingDeck) {
+        this.drawingDeck = drawingDeck.shuffle();
+        terrainCard = this.drawingDeck.remove(0);
+        turns = 1;
+    }
+
+    public Deck getDrawingDeck() {
+        return drawingDeck;
+    }
+
+    public Card getTerrainCard() {
         return terrainCard;
     }
 
-    public static void setTerrainCard(Card card) {
+    public void setTerrainCard(Card card) {
         terrainCard = card;
     }
 
-    public static int getTurns() {
+    public int getTurns() {
         return turns;
     }
 
     public static void main(String[] args) {
+        // Creating the deck and shuffling it
         List<Card> smallCardSet = new ArrayList<Card>();
         for (int i = 1; i <= 9; i++) {
             for (Suit suit : Suit.values())
                 smallCardSet.add(new Card(suit, i));
         }
-
         Deck smallDeck = new Deck(smallCardSet);
-        smallDeck.shuffle();
 
-        GameManager.setTerrainCard(smallDeck.remove(0));
+        // Set the first card
+        GameManager g1 = new GameManager(smallDeck);
 
+        // New player with its controller
         Player p1 = new Player("Human",
                 smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
                 smallDeck.remove(0));
 
         HumanController controllerP1 = new HumanController(p1);
 
-        // Before playing
+        // Print before playing one card
         System.out.println(p1.getHand().toString());
-        System.out.println(GameManager.getTerrainCard().toString());
+        System.out.println(g1.getTerrainCard().toString());
 
-        controllerP1.playCard(0);
-        
-        // After playing
+        controllerP1.playCardsFromInput(g1);
+
+        // Print after 
         System.out.println(p1.getHand().toString());
-        System.out.println(GameManager.getTerrainCard().toString());
+        System.out.println(g1.getTerrainCard().toString());
     }
 }

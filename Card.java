@@ -7,9 +7,9 @@ public class Card {
         this.value = value;
     }
 
-    public boolean isPlayable() {
+    public boolean isPlayable(GameManager game) {
         // !Non so se sia giusto cosi' perche' sarebbe come fare ==
-        return suit.equals(GameManager.getTerrainCard().getSuit());
+        return suit.equals(game.getTerrainCard().getSuit());
     }
 
     public Suit getSuit() {
