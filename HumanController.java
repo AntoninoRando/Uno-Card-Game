@@ -1,4 +1,3 @@
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +6,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class HumanController extends Controller {
-    //VARIABLES !Dovrei aggiungere il game come variabile
+    //VARIABLES
 
     // CONSTRUCTORS
     public HumanController(Player bringer) {
@@ -22,7 +21,7 @@ public class HumanController extends Controller {
      * @param game
      * @return
      */
-    private boolean playCard(Card card, GameManager game) {
+    private boolean playCard(Card card) {
         if (!game.playCard(card)) {
             // !Usare StringBuilder
             System.out.println("Can't play " + card.toString() + " now! Try different.");
@@ -36,7 +35,7 @@ public class HumanController extends Controller {
     }
 
     @Override
-    public void playCardsFromInput(GameManager game) {
+    public void playCardsFromInput() {
         // !penso ci voglia un try-catch-finally quando uso gli scanner.
         Scanner selection = new Scanner(System.in); // ! Se provo a chiuderlo poi non mi da errore se richiamo il
                                                     // metodo:
@@ -89,7 +88,7 @@ public class HumanController extends Controller {
                 lastCard = cardSelected;
             }
             for (Card card : cardsPlayed) {
-                playCard(card, game);
+                playCard(card);
             }
             // !Siccome usiamo un treeSet gli indici sono ordinati e non serve shiftare gli
             // indici

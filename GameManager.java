@@ -21,13 +21,15 @@ public class GameManager {
         terrainCard = this.drawingDeck.remove(0);
         turns = 1;
 
+        for (Controller controller : controllers) 
+            controller.setGame(this);
         this.controllers = controllers;
     }
 
     // METHODS
     public void playTurns() {
         for (Controller controller : controllers)
-            controller.playCardsFromInput(this);
+            controller.playCardsFromInput();
         turns++;
     }
 

@@ -1,7 +1,7 @@
 public class AIController extends Controller {
 
     @Override
-    public void playCardsFromInput(GameManager game) {
+    public void playCardsFromInput() {
         // TODO Auto-generated method stub
         
     }
