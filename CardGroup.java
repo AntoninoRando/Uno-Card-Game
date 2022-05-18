@@ -2,6 +2,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Collections;
 
+// !Dovrebbe implementare Collection così che è persino iterable
 public class CardGroup {
     // VARIABLES
     protected int size;

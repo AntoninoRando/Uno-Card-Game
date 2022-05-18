@@ -29,7 +29,7 @@ public class GameManager {
     // METHODS
     public void playTurns() {
         for (Controller controller : controllers)
-            controller.playCardsFromInput();
+            controller.makePlay();
         turns++;
     }
 
@@ -66,7 +66,7 @@ public class GameManager {
 
     // !Questo metodo fa schifo
     public boolean checkWin(Controller controller) {
-        Player bringer = controller.bringer;
+        Player bringer = controller.getBringer();
 
         if (bringer.getHand().getSize() != 0) 
             return false;
@@ -109,12 +109,12 @@ public class GameManager {
                 smallDeck.remove(0));
         HumanController controllerP1 = new HumanController(p1);
 
-        Player p2 = new Player("Alice",
+        Player p2 = new Player("Bot Giovanni",
                 smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
                 smallDeck.remove(0));
-        HumanController controllerP2 = new HumanController(p2);
+        AIController bot1 = new AIController(p2);
 
-        GameManager g1 = new GameManager(smallDeck, List.of(controllerP1, controllerP2));
+        GameManager g1 = new GameManager(smallDeck, List.of(controllerP1, bot1));
         g1.playGame();
     }
 }

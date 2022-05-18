@@ -30,12 +30,8 @@ public class HumanController extends Controller {
         return true;
     }
 
-    private void drawFromDeck(GameManager game) {
-        bringer.addCard(game.drawFromDeck());
-    }
-
     @Override
-    public void playCardsFromInput() {
+    public void makePlay() {
         // !penso ci voglia un try-catch-finally quando uso gli scanner.
         Scanner selection = new Scanner(System.in); // ! Se provo a chiuderlo poi non mi da errore se richiamo il
                                                     // metodo:
@@ -64,7 +60,7 @@ public class HumanController extends Controller {
             String line = selection.nextLine();
 
             if (line.equals("draw")) {
-                drawFromDeck(game);
+                drawFromDeck();
                 break;
             }
 

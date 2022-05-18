@@ -5,9 +5,17 @@ public abstract class Controller {
     // CONSTRUCTORS !Non so se vada fatto
 
     // METHODS
-    public abstract void playCardsFromInput();
+    public abstract void makePlay();
+
+    protected void drawFromDeck() {
+        bringer.addCard(game.drawFromDeck());
+    }
 
     // GETTERS AND SETTERS
+    public Player getBringer() {
+        return bringer;
+    }
+
     public GameManager getGame() {
         return game;
     }
