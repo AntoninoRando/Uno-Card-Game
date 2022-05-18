@@ -1,17 +1,26 @@
 public class Card {
+    // VARIABLES
     private Suit suit;
     private int value;
 
+    // CONSTRUCTORS
     public Card(Suit suit, int value) {
         this.suit = suit;
         this.value = value;
     }
 
-    public boolean isPlayable(GameManager game) {
-        // !Non so se sia giusto cosi' perche' sarebbe come fare ==
-        return suit.equals(game.getTerrainCard().getSuit());
+    // METHODS
+    public boolean isPlayable(Card card) {
+        return suit.equals(card.getSuit()) || value == card.getValue();
     }
 
+    public boolean isPlayable(GameManager game) {
+        Card terrainCard = game.getTerrainCard();
+        // !Non so se sia giusto equals sugni enum perche' sarebbe come fare ==
+        return isPlayable(terrainCard);
+    }
+
+    // GETTERS AND SETTERS
     public Suit getSuit() {
         return suit;
     }
@@ -20,6 +29,7 @@ public class Card {
         return value;
     }
 
+    // CONVERTERS
     public String toString() {
         // !Andrebbe fatto con StringBuilder
         return suit + " " + value;
@@ -27,5 +37,5 @@ public class Card {
 }
 
 enum Suit {
-    RED, BLUE, GREEN, YELLOW, BLACK;
+    RED, BLUE, GREEN, YELLOW, WILD;
 }
