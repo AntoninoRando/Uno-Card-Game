@@ -1,6 +1,8 @@
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -107,16 +109,29 @@ public class GameManager {
         return turns;
     }
 
+    public List<Controller> getControllers() {
+        return controllers;
+    }
+
     // MAIN
     public static void main(String[] args) {
         // Creating the deck and shuffling it
         List<Card> smallCardSet = new ArrayList<Card>();
         for (int i = 1; i <= 9; i++) {
-            for (Suit suit : Suit.values())
+            for (Suit suit : Suit.values()) {
+                if (suit == Suit.WILD) 
+                    continue;
                 smallCardSet.add(new Card(suit, i));
+            }
+            // Special card
+            Card draw2 = new Card(Suit.WILD, 0);
+            Map<String, String> draw2e = new HashMap<String,String>() ;
+            draw2e.put("play", "draw(2, next)");
+            draw2.addEffect(new Effect(draw2e));
+            smallCardSet.add(draw2);
         }
+
         Deck smallDeck = new Deck(smallCardSet);
-        smallDeck.shuffle(); // !Shufflo perchè i giocatori devono avere carte casuali
 
         // New players with their controller
         Player p1 = new Player("Antonino");

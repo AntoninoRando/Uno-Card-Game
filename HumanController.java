@@ -37,13 +37,13 @@ public class HumanController extends Controller {
             System.out.println("Can't play " + card.toString() + " now! Try different.");
             return false;
         }
+        card.getEffect().signalToThis("play", game, game.getControllers().indexOf(this));
         return true;
     }
 
     // METHODS
     @Override
-    public int getPlay() {
-        String line = userInput.nextLine();
+    public int getPlay() { //!Da fare
         return 2;
     }
 
