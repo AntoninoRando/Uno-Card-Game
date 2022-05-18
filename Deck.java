@@ -10,11 +10,6 @@ public class Deck extends CardGroup {
         super(cards);
     }
 
-    public Deck shuffle() {
-        Collections.shuffle(cards);
-        return this;
-    }
-
     public void deal(int index, CardGroup to) {
         to.add(this.remove(index));
         // !Non biosgna fare size-- perche' gia' ci pensa il metodo remove

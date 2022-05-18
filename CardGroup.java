@@ -3,23 +3,41 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class CardGroup {
+    // VARIABLES
     protected int size;
     // !Non sono sicuro vada usato ArrayList
     protected ArrayList<Card> cards = new ArrayList<Card>();
 
+    // CONSTRUCTORS
     public CardGroup(Card... cards) {
-        Collections.addAll(this.cards, cards);
         size = cards.length;
+        Collections.addAll(this.cards, cards);
     }
 
     public CardGroup(Collection<Card> cards) {
-        this.cards.addAll(cards);
         size = cards.size();
+        this.cards.addAll(cards);
     }
 
+    // METHODS !Siccome molti metodo sono gli stessi delle collection, forse si può
+    // implementare Collection<Card> stesso.
     public boolean add(Card card) {
         size++;
         return cards.add(card);
+    }
+
+    public boolean addAll(Collection<Card> cards) {
+        size = cards.size();
+        return this.cards.addAll(cards);
+    }
+
+    public void clear() {
+        size = 0;
+        cards.clear();
+    }
+
+    public boolean isEmpty() {
+        return cards.isEmpty();
     }
 
     public Card remove(int index) {
@@ -27,6 +45,12 @@ public class CardGroup {
         return cards.remove(index);
     }
 
+    public CardGroup shuffle() {
+        Collections.shuffle(cards);
+        return this;
+    }
+
+    // GETTERS AND SETTERS
     public int getSize() {
         return size;
     }
@@ -35,6 +59,11 @@ public class CardGroup {
         return cards.get(index);
     }
 
+    public Collection<Card> getCards() {
+        return cards;
+    }
+
+    // CONVERTERS
     public String toString() {
         return cards.toString();
     }

@@ -7,28 +7,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class HumanController extends Controller {
+    //VARIABLES !Dovrei aggiungere il game come variabile
+
     // CONSTRUCTORS
     public HumanController(Player bringer) {
         this.bringer = bringer;
-    }
-
-    /**
-     * 
-     * @param index
-     * @return true if the card has been played, false otherwise.
-     */
-    private boolean playCard(int index, GameManager game) {
-        Card card = bringer.getCard(index);
-
-        if (!card.isPlayable(game)) {
-            // !Usare StringBuilder
-            System.out.println("Can't play " + card.toString() + " now! Try different.");
-            return false;
-        }
-
-        game.setTerrainCard(card);
-        bringer.removeCard(index);
-        return true;
     }
 
     /**
@@ -40,18 +23,16 @@ public class HumanController extends Controller {
      * @return
      */
     private boolean playCard(Card card, GameManager game) {
-        if (!card.isPlayable(game)) {
+        if (!game.playCard(card)) {
             // !Usare StringBuilder
             System.out.println("Can't play " + card.toString() + " now! Try different.");
             return false;
         }
-
-        game.setTerrainCard(card);
         return true;
     }
 
-    private void drawCard(int index, GameManager game) {
-        bringer.addCard(game.getDrawingDeck().remove(index));
+    private void drawFromDeck(GameManager game) {
+        bringer.addCard(game.drawFromDeck());
     }
 
     @Override
@@ -84,7 +65,7 @@ public class HumanController extends Controller {
             String line = selection.nextLine();
 
             if (line.equals("draw")) {
-                drawCard(0, game);
+                drawFromDeck(game);
                 break;
             }
 

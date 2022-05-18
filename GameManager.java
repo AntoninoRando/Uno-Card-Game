@@ -8,6 +8,7 @@ import java.util.LinkedList;
 public class GameManager {
     // VARIABLES
     private Deck drawingDeck;
+    private CardGroup discardPile = new CardGroup();
     private Card terrainCard;
     private int turns;
 
@@ -16,7 +17,7 @@ public class GameManager {
 
     // CONSTRUCTORS
     public GameManager(Deck drawingDeck, List<Controller> controllers) {
-        this.drawingDeck = drawingDeck.shuffle();
+        this.drawingDeck = (Deck) drawingDeck.shuffle();
         terrainCard = this.drawingDeck.remove(0);
         turns = 1;
 
@@ -36,6 +37,31 @@ public class GameManager {
         }
     }
 
+    public boolean reShuffle() {
+        boolean hasChanghed = drawingDeck.addAll(discardPile.shuffle().getCards());
+        discardPile.clear();
+        return hasChanghed;
+    }
+
+    public Card drawFromDeck() {
+        if (drawingDeck.isEmpty())
+            reShuffle();
+        return drawingDeck.remove(0);
+    }
+
+    public void putCard(Card card) {
+        discardPile.add(terrainCard);
+        terrainCard = card;
+    }
+
+    public boolean playCard(Card card) {
+        if (!card.isPlayable(terrainCard))
+            return false;
+        
+        putCard(card);
+        return true;
+    }
+
     // GETTERS AND SETTERS
     public Deck getDrawingDeck() {
         return drawingDeck;
@@ -43,10 +69,6 @@ public class GameManager {
 
     public Card getTerrainCard() {
         return terrainCard;
-    }
-
-    public void setTerrainCard(Card card) {
-        terrainCard = card;
     }
 
     public int getTurns() {
