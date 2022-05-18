@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -17,16 +18,27 @@ public class GameManager {
 
     // CONSTRUCTORS
     public GameManager(Deck drawingDeck, List<Controller> controllers) {
-        this.drawingDeck = (Deck) drawingDeck.shuffle();
-        terrainCard = this.drawingDeck.remove(0);
-        turns = 1;
-
-        for (Controller controller : controllers) 
-            controller.setGame(this);
+        this.drawingDeck = drawingDeck;
         this.controllers = controllers;
     }
 
+    public GameManager(Deck drawingDeck, Controller... controllers) {
+        this.drawingDeck = drawingDeck;
+        this.controllers = Arrays.asList(controllers);
+    }
+
     // METHODS
+    public void setup() {
+        drawingDeck.shuffle();
+        terrainCard = this.drawingDeck.remove(0);
+        turns = 1;
+
+        for (Controller controller : controllers) {
+            controller.setGame(this);
+            controller.drawFromDeck(5);
+        }
+    }
+
     public void playTurns() {
         for (Controller controller : controllers)
             controller.makePlay();
@@ -34,6 +46,7 @@ public class GameManager {
     }
 
     public void playGame() {
+        setup();
         while (!controllers.isEmpty()) {
             playTurns();
         }
@@ -68,10 +81,12 @@ public class GameManager {
     public boolean checkWin(Controller controller) {
         Player bringer = controller.getBringer();
 
-        if (bringer.getHand().getSize() != 0) 
+        if (bringer.getHand().getSize() != 0)
             return false;
-        
-        System.out.println("Well done "+bringer.getNickname()+", you won!");
+
+        System.out.println("Well done " + bringer.getNickname() + ", you won!");
+        // !Anche se da questo punto in poi la partita finisce, questa istruzione darà
+        // errore (penso perché la lista che gli passo è immutabile)
         controllers.clear(); // Game will end because controllers is empty
         return true;
 
@@ -104,17 +119,17 @@ public class GameManager {
         smallDeck.shuffle(); // !Shufflo perchè i giocatori devono avere carte casuali
 
         // New players with their controller
-        Player p1 = new Player("Antonino",
-                smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
-                smallDeck.remove(0));
+        Player p1 = new Player("Antonino");
         HumanController controllerP1 = new HumanController(p1);
 
-        Player p2 = new Player("Bot Giovanni",
-                smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
-                smallDeck.remove(0));
+        Player p2 = new Player("Bot Giovanni");
         AIController bot1 = new AIController(p2);
 
-        GameManager g1 = new GameManager(smallDeck, List.of(controllerP1, bot1));
+        Player p3 = new Player("Bot Luca");
+        AIController bot2 = new AIController(p3);
+
+        GameManager g1 = new GameManager(smallDeck, controllerP1, bot1, bot2);
+
         g1.playGame();
     }
 }

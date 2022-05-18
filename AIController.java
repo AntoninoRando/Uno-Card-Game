@@ -7,7 +7,7 @@ public class AIController extends Controller {
     // METHODS
     @Override
     public void makePlay() {
-        int index = evaluateBestPlay();
+        int index = getPlay();
 
         if (index == -1) {
             drawFromDeck();
@@ -24,7 +24,7 @@ public class AIController extends Controller {
     // carte degli avversari. Ad esempio se l'avversario pesca su giallo, se hai un
     // cambio giro giallo è bene giocarlo per far (probabilmente) ripescare
     // l'avversario
-    public int evaluateBestPlay() {
+    public int getPlay() {
         Hand hand = bringer.getHand();
         for (int i = 0; i < hand.getSize(); i++) {
             if (hand.getCard(i).isPlayable(game)) {

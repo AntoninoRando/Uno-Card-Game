@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Collections;
 
 public class Deck extends CardGroup {
     public Deck(Card... cards) {

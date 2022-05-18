@@ -66,6 +66,16 @@ public class CardGroup {
 
     // CONVERTERS
     public String toString() {
-        return cards.toString();
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("[ ");
+        for (int i = 0; i < size; i++) {
+            sb.append("(").append(i+1).append(")");
+            sb.append(cards.get(i));
+            sb.append(" ");
+        }
+        sb.append("]");
+
+        return sb.toString();
     }
 }

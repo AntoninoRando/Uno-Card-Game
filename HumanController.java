@@ -6,7 +6,17 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class HumanController extends Controller {
-    //VARIABLES
+    // VARIABLES
+    // !penso ci voglia un try-catch-finally quando uso gli scanner. Inoltre non so
+    // se vada bene perche' non capisco come funzioni. Penso si apra quando faccio
+    // un print e l'esecuzione del codice si blocchi quando lo uso, perché quando lo
+    // uso aspetta sicuro un comando.
+    private Scanner userInput = new Scanner(System.in);
+    // ! Se provo a chiuderlo poi non mi da errore se richiamo il metodo:
+    // https://stackoverflow.com/questions/17622556/scanner-method-opened-and-closed-twice.
+    // Inoltre da quello che vedo su questo comment, siccome lo scanner
+    // rimane lo stesso (perchè è sullo stesso input stream), dovrei
+    // renderlo un metodo della classe
 
     // CONSTRUCTORS
     public HumanController(Player bringer) {
@@ -30,15 +40,15 @@ public class HumanController extends Controller {
         return true;
     }
 
+    // METHODS
+    @Override
+    public int getPlay() {
+        String line = userInput.nextLine();
+        return 2;
+    }
+
     @Override
     public void makePlay() {
-        // !penso ci voglia un try-catch-finally quando uso gli scanner.
-        Scanner selection = new Scanner(System.in); // ! Se provo a chiuderlo poi non mi da errore se richiamo il
-                                                    // metodo:
-                                                    // https://stackoverflow.com/questions/17622556/scanner-method-opened-and-closed-twice.
-                                                    // Inoltre da quello che vedo su questo comment, siccome lo scanner
-                                                    // rimane lo stesso (perchè è sullo stesso input stream), dovrei
-                                                    // renderlo un metodo della classe
         System.out.print(
                 bringer.getNickname() + ", select cards to play over " + game.getTerrainCard().toString()
                         + " or \"draw\" - " + bringer.getHand().toString() + ": ");
@@ -57,7 +67,7 @@ public class HumanController extends Controller {
             cardsPlayed.clear();
             indicies.clear();
 
-            String line = selection.nextLine();
+            String line = userInput.nextLine();
 
             if (line.equals("draw")) {
                 drawFromDeck();
@@ -72,8 +82,14 @@ public class HumanController extends Controller {
             // playCard(index, game);
             // }
             Card lastCard = game.getTerrainCard();
-            for (String position : line.split(" ")) {
-                int index = Integer.parseInt(position);
+            for (String token : line.split(" ")) {
+                int index = 0;
+                try {
+                    index = Integer.parseInt(token);
+                } catch (NumberFormatException e) {
+                    System.out.print("Invalid input, type something else: ");
+                    break;
+                }
 
                 Card cardSelected = bringer.getHand().getCard(index - 1); // !L'input dato parte a contare da 1, quindi
                                                                           // index-1

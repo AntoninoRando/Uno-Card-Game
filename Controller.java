@@ -5,10 +5,17 @@ public abstract class Controller {
     // CONSTRUCTORS !Non so se vada fatto
 
     // METHODS
+    public abstract int getPlay();
+
     public abstract void makePlay();
 
     protected void drawFromDeck() {
         bringer.addCard(game.drawFromDeck());
+    }
+
+    protected void drawFromDeck(int times) {
+        while (times-- > 0)
+            bringer.addCard(game.drawFromDeck());
     }
 
     // GETTERS AND SETTERS
