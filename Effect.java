@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Effect {
     // VARIABLES
@@ -25,6 +26,10 @@ public class Effect {
     // METHODS
     private void perform(String effect) {
         switch (effect) {
+            case "draw(2, me)": {
+                game.getControllers().get(performer).drawFromDeck(2);
+                break;
+            }
             case "draw(2, next)": {// !draw(quantity, who)
                 Controller to = game.getControllers().get(performer + 1);
                 to.drawFromDeck(2);
@@ -71,5 +76,27 @@ public class Effect {
 
     public void effectBuilder(String effectText) {
         // !TO-DO
+        Scanner scanner = new Scanner(effectText);
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            // !Lista delle possibili linee da poter scrivere:
+            // draw(quantity, who)
+            // blockTurn(quantity, who)
+            // changeColor(newColor)
+            // changeTurnOrder(int... orders)
+            // deleteCard(card)
+            // seeCard(card)
+            // createCard(card)
+            // playCards(Card... cards)
+        }
+        scanner.close();
     }
+
+    // PRE-BUILD EFFECTS
+    private void draw(int times, Controller who) {
+        who.drawFromDeck(times);
+    }
+
+    // !Come mappare string a metodo:
+    // https://stackoverflow.com/questions/6721318/can-i-map-a-string-to-a-method-in-java
 }
