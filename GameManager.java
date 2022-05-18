@@ -57,9 +57,22 @@ public class GameManager {
     public boolean playCard(Card card) {
         if (!card.isPlayable(terrainCard))
             return false;
-        
+
         putCard(card);
         return true;
+    }
+
+    // !Questo metodo fa schifo
+    public boolean checkWin(Controller controller) {
+        Player bringer = controller.bringer;
+
+        if (bringer.getHand().getSize() != 0) 
+            return false;
+        
+        System.out.println("Well done "+bringer.getNickname()+", you won!");
+        controllers.clear(); // Game will end because controllers is empty
+        return true;
+
     }
 
     // GETTERS AND SETTERS
@@ -67,6 +80,8 @@ public class GameManager {
         return drawingDeck;
     }
 
+    // !Potrei fare che ti da la prima carta della discard pile, e che quindi non
+    // eiste la variabile terrainCard
     public Card getTerrainCard() {
         return terrainCard;
     }
@@ -84,17 +99,17 @@ public class GameManager {
                 smallCardSet.add(new Card(suit, i));
         }
         Deck smallDeck = new Deck(smallCardSet);
-        smallDeck.shuffle(); //!Shufflo perchè i giocatori devono avere carte casuali
+        smallDeck.shuffle(); // !Shufflo perchè i giocatori devono avere carte casuali
 
         // New players with their controller
         Player p1 = new Player("Antonino",
-        smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
-        smallDeck.remove(0));
+                smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
+                smallDeck.remove(0));
         HumanController controllerP1 = new HumanController(p1);
 
         Player p2 = new Player("Alice",
-        smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
-        smallDeck.remove(0));
+                smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0), smallDeck.remove(0),
+                smallDeck.remove(0));
         HumanController controllerP2 = new HumanController(p2);
 
         GameManager g1 = new GameManager(smallDeck, List.of(controllerP1, controllerP2));

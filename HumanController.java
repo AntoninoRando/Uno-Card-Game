@@ -96,6 +96,8 @@ public class HumanController extends Controller {
             for (int index : indicies) {
                 bringer.getHand().remove(index); // !Gli idici sono già diminuiti di 1 rispetto all'input
             }
+
+            game.checkWin(this);
         }
     }
 }
