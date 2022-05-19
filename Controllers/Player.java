@@ -1,4 +1,4 @@
-package GameTools;
+package Controllers;
 
 import CardsTools.Card;
 import CardsTools.Hand;
@@ -24,11 +24,11 @@ public class Player {
         return hand.getCard(index);
     }
 
-    public Card removeCard(int index) {
+    protected Card removeCard(int index) {
         return hand.remove(index);
     }
 
-    public void addCard(Card card) {
+    protected void addCard(Card card) {
         hand.add(card);
     }
 }

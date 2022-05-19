@@ -5,6 +5,7 @@ import CardsTools.Card;
 import CardsTools.CardGroup;
 import CardsTools.Deck;
 import Controllers.Controller;
+import Controllers.Player;
 
 import java.util.Arrays;
 import java.util.LinkedList;

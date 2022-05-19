@@ -1,4 +1,5 @@
 package Controllers;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import CardsTools.Card;
-import GameTools.Player;
 
 public class HumanController extends Controller {
     // VARIABLES
@@ -47,72 +47,74 @@ public class HumanController extends Controller {
 
     // METHODS
     @Override
-    public int getPlay() { //!Da fare
-        return 2;
+    public int[] getPlay() {
+        StringBuilder message = new StringBuilder();
+        message.append(bringer.getNickname());
+        message.append(", select cards to play over ");
+        message.append(game.getTerrainCard().toString());
+        message.append(" or \"draw\" - ");
+        message.append(bringer.getHand().toString() + ": ");
+        System.out.print(message.toString());
+
+        int[] indices;
+
+        String line = userInput.nextLine();
+
+        if (line.equals("draw"))
+            return new int[] { -1 };
+
+        // !Non so perche' ma while (selection.hasNextInt()) { \* ... *\ } funziona per
+        // iterare su tutti gli interi (anche senza l'uso di selection.nextLine()) ma
+        // continua a prendere input anche dopo l'invio. Pertanto faccio così...
+        String[] tokens = line.split(" ");
+        indices = new int[tokens.length];
+        for (int i = 0; i < tokens.length; i++) {
+            indices[i] = Integer.parseInt(tokens[i]);
+        }
+
+        return indices;
     }
 
     @Override
     public void makePlay() {
-        System.out.print(
-                bringer.getNickname() + ", select cards to play over " + game.getTerrainCard().toString()
-                        + " or \"draw\" - " + bringer.getHand().toString() + ": ");
+        int[] indices = getPlay();
 
-        // If no card was played
-        Set<Integer> indicies = new TreeSet<Integer>(Collections.reverseOrder()); // !Usiamo l'ordine inverso così che
-                                                                                  // non dobbiamo shiftare gli indici
-                                                                                  // man mano che li usiamo per togliere
-                                                                                  // carte.
-        List<Card> cardsPlayed = new LinkedList<Card>();
-        while (indicies.isEmpty()) { // Repeat until player play a valid card or draw. We use indicies to check
-                                     // instead of cardPlayed because cardsPlayed store also non valid selected
-                                     // cards. If player draw the loop will break
-            // We clear the collections because in case the input must be repeated. Must be
-            // done at the start of code block, otherwise the loop will never end
-            cardsPlayed.clear();
-            indicies.clear();
-
-            String line = userInput.nextLine();
-
-            if (line.equals("draw")) {
-                drawFromDeck();
-                break;
-            }
-
-            // !Non so perche' ma while (selection.hasNextInt()) { \* ... *\ } funziona per
-            // iterare su tutti gli interi (anche senza l'uso di selection.nextLine()) ma
-            // continua a prendere input anche dopo l'invio.
-            // while (selection.hasNextInt()) {
-            // int index = selection.nextInt();r
-            // playCard(index, game);
-            // }
-            Card lastCard = game.getTerrainCard();
-            for (String token : line.split(" ")) {
-                int index = 0;
-                try {
-                    index = Integer.parseInt(token);
-                } catch (NumberFormatException e) {
-                    System.out.print("Invalid input, type something else: ");
-                    break;
-                }
-
-                Card cardSelected = bringer.getHand().getCard(index - 1); // !L'input dato parte a contare da 1, quindi
-                                                                          // index-1
-                cardsPlayed.add(cardSelected);
-
-                if (cardSelected.isPlayable(lastCard))
-                    indicies.add(index - 1);
-                lastCard = cardSelected;
-            }
-            for (Card card : cardsPlayed) {
-                playCard(card);
-            }
-            // !Siccome usiamo un treeSet gli indici sono ordinati e non serve shiftare gli
-            // indici
-            for (int index : indicies) {
-                bringer.getHand().remove(index); // !Gli idici sono già diminuiti di 1 rispetto all'input
-            }
-
-            game.checkWin(this);
+        if (indices[0] == -1) {
+            drawFromDeck();
+            return;
         }
+
+        // !Ordiniamo gli indici inversamenti per non dover shiftarli quando modifichiamo la lista.
+        Set<Integer> validIndices = new TreeSet<Integer>(Collections.reverseOrder()); 
+        List<Card> cardsPlayed = new LinkedList<Card>();
+
+        Card lastCard = game.getTerrainCard();
+        for (int index : indices) {
+            Card cardSelected = bringer.getHand().getCard(index - 1); // !L'input dato parte a contare da 1, quindi
+                                                                      // index-1
+            cardsPlayed.add(cardSelected);
+
+            if (cardSelected.isPlayable(lastCard))
+                validIndices.add(index - 1);
+
+            lastCard = cardSelected;
+        }
+
+        if (validIndices.isEmpty()) {
+            System.out.println("You can't do it now, try again!");
+            makePlay();
+            return;
+        }
+
+
+        for (Card card : cardsPlayed) {
+            playCard(card);
+        }
+        // !Siccome usiamo un treeSet gli indici sono ordinati e non serve shiftare gli
+        // indici
+        for (int index : validIndices) {
+            bringer.getHand().remove(index); // !Gli idici sono già diminuiti di 1 rispetto all'input
+        }
+        game.checkWin(this);
     }
 }

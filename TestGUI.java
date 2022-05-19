@@ -7,11 +7,11 @@ import CardsTools.Card;
 import CardsTools.Deck;
 import CardsTools.Suit;
 import Controllers.HumanController;
+import Controllers.Player;
 import Controllers.AIController;
 import EffectsTools.Effect;
 import GUI.GameFrame;
 import GameTools.GameManager;
-import GameTools.Player;
 
 public class TestGUI {
     public static void main(String[] args) {

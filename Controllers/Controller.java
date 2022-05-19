@@ -1,7 +1,7 @@
 package Controllers;
 
+import CardsTools.Card;
 import GameTools.GameManager;
-import GameTools.Player;
 
 public abstract class Controller {
     protected Player bringer;
@@ -10,9 +10,9 @@ public abstract class Controller {
     // CONSTRUCTORS !Non so se vada fatto
 
     // METHODS
-    public abstract int getPlay();
+    public abstract int[] getPlay(); // !Usato per prendere la giocata
 
-    public abstract void makePlay();
+    public abstract void makePlay(); // !Usato per performarla
 
     public void drawFromDeck() {
         bringer.addCard(game.drawFromDeck());
@@ -21,6 +21,18 @@ public abstract class Controller {
     public void drawFromDeck(int times) {
         while (times-- > 0)
             bringer.addCard(game.drawFromDeck());
+    }
+
+    // !Il metodo non è proprio buono perché prima prende la carta, poi controlla se
+    // è giocabile (cosa che fa anche il gioco: ripetitivo) ed infine rimuove la
+    // carta
+    public boolean playCard(int cardPosition) {
+        Card card = bringer.getCard(cardPosition);
+        if (!card.isPlayable(game)) {
+            return false;
+        }
+        game.putCard(bringer.removeCard(cardPosition));
+        return true;
     }
 
     // GETTERS AND SETTERS

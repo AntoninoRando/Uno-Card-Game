@@ -7,10 +7,10 @@ import CardsTools.Card;
 import CardsTools.Deck;
 import CardsTools.Suit;
 import Controllers.HumanController;
+import Controllers.Player;
 import Controllers.AIController;
 import EffectsTools.Effect;
 import GameTools.GameManager;
-import GameTools.Player;
 
 public class Test {
     // MAIN
