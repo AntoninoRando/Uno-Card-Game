@@ -35,7 +35,7 @@ public class AIController extends Controller {
     // l'avversario
     public int[] getPlay() {
         Hand hand = bringer.getHand();
-        for (int i = 0; i < hand.getSize(); i++) {
+        for (int i = 0; i < hand.size(); i++) {
             if (hand.getCard(i).isPlayable(game)) {
                 return new int[] { i };
             }

@@ -9,7 +9,7 @@ public class Player {
 
     public Player(String nickname, Card... cards) {
         this.nickname = nickname;
-        this.hand = new Hand(cards);
+        hand = new Hand(cards);
     }
 
     public String getNickname() {
@@ -30,5 +30,9 @@ public class Player {
 
     protected void addCard(Card card) {
         hand.add(card);
+
+        // !E' davvero inefficiente e spiacevole (almeno penso, perché non so i dettagli
+        // implementativi), sortare ad ogni pescata
+        hand.arrange();
     }
 }

@@ -1,4 +1,5 @@
 package CardsTools;
+
 import java.util.List;
 
 public class Hand extends CardGroup {
@@ -10,10 +11,8 @@ public class Hand extends CardGroup {
         super(cards);
     }
 
-    // !Dovrei usare una treeList per tenere ordinate le carte
-    /**
-     * Arrange the cards first by colors, second by value.
-     */
+    // !Sembri non funzioni
     public void arrange() {
+        cards.sort(Card::compareTo);
     }
 }

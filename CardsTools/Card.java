@@ -4,7 +4,7 @@ import EffectsTools.Effect;
 import EffectsTools.Selectable;
 import GameTools.GameManager;
 
-public class Card implements Selectable<Card> {
+public class Card implements Selectable<Card>, Comparable<Card> {
     // VARIABLES
     private Suit suit;
     private int value;
@@ -56,7 +56,17 @@ public class Card implements Selectable<Card> {
 
     // CONVERTERS
     public String toString() {
-        // !Andrebbe fatto con StringBuilder
-        return suit + " " + value;
+        StringBuilder sb = new StringBuilder();
+        sb.append(suit).append(" ").append(value);
+        return sb.toString();
+    }
+
+    // COMPARABLE METHODS
+    @Override // Used to order card.
+    public int compareTo(Card o) {
+        // !Non so se sia giusto usare == per gli enum
+        if (suit != o.suit) 
+            return suit.compareTo(o.suit);
+        return Integer.compare(value, o.value);
     }
 }

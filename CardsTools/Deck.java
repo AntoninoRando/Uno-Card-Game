@@ -12,6 +12,5 @@ public class Deck extends CardGroup {
 
     public void deal(int index, CardGroup to) {
         to.add(this.remove(index));
-        // !Non biosgna fare size-- perche' gia' ci pensa il metodo remove
     }
 }

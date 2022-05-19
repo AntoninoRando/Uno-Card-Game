@@ -88,7 +88,7 @@ public class GameManager {
     public boolean checkWin(Controller controller) {
         Player bringer = controller.getBringer();
 
-        if (bringer.getHand().getSize() != 0)
+        if (bringer.getHand().size() != 0)
             return false;
 
         System.out.println("Well done " + bringer.getNickname() + ", you won!");

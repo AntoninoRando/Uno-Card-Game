@@ -1,14 +1,16 @@
 package CardsTools;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Collections;
 
-// !Dovrebbe implementare Collection così che è persino iterable
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 public class CardGroup {
     // VARIABLES
     protected int size;
-    // !Non sono sicuro vada usato ArrayList
-    protected ArrayList<Card> cards = new ArrayList<Card>();
+    protected List<Card> cards = new LinkedList<Card>();
 
     // CONSTRUCTORS
     public CardGroup(Card... cards) {
@@ -21,16 +23,25 @@ public class CardGroup {
         this.cards.addAll(cards);
     }
 
-    // METHODS !Siccome molti metodo sono gli stessi delle collection, forse si può
-    // implementare Collection<Card> stesso.
+    // METHODS
     public boolean add(Card card) {
         size++;
         return cards.add(card);
     }
 
+    public boolean addAll(Card... cards) {
+        size += cards.length;
+        return Collections.addAll(this.cards, cards);
+    }
+
     public boolean addAll(Collection<Card> cards) {
-        size = cards.size();
+        size += cards.size();
         return this.cards.addAll(cards);
+    }
+
+    public Card remove(int index) {
+        size--;
+        return cards.remove(index);
     }
 
     public void clear() {
@@ -42,18 +53,25 @@ public class CardGroup {
         return cards.isEmpty();
     }
 
-    public Card remove(int index) {
-        size--;
-        return cards.remove(index);
-    }
-
     public CardGroup shuffle() {
         Collections.shuffle(cards);
         return this;
     }
 
+    public void forEach(Consumer<Card> action) {
+        cards.forEach(action);
+    }
+
+    // !Non so come altro farlo
+    public void forEach(BiConsumer<Integer, Card> action) {
+        for (int i = 0; i < size; i++) {
+            Card card = cards.get(i);
+            action.accept(i, card);
+        }
+    }
+
     // GETTERS AND SETTERS
-    public int getSize() {
+    public int size() {
         return size;
     }
 
@@ -68,13 +86,9 @@ public class CardGroup {
     // CONVERTERS
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append("[ ");
-        for (int i = 0; i < size; i++) {
-            sb.append("(").append(i+1).append(")");
-            sb.append(cards.get(i));
-            sb.append(" ");
-        }
+        this.forEach((i, card) -> sb.append("(").append(i + 1).append(")").append(card).append(" "));
         sb.append("]");
 
         return sb.toString();
