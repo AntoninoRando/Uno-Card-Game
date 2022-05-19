@@ -17,7 +17,7 @@ import CardsTools.CardGroup;
 public class HandPanel extends JPanel implements ActionListener {
     // VARIABLES
     private Controller controller;
-    private Hand cards = new Hand();
+    private Hand hand = new Hand();
     private List<JButton> cardButtons = new LinkedList<JButton>();
 
     // CONSTRUCTORS
@@ -27,7 +27,7 @@ public class HandPanel extends JPanel implements ActionListener {
     }
 
     protected boolean addCard(Card card) {
-        boolean isAdded = cards.add(card);
+        boolean isAdded = hand.add(card);
         if (isAdded) {
             JButton cardButton = new JButton(card.toString());
             cardButton.addActionListener(this);
@@ -40,7 +40,7 @@ public class HandPanel extends JPanel implements ActionListener {
 
     protected boolean addCards(CardGroup cards) {
         boolean allAdded = true;
-        for (Card card : cards.getCards()) {
+        for (Card card : cards) {
             allAdded = allAdded && addCard(card); // !Non so se esista l'operatore &=
         }
         return allAdded;

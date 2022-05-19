@@ -10,9 +10,4 @@ public class Hand extends CardGroup {
     public Hand(List<Card> cards) {
         super(cards);
     }
-
-    // !Sembri non funzioni
-    public void arrange() {
-        cards.sort(Card::compareTo);
-    }
 }

@@ -60,7 +60,8 @@ public class GameManager {
     }
 
     public boolean reShuffle() {
-        boolean hasChanghed = drawingDeck.addAll(discardPile.shuffle().getCards());
+        boolean hasChanghed = drawingDeck.addAll(discardPile);
+        drawingDeck.shuffle();
         discardPile.clear();
         return hasChanghed;
     }

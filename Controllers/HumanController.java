@@ -90,7 +90,7 @@ public class HumanController extends Controller {
 
         Card lastCard = game.getTerrainCard();
         for (int index : indices) {
-            Card cardSelected = bringer.getHand().getCard(index - 1); // !L'input dato parte a contare da 1, quindi
+            Card cardSelected = bringer.getHand().get(index - 1); // !L'input dato parte a contare da 1, quindi
                                                                       // index-1
             cardsPlayed.add(cardSelected);
 

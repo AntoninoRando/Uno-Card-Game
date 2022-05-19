@@ -21,7 +21,7 @@ public class Player {
     }
 
     public Card getCard(int index) {
-        return hand.getCard(index);
+        return hand.get(index);
     }
 
     protected Card removeCard(int index) {
@@ -31,8 +31,7 @@ public class Player {
     protected void addCard(Card card) {
         hand.add(card);
 
-        // !E' davvero inefficiente e spiacevole (almeno penso, perché non so i dettagli
-        // implementativi), sortare ad ogni pescata
+        // !Potrebbe essere inefficiente e spiacevole sortare ad ogni pescata
         hand.arrange();
     }
 }

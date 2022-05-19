@@ -2,84 +2,49 @@ package CardsTools;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class CardGroup {
+public class CardGroup implements Collection<Card> {
     // VARIABLES
-    protected int size;
     protected List<Card> cards = new LinkedList<Card>();
 
     // CONSTRUCTORS
     public CardGroup(Card... cards) {
-        size = cards.length;
         Collections.addAll(this.cards, cards);
     }
 
     public CardGroup(Collection<Card> cards) {
-        size = cards.size();
         this.cards.addAll(cards);
     }
 
     // METHODS
-    public boolean add(Card card) {
-        size++;
-        return cards.add(card);
-    }
-
-    public boolean addAll(Card... cards) {
-        size += cards.length;
-        return Collections.addAll(this.cards, cards);
-    }
-
-    public boolean addAll(Collection<Card> cards) {
-        size += cards.size();
-        return this.cards.addAll(cards);
-    }
-
-    public Card remove(int index) {
-        size--;
-        return cards.remove(index);
-    }
-
-    public void clear() {
-        size = 0;
-        cards.clear();
-    }
-
-    public boolean isEmpty() {
-        return cards.isEmpty();
-    }
-
-    public CardGroup shuffle() {
+    public void shuffle() {
         Collections.shuffle(cards);
-        return this;
     }
 
-    public void forEach(Consumer<Card> action) {
-        cards.forEach(action);
+    public void arrange() {
+        cards.sort(Card::compareTo);
     }
 
+    // Overload that support a BiConsumer: index, card
     // !Non so come altro farlo
     public void forEach(BiConsumer<Integer, Card> action) {
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < cards.size(); i++) {
             Card card = cards.get(i);
             action.accept(i, card);
         }
     }
 
     // GETTERS AND SETTERS
-    public int size() {
-        return size;
-    }
-
-    public Card getCard(int index) {
+    public Card get(int index) {
         return cards.get(index);
     }
-
-    public Collection<Card> getCards() {
+    
+    public Collection<Card> getAll() {
         return cards;
     }
 
@@ -92,5 +57,80 @@ public class CardGroup {
         sb.append("]");
 
         return sb.toString();
+    }
+    
+    // COLLECTION METHODS
+    @Override
+    public boolean contains(Object o) {
+        return cards.contains(o);
+    }
+    
+    @Override
+    public Iterator<Card> iterator() {
+        return cards.iterator();
+    }
+    
+    @Override
+    public void forEach(Consumer<? super Card> action) {
+        cards.forEach(action);
+    }
+
+    @Override
+    public Object[] toArray() {
+        return cards.toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return cards.toArray(a);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return cards.remove(o);
+    }
+    
+    public Card remove(int i) {
+        return cards.remove(i);
+    }
+    
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return cards.containsAll(c);
+    }
+    
+    @Override
+    public boolean add(Card e) {
+        return cards.add(e);
+    }
+    
+    @Override
+    public boolean addAll(Collection<? extends Card> c) {
+        return cards.addAll(c);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return cards.removeAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return cards.retainAll(c);
+    }
+    
+    @Override
+    public int size() {
+        return cards.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return cards.isEmpty();
+    }
+    
+    @Override
+    public void clear() {
+        cards.clear();
     }
 }
