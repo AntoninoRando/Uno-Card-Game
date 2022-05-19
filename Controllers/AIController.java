@@ -1,3 +1,8 @@
+package Controllers;
+import CardsTools.Card;
+import CardsTools.Hand;
+import GameTools.Player;
+
 public class AIController extends Controller {
     // CONSTRUCTORS
     public AIController(Player bringer) {

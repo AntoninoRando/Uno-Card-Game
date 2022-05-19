@@ -1,3 +1,4 @@
+package CardsTools;
 import java.util.List;
 
 public class Hand extends CardGroup {

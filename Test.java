@@ -3,6 +3,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import CardsTools.Card;
+import CardsTools.Deck;
+import CardsTools.Suit;
+import Controllers.HumanController;
+import Controllers.AIController;
+import EffectsTools.Effect;
+import GameTools.GameManager;
+import GameTools.Player;
+
 public class Test {
     // MAIN
     public static void main(String[] args) {

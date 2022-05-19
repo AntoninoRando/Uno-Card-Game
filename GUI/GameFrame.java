@@ -1,6 +1,9 @@
+package GUI;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
+
+import GameTools.GameManager;
 
 public class GameFrame extends JFrame {
     private HandPanel handPanel;

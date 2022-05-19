@@ -1,9 +1,13 @@
+package Controllers;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+
+import CardsTools.Card;
+import GameTools.Player;
 
 public class HumanController extends Controller {
     // VARIABLES

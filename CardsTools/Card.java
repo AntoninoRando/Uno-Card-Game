@@ -1,3 +1,9 @@
+package CardsTools;
+
+import EffectsTools.Effect;
+import EffectsTools.Selectable;
+import GameTools.GameManager;
+
 public class Card implements Selectable<Card> {
     // VARIABLES
     private Suit suit;
@@ -53,8 +59,4 @@ public class Card implements Selectable<Card> {
         // !Andrebbe fatto con StringBuilder
         return suit + " " + value;
     }
-}
-
-enum Suit {
-    RED, BLUE, GREEN, YELLOW, WILD;
 }

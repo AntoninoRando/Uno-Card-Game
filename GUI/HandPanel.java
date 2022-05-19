@@ -1,7 +1,11 @@
+package GUI;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import CardsTools.Card;
+import CardsTools.Hand;
 
 public class HandPanel extends JPanel {
     // VARIABLES

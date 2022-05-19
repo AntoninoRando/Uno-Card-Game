@@ -1,3 +1,8 @@
+package Controllers;
+
+import GameTools.GameManager;
+import GameTools.Player;
+
 public abstract class Controller {
     protected Player bringer;
     protected GameManager game;
@@ -9,11 +14,11 @@ public abstract class Controller {
 
     public abstract void makePlay();
 
-    protected void drawFromDeck() {
+    public void drawFromDeck() {
         bringer.addCard(game.drawFromDeck());
     }
 
-    protected void drawFromDeck(int times) {
+    public void drawFromDeck(int times) {
         while (times-- > 0)
             bringer.addCard(game.drawFromDeck());
     }

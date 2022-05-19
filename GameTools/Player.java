@@ -1,3 +1,8 @@
+package GameTools;
+
+import CardsTools.Card;
+import CardsTools.Hand;
+
 public class Player {
     private String nickname;
     private Hand hand;
