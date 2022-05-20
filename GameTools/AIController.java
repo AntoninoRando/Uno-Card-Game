@@ -1,7 +1,4 @@
-package Controllers;
-
-import CardsTools.Card;
-import CardsTools.Hand;
+package GameTools;
 
 public class AIController extends Controller {
     // CONSTRUCTORS
@@ -23,9 +20,9 @@ public class AIController extends Controller {
 
             // !Questa parte sotto funziona solo perché sarò un solo elemento, altrimenti
             // gli indici si spostano
-            Card toPlay = bringer.getHand().remove(i);
-            game.playCard(toPlay);
-            System.out.println(bringer.getNickname() + " played " + toPlay);
+            String played = bringer.getCard(i).toString();
+            playCard(i);
+            System.out.println(bringer.getNickname() + " played " + played);
         }
     }
 
@@ -34,11 +31,9 @@ public class AIController extends Controller {
     // cambio giro giallo è bene giocarlo per far (probabilmente) ripescare
     // l'avversario
     public int[] getPlay() {
-        Hand hand = bringer.getHand();
-        for (int i = 0; i < hand.size(); i++) {
-            if (hand.get(i).isPlayable(game)) {
+        for (int i = 0; i < bringer.hand.size(); i++) {
+            if (game.isPlayable(bringer.hand.get(i))) 
                 return new int[] { i };
-            }
         }
         return new int[] { -1 };
     }

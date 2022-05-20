@@ -1,12 +1,11 @@
-package Controllers;
+package GameTools;
 
 import CardsTools.Card;
-import GameTools.GameController;
-import GameTools.GameManager;
 
 public abstract class Controller {
-    protected Player bringer;
-    protected GameManager game;
+    // !Visbilità default per usarle nel package
+    Player bringer;
+    GameController game;
 
     // CONSTRUCTORS !Non so se vada fatto
 
@@ -16,23 +15,22 @@ public abstract class Controller {
     public abstract void makePlay(); // !Usato per performarla
 
     public void drawFromDeck() {
-        bringer.addCard(game.drawFromDeck());
+        bringer.addCard(game.dealFromDeck(0));
     }
 
     public void drawFromDeck(int times) {
         while (times-- > 0)
-            bringer.addCard(game.drawFromDeck());
+            drawFromDeck();
     }
 
-    // !Il metodo non è proprio buono perché prima prende la carta, poi controlla se
-    // è giocabile (cosa che fa anche il gioco: ripetitivo) ed infine rimuove la
-    // carta
     public boolean playCard(int cardPosition) {
         Card card = bringer.getCard(cardPosition);
-        if (!card.isPlayable(game)) {
+
+        if (!game.isPlayable(card)) {
             return false;
         }
-        game.putCard(bringer.removeCard(cardPosition));
+
+        game.changeCurrentCard(bringer.removeCard(cardPosition));
         return true;
     }
 
@@ -41,16 +39,11 @@ public abstract class Controller {
         return bringer;
     }
 
-    public GameManager getGame() {
+    public GameController getGame() {
         return game;
     }
 
-    public void setGame(GameManager game) {
-        this.game = game;
-    }
-
-    /** TO-DO */
     public void setGame(GameController game) {
-        // TO-DO
+        this.game = game;
     }
 }

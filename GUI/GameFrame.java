@@ -4,19 +4,17 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 
-import CardsTools.Card;
-
 import javax.swing.JButton;
 
-import GameTools.GameManager;
+import GameTools.GameController;
 
 public class GameFrame extends JFrame {
     private HandPanel handPanel;
-    private GameManager game;
+    private GameController game;
     private JButton terrainCard;
 
     // CONSTRUCTORS
-    public GameFrame(GameManager currentGame) {
+    public GameFrame(GameController currentGame) {
         // Chiamiamo questa finestra "Home page"
         super("");
 
@@ -28,8 +26,8 @@ public class GameFrame extends JFrame {
         setLayout(new BorderLayout());
 
         // Creiamo i componenti all'interno del frame...
-        handPanel = new HandPanel(game.getControllers().get(0).getBringer().getHand());
-        terrainCard = new JButton(game.getTerrainCard().toString());
+        handPanel = new HandPanel(game.getControllers()[0].getBringer().getHand());
+        terrainCard = new JButton(game.getGame().getCurrentCard().toString());
         // ...e aggiungiamoli (nelle posizioni disponibili nel layout usato)
         add(handPanel, BorderLayout.PAGE_END);
         add(terrainCard, BorderLayout.CENTER);
@@ -48,7 +46,7 @@ public class GameFrame extends JFrame {
         setVisible(true);
     }
 
-    private void setTerrainCard() {
-        Card card = game.getTerrainCard();
-    }
+    // private void setTerrainCard() {
+    //     Card card = game.getGame().getCurrentCard();
+    // }
 }

@@ -3,7 +3,6 @@ package GameTools;
 import CardsTools.Card;
 import CardsTools.CardGroup;
 import CardsTools.Deck;
-import Controllers.Player;
 
 public class Game {
     // VARIABLES
@@ -23,6 +22,7 @@ public class Game {
     public Game(Deck deck, Player... players) {
         this.players = players;
         this.deck = deck;
+        discardPile = new CardGroup();
     }
 
     // GETTERS AND SETTERS

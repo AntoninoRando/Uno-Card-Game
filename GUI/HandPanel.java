@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 import CardsTools.Card;
 import CardsTools.Hand;
-import Controllers.Controller;
+import GameTools.Controller;
 import CardsTools.CardGroup;
 
 public class HandPanel extends JPanel implements ActionListener {

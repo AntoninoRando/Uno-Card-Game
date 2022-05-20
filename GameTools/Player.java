@@ -1,11 +1,12 @@
-package Controllers;
+package GameTools;
 
 import CardsTools.Card;
 import CardsTools.Hand;
 
 public class Player {
-    private String nickname;
-    private Hand hand;
+    // !Visibilità default per usarle nel package
+    String nickname;
+    Hand hand;
 
     public Player(String nickname, Card... cards) {
         this.nickname = nickname;

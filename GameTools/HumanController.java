@@ -1,4 +1,4 @@
-package Controllers;
+package GameTools;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -36,12 +36,12 @@ public class HumanController extends Controller {
      * @return
      */
     private boolean playCard(Card card) {
-        if (!game.playCard(card)) {
-            // !Usare StringBuilder
+        if (!game.isPlayable(card)) {
             System.out.println("Can't play " + card.toString() + " now! Try different.");
             return false;
         }
-        card.getEffect().signalToThis("play", game, game.getControllers().indexOf(this));
+
+        game.changeCurrentCard(card);
         return true;
     }
 
@@ -51,7 +51,7 @@ public class HumanController extends Controller {
         StringBuilder message = new StringBuilder();
         message.append(bringer.getNickname());
         message.append(", select cards to play over ");
-        message.append(game.getTerrainCard().toString());
+        message.append(game.game.getCurrentCard().toString());
         message.append(" or \"draw\" - ");
         message.append(bringer.getHand().toString() + ": ");
         System.out.print(message.toString());
@@ -88,13 +88,13 @@ public class HumanController extends Controller {
         Set<Integer> validIndices = new TreeSet<Integer>(Collections.reverseOrder()); 
         List<Card> cardsPlayed = new LinkedList<Card>();
 
-        Card lastCard = game.getTerrainCard();
+        Card lastCard = game.game.getCurrentCard();
         for (int index : indices) {
-            Card cardSelected = bringer.getHand().get(index - 1); // !L'input dato parte a contare da 1, quindi
+            Card cardSelected = bringer.hand.get(index - 1); // !L'input dato parte a contare da 1, quindi
                                                                       // index-1
             cardsPlayed.add(cardSelected);
 
-            if (cardSelected.isPlayable(lastCard))
+            if (game.isPlayable(lastCard, cardSelected))
                 validIndices.add(index - 1);
 
             lastCard = cardSelected;
@@ -113,8 +113,10 @@ public class HumanController extends Controller {
         // !Siccome usiamo un treeSet gli indici sono ordinati e non serve shiftare gli
         // indici
         for (int index : validIndices) {
-            bringer.getHand().remove(index); // !Gli idici sono già diminuiti di 1 rispetto all'input
+            bringer.hand.remove(index); // !Gli idici sono già diminuiti di 1 rispetto all'input
         }
-        game.checkWin(this);
+
+        if (game.winCondition(this))
+            System.out.println("Well done " + bringer.nickname + ", you won!");
     }
 }

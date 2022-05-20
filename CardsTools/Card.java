@@ -2,7 +2,6 @@ package CardsTools;
 
 import EffectsTools.Effect;
 import EffectsTools.Selectable;
-import GameTools.GameManager;
 
 public class Card implements Selectable<Card>, Comparable<Card> {
     // VARIABLES
@@ -24,18 +23,6 @@ public class Card implements Selectable<Card>, Comparable<Card> {
     }
 
     // METHODS
-    public boolean isPlayable(Card card) {
-        if (card.getSuit() == Suit.WILD || suit == Suit.WILD) 
-            return true;
-        return suit.equals(card.getSuit()) || value == card.getValue();
-    }
-
-    public boolean isPlayable(GameManager game) {
-        Card terrainCard = game.getTerrainCard();
-        // !Non so se sia giusto equals sugni enum perche' sarebbe come fare ==
-        return isPlayable(terrainCard);
-    }
-
     // !In realtà non aggiunge un effetto, ma lo setta proprio, cancellando il precedente...
     public void addEffect(Effect effect) {
         this.effect = effect;

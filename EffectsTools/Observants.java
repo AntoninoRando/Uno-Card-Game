@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import CardsTools.Card;
-import GameTools.GameManager;
+import GameTools.GameController;
 
 public abstract class Observants { // !Potrebbe estendere cardGroup (ma non è static)
     private static List<Card> all = new ArrayList<Card>();
@@ -22,7 +22,7 @@ public abstract class Observants { // !Potrebbe estendere cardGroup (ma non è s
     }
 
     // !Dovrebbe tornare true se almeno una carta è stata attivata
-    public static void trigger(String eventLabel, GameManager caller, int performer) {
+    public static void trigger(String eventLabel, GameController caller, int performer) {
         all.forEach(c -> c.getEffect().signalToThis(eventLabel, caller, performer));
     }
 }

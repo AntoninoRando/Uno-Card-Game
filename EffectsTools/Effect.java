@@ -5,16 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import CardsTools.Card;
-import CardsTools.Suit;
-import Controllers.Controller;
-import GameTools.GameManager;
+import GameTools.Controller;
+import GameTools.GameController;
 
 public class Effect {
     // VARIABLES
     private static List<Effect> instances = new ArrayList<Effect>();
 
-    private GameManager game;
+    private GameController game;
     private int performer; // ! numero (per turno) della persona che attiva l'effetto
 
     private Map<String, String> triggers = new HashMap<String, String>();
@@ -31,29 +29,29 @@ public class Effect {
 
     // METHODS
     private void perform(String effect) {
-        switch (effect) {
-            case "draw(2, me)": {
-                game.getControllers().get(performer).drawFromDeck(2);
-                break;
-            }
-            case "draw(2, next)": {// !draw(quantity, who)
-                Controller to = game.getControllers().get(performer + 1);
-                to.drawFromDeck(2);
-                break;
-            }
-            case "draw(4, next)": {
-                Controller to = game.getControllers().get(performer + 1);
-                to.drawFromDeck(2);
-                break;
-            }
-            case "changeColor(any)": {
-                Suit color = new Selector<Suit>().select(Suit.RED, Suit.BLUE, Suit.GREEN, Suit.YELLOW);
-                game.putCard(new Card(color, 0));
-                break;
-            }
-            default:
-                return;
-        }
+        // switch (effect) {
+        //     case "draw(2, me)": {
+        //         game.getControllers().get(performer).drawFromDeck(2);
+        //         break;
+        //     }
+        //     case "draw(2, next)": {// !draw(quantity, who)
+        //         Controller to = game.getControllers().get(performer + 1);
+        //         to.drawFromDeck(2);
+        //         break;
+        //     }
+        //     case "draw(4, next)": {
+        //         Controller to = game.getControllers().get(performer + 1);
+        //         to.drawFromDeck(2);
+        //         break;
+        //     }
+        //     case "changeColor(any)": {
+        //         Suit color = new Selector<Suit>().select(Suit.RED, Suit.BLUE, Suit.GREEN, Suit.YELLOW);
+        //         game.change(new Card(color, 0));
+        //         break;
+        //     }
+        //     default:
+        //         return;
+        // }
     }
 
     /**
@@ -63,7 +61,7 @@ public class Effect {
      * 
      * @param eventLabel
      */
-    public static void signalGlobal(String eventLabel, GameManager caller, int performer) {
+    public static void signalGlobal(String eventLabel, GameController caller, int performer) {
         for (Effect e: instances) {
             e.game = caller;
             e.performer = performer;
@@ -72,7 +70,7 @@ public class Effect {
                 e.perform(e.triggers.get(eventLabel));
         }
     }
-    public void signalToThis(String eventLabel, GameManager caller, int performer) {
+    public void signalToThis(String eventLabel, GameController caller, int performer) {
         game = caller;
         this.performer = performer; 
 

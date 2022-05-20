@@ -6,12 +6,14 @@ import java.util.Map;
 import CardsTools.Card;
 import CardsTools.Deck;
 import CardsTools.Suit;
-import Controllers.HumanController;
-import Controllers.Player;
-import Controllers.AIController;
+
 import EffectsTools.Effect;
+
 import GUI.GameFrame;
-import GameTools.GameManager;
+
+import GameTools.Game;
+import GameTools.GameController;
+import GameTools.Player;
 
 public class TestGUI {
     public static void main(String[] args) {
@@ -19,13 +21,13 @@ public class TestGUI {
         List<Card> smallCardSet = new ArrayList<Card>();
         for (int i = 1; i <= 9; i++) {
             for (Suit suit : Suit.values()) {
-                if (suit == Suit.WILD) 
+                if (suit == Suit.WILD)
                     continue;
                 smallCardSet.add(new Card(suit, i));
             }
             // Special card
             Card draw2 = new Card(Suit.WILD, 0);
-            Map<String, String> draw2e = new HashMap<String,String>() ;
+            Map<String, String> draw2e = new HashMap<String, String>();
             draw2e.put("play", "draw(2, me)");
             draw2.addEffect(new Effect(draw2e));
             smallCardSet.add(draw2);
@@ -35,16 +37,11 @@ public class TestGUI {
 
         // New players with their controller
         Player p1 = new Player("Antonino");
-        HumanController controllerP1 = new HumanController(p1);
-
         Player p2 = new Player("Bot Giovanni");
-        AIController bot1 = new AIController(p2);
-
         Player p3 = new Player("Bot Luca");
-        AIController bot2 = new AIController(p3);
 
-        GameManager g1 = new GameManager(smallDeck, controllerP1, bot1, bot2);
-        // new HomePage();
+        Game game1 = new Game(smallDeck, p1, p2, p3);
+        GameController g1 = new GameController(game1, 0, 1, 2);
 
         new GameFrame(g1);
     }
