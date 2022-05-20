@@ -12,7 +12,7 @@ import Controllers.AIController;
 import EffectsTools.Effect;
 import GameTools.GameManager;
 
-public class Test {
+public class TestGame {
     // MAIN
     public static void main(String[] args) {
         // Creating the deck and shuffling it

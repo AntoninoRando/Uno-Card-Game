@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+// !Visto che le carte nel gruppo potrebbero cambiare per via di molti effetti, 
+// potrei aggiungere un metodo che permette di iterare anche se viene modificato 
+// il cardGroup
 public class CardGroup implements Collection<Card> {
     // VARIABLES
     protected List<Card> cards = new LinkedList<Card>();
@@ -43,9 +46,13 @@ public class CardGroup implements Collection<Card> {
     public Card get(int index) {
         return cards.get(index);
     }
-    
+
     public Collection<Card> getAll() {
         return cards;
+    }
+
+    public Card getLast() {
+        return cards.get(cards.size()-1);
     }
 
     // CONVERTERS
@@ -58,18 +65,18 @@ public class CardGroup implements Collection<Card> {
 
         return sb.toString();
     }
-    
+
     // COLLECTION METHODS
     @Override
     public boolean contains(Object o) {
         return cards.contains(o);
     }
-    
+
     @Override
     public Iterator<Card> iterator() {
         return cards.iterator();
     }
-    
+
     @Override
     public void forEach(Consumer<? super Card> action) {
         cards.forEach(action);
@@ -89,21 +96,21 @@ public class CardGroup implements Collection<Card> {
     public boolean remove(Object o) {
         return cards.remove(o);
     }
-    
+
     public Card remove(int i) {
         return cards.remove(i);
     }
-    
+
     @Override
     public boolean containsAll(Collection<?> c) {
         return cards.containsAll(c);
     }
-    
+
     @Override
     public boolean add(Card e) {
         return cards.add(e);
     }
-    
+
     @Override
     public boolean addAll(Collection<? extends Card> c) {
         return cards.addAll(c);
@@ -118,7 +125,7 @@ public class CardGroup implements Collection<Card> {
     public boolean retainAll(Collection<?> c) {
         return cards.retainAll(c);
     }
-    
+
     @Override
     public int size() {
         return cards.size();
@@ -128,7 +135,7 @@ public class CardGroup implements Collection<Card> {
     public boolean isEmpty() {
         return cards.isEmpty();
     }
-    
+
     @Override
     public void clear() {
         cards.clear();

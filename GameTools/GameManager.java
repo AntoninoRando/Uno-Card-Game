@@ -34,7 +34,8 @@ public class GameManager {
         this.controllers = Arrays.asList(controllers);
     }
 
-    // METHODS
+    // PHASES
+    @Phase
     public void setup() {
         drawingDeck.shuffle();
         terrainCard = this.drawingDeck.remove(0);
@@ -46,12 +47,14 @@ public class GameManager {
         }
     }
 
+    @Phase
     public void playTurns() {
         for (Controller controller : controllers)
             controller.makePlay();
         turns++;
     }
 
+    @Phase
     public void playGame() {
         setup();
         while (!controllers.isEmpty()) {
@@ -59,6 +62,7 @@ public class GameManager {
         }
     }
 
+    // METHODS
     public boolean reShuffle() {
         boolean hasChanghed = drawingDeck.addAll(discardPile);
         drawingDeck.shuffle();
