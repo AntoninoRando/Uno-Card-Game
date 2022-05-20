@@ -7,7 +7,14 @@ import Controllers.Player;
 
 public class Game {
     // VARIABLES
-    // !Non so se sia corretto renderle protected o se vada aggiunto un getter
+    // !Non so se sia corretto renderle protected o se vada aggiunto un getter.
+    // !Questo players funziona in maniera particolare. Associa ad ogni Player (e
+    // quindi controller) un numero. Il gameController associerà ad ogni numero, che
+    // corrisponde quindi a un giocatore, un altro numero (= indice nella lista) che
+    // corrisponde al turno in cui giocherà. Cioè la sua posizione nella lista
+    // corrisponde al turno in cui giocherà. Tutte queste metainformazioni le salva
+    // il GameController, perché il Game (come il Player) contiene solo quello
+    // superficiale "che il giocatore vede"
     protected Player[] players;
     protected Deck deck;
     protected CardGroup discardPile;
@@ -22,6 +29,7 @@ public class Game {
     public Card getCurrentCard() {
         return discardPile.getLast();
     }
+
     public Player getPlayer(int i) {
         return players[i];
     }

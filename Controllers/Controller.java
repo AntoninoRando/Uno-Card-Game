@@ -1,6 +1,7 @@
 package Controllers;
 
 import CardsTools.Card;
+import GameTools.GameController;
 import GameTools.GameManager;
 
 public abstract class Controller {
@@ -46,5 +47,10 @@ public abstract class Controller {
 
     public void setGame(GameManager game) {
         this.game = game;
+    }
+
+    /** TO-DO */
+    public void setGame(GameController game) {
+        // TO-DO
     }
 }

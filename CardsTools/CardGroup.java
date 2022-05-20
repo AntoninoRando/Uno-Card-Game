@@ -33,6 +33,10 @@ public class CardGroup implements Collection<Card> {
         cards.sort(Card::compareTo);
     }
 
+    public void add(int index, Card card) {
+        cards.add(index, card);
+    }
+
     // Overload that support a BiConsumer: index, card
     // !Non so come altro farlo
     public void forEach(BiConsumer<Integer, Card> action) {
