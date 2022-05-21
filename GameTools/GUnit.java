@@ -14,6 +14,10 @@ public abstract class GUnit {
         cardInput = index+1;
     }
 
+    public static void giveInput(int index) {
+        cardInput = index;
+    }
+
     public static int getInput() {
         return cardInput;
     }

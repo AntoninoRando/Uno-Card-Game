@@ -42,9 +42,6 @@ public class HumanController extends Controller {
         }
 
         game.changeCurrentCard(card);
-        
-        if (cardListener != null)
-            cardListener.cardChanged();
 
         return true;
     }
@@ -101,6 +98,9 @@ public class HumanController extends Controller {
 
         if (indices[0] == -1) {
             drawFromDeck();
+
+            if (cardListener != null)
+                cardListener.cardChanged();
             return;
         }
 
@@ -138,5 +138,8 @@ public class HumanController extends Controller {
 
         if (game.winCondition(this))
             System.out.println("Well done " + bringer.nickname + ", you won!");
+        
+        if (cardListener != null)
+            cardListener.cardChanged();
     }
 }

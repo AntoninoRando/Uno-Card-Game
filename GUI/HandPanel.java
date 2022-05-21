@@ -19,6 +19,7 @@ public class HandPanel extends JPanel implements ActionListener {
     // VARIABLES
     private Controller controller;
     private Map<Card, JButton> cardButtons = new LinkedHashMap<Card, JButton>();
+    private JButton drawButton;
 
     // CONSTRUCTORS
     public HandPanel(Controller controller) {
@@ -26,6 +27,10 @@ public class HandPanel extends JPanel implements ActionListener {
         controller.setCardListener(this::updateButtons);
 
         setLayout(new FlowLayout());
+
+        drawButton = new JButton("draw");
+        drawButton.addActionListener(this);
+        add(drawButton);
         updateButtons();
     }
 
@@ -41,9 +46,6 @@ public class HandPanel extends JPanel implements ActionListener {
 
             cardButtons.put(card, newButton);
             add(newButton); // Adding to the layout
-
-            validate(); // !Non so quale sia la funzione ma forse serve per applicare i cambiamenti.
-            repaint();
         }
         
         ArrayList<Card> buttonsToRemove = new ArrayList<Card>();
@@ -54,10 +56,10 @@ public class HandPanel extends JPanel implements ActionListener {
         for (Card card : buttonsToRemove) {
             JButton oldButton = cardButtons.remove(card);
             remove(oldButton); // Removing from the layout
-            
-            validate(); // !Non so quale sia la funzione ma forse serve per applicare i cambiamenti.
-            repaint();
         }
+
+        revalidate(); // !Non so quale sia la funzione ma forse serve per applicare i cambiamenti.
+        repaint();
     }
 
 
@@ -72,6 +74,14 @@ public class HandPanel extends JPanel implements ActionListener {
         // !Per stare attenti a differenziare persino carte con stesso colore e seme, potrei usare l'hashCode.
 
         JButton premuto = (JButton) e.getSource();
+
+        if (premuto == drawButton) {
+            synchronized (controller) {
+                GUnit.giveInput(-1);
+                controller.notify();
+            }
+            return;
+        }
 
         for (Map.Entry<Card, JButton>  entry: cardButtons.entrySet()) {
             if (premuto != entry.getValue()) // ! uso == e non equals perché deve essere lo stesso oggetto.
