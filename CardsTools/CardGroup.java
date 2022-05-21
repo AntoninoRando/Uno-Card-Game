@@ -37,6 +37,10 @@ public class CardGroup implements Collection<Card> {
         cards.add(index, card);
     }
 
+    public int indexOf(Card c) {
+        return cards.indexOf(c);
+    }
+
     // Overload that support a BiConsumer: index, card
     // !Non so come altro farlo
     public void forEach(BiConsumer<Integer, Card> action) {

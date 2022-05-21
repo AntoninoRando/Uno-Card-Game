@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 
+import CardsTools.Card;
+
 import javax.swing.JButton;
 
 import GameTools.GameController;
@@ -26,7 +28,9 @@ public class GameFrame extends JFrame {
         setLayout(new BorderLayout());
 
         // Creiamo i componenti all'interno del frame...
-        handPanel = new HandPanel(game.getControllers()[0].getBringer().getHand());
+        handPanel = new HandPanel(game.getControllers()[0]);
+        game.setCardListener(this::updateCurrentCard);
+
         terrainCard = new JButton(game.getGame().getCurrentCard().toString());
         // ...e aggiungiamoli (nelle posizioni disponibili nel layout usato)
         add(handPanel, BorderLayout.PAGE_END);
@@ -44,9 +48,12 @@ public class GameFrame extends JFrame {
 
         // Rendiamo la finestra visibile. E' bene farlo alla fine perche' prima la finestra deve essere impostata
         setVisible(true);
+
+        game.playWithNoSetup();
     }
 
-    // private void setTerrainCard() {
-    //     Card card = game.getGame().getCurrentCard();
-    // }
+    private void updateCurrentCard() {
+        Card card = game.getGame().getCurrentCard();
+        terrainCard.setText(card.toString());
+    }
 }

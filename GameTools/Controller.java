@@ -1,16 +1,18 @@
 package GameTools;
 
 import CardsTools.Card;
+import GUI.CardChangedListener;
 
 public abstract class Controller {
     // !Visbilità default per usarle nel package
     Player bringer;
     GameController game;
+    CardChangedListener cardListener;
 
     // CONSTRUCTORS !Non so se vada fatto
 
     // METHODS
-    public abstract int[] getPlay(); // !Usato per prendere la giocata
+    public abstract int[] getPlay() throws InterruptedException; // !Usato per prendere la giocata
 
     public abstract void makePlay(); // !Usato per performarla
 
@@ -31,6 +33,10 @@ public abstract class Controller {
         }
 
         game.changeCurrentCard(bringer.removeCard(cardPosition));
+
+        if (cardListener != null)
+            cardListener.cardChanged();
+        
         return true;
     }
 
@@ -45,5 +51,9 @@ public abstract class Controller {
 
     public void setGame(GameController game) {
         this.game = game;
+    }
+
+    public void setCardListener(CardChangedListener cardListener) {
+        this.cardListener = cardListener;
     }
 }

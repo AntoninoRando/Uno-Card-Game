@@ -2,6 +2,7 @@ package GameTools;
 
 import CardsTools.Card;
 import CardsTools.Suit;
+import GUI.CardChangedListener;
 
 // !Il GameController e i Controller si parlano in modo stretto: hanno accesso 
 // a qualsiasi componente del gioco ed insieme devono poter modificare ogni regola 
@@ -15,15 +16,22 @@ public class GameController {
     Game game;
     int[] turnsOrder;
     Controller[] controllers;
+    CardChangedListener cardListener;
 
-    public GameController(Game game, int... turnsOrder) {
+    public GameController(Game game, boolean[] bots, int... turnsOrder) {
         this.game = game;
         this.turnsOrder = turnsOrder;
         controllers = new Controller[turnsOrder.length];
 
         for (int i = 0; i < turnsOrder.length; i++) {
             Player player = game.getPlayer(turnsOrder[i]);
-            Controller playerController = new HumanController(player);
+
+            Controller playerController;
+            if (bots[i])
+                playerController = new AIController(player);
+            else 
+                playerController = new HumanController(player);
+
             controllers[i] = playerController;
             playerController.setGame(this);
             // !(riga sopra) Apparte che prende un GameManager, dovrei fare che glielo posso
@@ -61,6 +69,7 @@ public class GameController {
     @Action
     void changeCurrentCard(Card c) {
         game.discardPile.add(c);
+        cardListener.cardChanged();
     }
 
     @Action
@@ -166,9 +175,14 @@ public class GameController {
     public void play() {
         setup();
 
-        while (true) {
+        while (true) 
             playRound();
-        }
+        
+    }
+
+    public void playWithNoSetup() {
+        while(true)
+            playRound();
     }
 
     // !Quando un controller controllerà e confermerà che un giocatore ha vinto,
@@ -189,5 +203,9 @@ public class GameController {
 
     public Game getGame() {
         return game;
+    }
+
+    public void setCardListener(CardChangedListener cardListener) {
+        this.cardListener = cardListener;
     }
 }

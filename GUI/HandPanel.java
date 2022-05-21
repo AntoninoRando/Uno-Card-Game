@@ -2,52 +2,85 @@ package GUI;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import CardsTools.Card;
 import CardsTools.Hand;
+
 import GameTools.Controller;
-import CardsTools.CardGroup;
+import GameTools.GUnit;
 
 public class HandPanel extends JPanel implements ActionListener {
     // VARIABLES
     private Controller controller;
-    private Hand hand = new Hand();
-    private List<JButton> cardButtons = new LinkedList<JButton>();
+    private Map<Card, JButton> cardButtons = new LinkedHashMap<Card, JButton>();
 
     // CONSTRUCTORS
-    public HandPanel(Hand firstHand) {
+    public HandPanel(Controller controller) {
+        this.controller = controller;
+        controller.setCardListener(this::updateButtons);
+
         setLayout(new FlowLayout());
-        addCards(firstHand);
+        updateButtons();
     }
 
-    protected boolean addCard(Card card) {
-        boolean isAdded = hand.add(card);
-        if (isAdded) {
-            JButton cardButton = new JButton(card.toString());
-            cardButton.addActionListener(this);
+    // METHODS
+    // !Questo metodo è poco efficente
+    private void updateButtons() {
+        for (Card card : getHand()) {
+            if (cardButtons.containsKey(card)) 
+                continue;
+            
+            JButton newButton = new JButton(card.toString());
+            newButton.addActionListener(this); // Add the functionality
 
-            cardButtons.add(cardButton);
-            add(cardButton);
+            cardButtons.put(card, newButton);
+            add(newButton); // Adding to the layout
+
+            validate(); // !Non so quale sia la funzione ma forse serve per applicare i cambiamenti.
+            repaint();
         }
-        return isAdded;
-    }
-
-    protected boolean addCards(CardGroup cards) {
-        boolean allAdded = true;
-        for (Card card : cards) {
-            allAdded = allAdded && addCard(card); // !Non so se esista l'operatore &=
+        
+        ArrayList<Card> buttonsToRemove = new ArrayList<Card>();
+        for (Card card : cardButtons.keySet()) {
+            if (!getHand().contains(card))
+                buttonsToRemove.add(card);
         }
-        return allAdded;
+        for (Card card : buttonsToRemove) {
+            JButton oldButton = cardButtons.remove(card);
+            remove(oldButton); // Removing from the layout
+            
+            validate(); // !Non so quale sia la funzione ma forse serve per applicare i cambiamenti.
+            repaint();
+        }
     }
 
+
+    // GETTERS AND SETTERS
+    public Hand getHand() {
+        return controller.getBringer().getHand();
+    }
+
+    // ActionListener METHODS
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("Prova");
+        // !Per stare attenti a differenziare persino carte con stesso colore e seme, potrei usare l'hashCode.
+
+        JButton premuto = (JButton) e.getSource();
+
+        for (Map.Entry<Card, JButton>  entry: cardButtons.entrySet()) {
+            if (premuto != entry.getValue()) // ! uso == e non equals perché deve essere lo stesso oggetto.
+                continue;
+
+            synchronized (controller) {
+                GUnit.giveInput(controller, entry.getKey());
+                controller.notify();
+            }
+        }
     }
 }

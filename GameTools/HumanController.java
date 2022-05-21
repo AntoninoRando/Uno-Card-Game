@@ -42,12 +42,16 @@ public class HumanController extends Controller {
         }
 
         game.changeCurrentCard(card);
+        
+        if (cardListener != null)
+            cardListener.cardChanged();
+
         return true;
     }
 
     // METHODS
     @Override
-    public int[] getPlay() {
+    public int[] getPlay() throws InterruptedException {
         StringBuilder message = new StringBuilder();
         message.append(bringer.getNickname());
         message.append(", select cards to play over ");
@@ -58,40 +62,57 @@ public class HumanController extends Controller {
 
         int[] indices;
 
-        String line = userInput.nextLine();
-
-        if (line.equals("draw"))
-            return new int[] { -1 };
-
-        // !Non so perche' ma while (selection.hasNextInt()) { \* ... *\ } funziona per
-        // iterare su tutti gli interi (anche senza l'uso di selection.nextLine()) ma
-        // continua a prendere input anche dopo l'invio. Pertanto faccio così...
-        String[] tokens = line.split(" ");
-        indices = new int[tokens.length];
-        for (int i = 0; i < tokens.length; i++) {
-            indices[i] = Integer.parseInt(tokens[i]);
+        synchronized (this) {
+            wait(); // !Aspettimao finchè un bottone non verrà premuto: a quel punto GUnit.input
+                    // avrà assunto un valore (che otterremo con gUnit.getInput()) e sveglierà
+                    // questo trhead.
+            indices = new int[] { GUnit.getInput() };
+            return indices;
         }
 
-        return indices;
+        // String line = userInput.nextLine();
+
+        // if (line.equals("draw"))
+        // return new int[] { -1 };
+
+        // // !Non so perche' ma while (selection.hasNextInt()) { \* ... *\ } funziona
+        // per
+        // // iterare su tutti gli interi (anche senza l'uso di selection.nextLine()) ma
+        // // continua a prendere input anche dopo l'invio. Pertanto faccio così...
+        // String[] tokens = line.split(" ");
+        // indices = new int[tokens.length];
+        // for (int i = 0; i < tokens.length; i++) {
+        // indices[i] = Integer.parseInt(tokens[i]);
+        // }
+
+        // return indices;
     }
 
     @Override
     public void makePlay() {
-        int[] indices = getPlay();
+        int[] indices;
+        try {
+            indices = getPlay();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return;
+        }
 
         if (indices[0] == -1) {
             drawFromDeck();
             return;
         }
 
-        // !Ordiniamo gli indici inversamenti per non dover shiftarli quando modifichiamo la lista.
-        Set<Integer> validIndices = new TreeSet<Integer>(Collections.reverseOrder()); 
+        // !Ordiniamo gli indici inversamenti per non dover shiftarli quando
+        // modifichiamo la lista.
+        Set<Integer> validIndices = new TreeSet<Integer>(Collections.reverseOrder());
         List<Card> cardsPlayed = new LinkedList<Card>();
 
         Card lastCard = game.game.getCurrentCard();
         for (int index : indices) {
             Card cardSelected = bringer.hand.get(index - 1); // !L'input dato parte a contare da 1, quindi
-                                                                      // index-1
+                                                             // index-1
             cardsPlayed.add(cardSelected);
 
             if (game.isPlayable(lastCard, cardSelected))
@@ -105,7 +126,6 @@ public class HumanController extends Controller {
             makePlay();
             return;
         }
-
 
         for (Card card : cardsPlayed) {
             playCard(card);

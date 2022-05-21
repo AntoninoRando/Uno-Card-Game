@@ -41,7 +41,7 @@ public class TestGUI {
         Player p3 = new Player("Bot Luca");
 
         Game game1 = new Game(smallDeck, p1, p2, p3);
-        GameController g1 = new GameController(game1, 0, 1, 2);
+        GameController g1 = new GameController(game1, new boolean[] {false, true, true}, 0, 1, 2);
 
         new GameFrame(g1);
     }
