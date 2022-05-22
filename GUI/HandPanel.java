@@ -2,12 +2,22 @@ package GUI;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.awt.Image;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonActionListener;
 
 import CardsTools.Card;
 import CardsTools.Hand;
@@ -41,11 +51,28 @@ public class HandPanel extends JPanel implements ActionListener {
             if (cardButtons.containsKey(card)) 
                 continue;
             
-            JButton newButton = new JButton(card.toString());
-            newButton.addActionListener(this); // Add the functionality
+            try {
+                // !Tutto quello che ho fatto sull'immagine l'ho preso da internet.
+                BufferedImage buttonIcon = ImageIO.read(new File("../../AllUnoCards/"+card+".png"));
+                ImageIcon buttonImage = new ImageIcon(buttonIcon);
 
-            cardButtons.put(card, newButton);
-            add(newButton); // Adding to the layout
+                Image image = buttonImage.getImage();
+                // !La proporzione originale era 216x336 px (il file vero e proprio era ancora più grande)
+                Image newImage = image.getScaledInstance(100, 155, java.awt.Image.SCALE_SMOOTH);
+
+                JButton newButton = new JButton(new ImageIcon(newImage));
+                newButton.addActionListener(this); // Add the functionality
+
+                // !Leviamo i particolari del bottone per lasciare solo l'immagine.
+                newButton.setBorder(BorderFactory.createEmptyBorder());
+                newButton.setContentAreaFilled(false);
+
+                cardButtons.put(card, newButton);
+                add(newButton); // Adding to the layout
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         
         ArrayList<Card> buttonsToRemove = new ArrayList<Card>();

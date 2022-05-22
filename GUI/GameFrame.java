@@ -38,7 +38,7 @@ public class GameFrame extends JFrame {
 
         // Impostiamo la dimensione della finestra in pixels e decidiamo che non può essere ridimensionata
         setSize(800, 500);
-        setResizable(false);
+        setResizable(true);
 
         // Facciamo apparire la finestra al centro dello schermo
         setLocationRelativeTo(null);
