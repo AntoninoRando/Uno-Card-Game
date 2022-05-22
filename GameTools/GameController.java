@@ -32,7 +32,7 @@ public class GameController {
             Controller playerController;
             if (bots[i])
                 playerController = new AIController(player);
-            else 
+            else
                 playerController = new HumanController(player);
 
             controllers[i] = playerController;
@@ -67,8 +67,9 @@ public class GameController {
     private void turnEnd() {
     }
 
-    // ACTIONS 
-    // !Visibilità di default: SOLO NEL PACKAGE (sottoclassi fuori dal package non vedono)
+    // ACTIONS
+    // !Visibilità di default: SOLO NEL PACKAGE (sottoclassi fuori dal package non
+    // vedono)
     @Action
     void changeCurrentCard(Card c) {
         game.discardPile.add(c);
@@ -148,16 +149,29 @@ public class GameController {
     }
 
     public void setup() {
-        game.deck.shuffle();
-        discardFromDeck(0); // Set the first card.
+        gameHasEnded = false;
+
+        reshuffle();
 
         for (Controller controller : controllers) {
+            if (!controller.bringer.hand.isEmpty()) {
+                game.deck.addAll(controller.bringer.hand);
+                controller.bringer.hand.clear();
+            }
+
             controller.setGame(this);
             controller.drawFromDeck(5);
         }
+
+        game.deck.shuffle(); // !Rimischio in caso siano state aggiunte le vecchie carte dei players
+
+        discardFromDeck(0); // Set the first card.
     }
 
     private void playTurn(int i) {
+        if (gameHasEnded)
+            return;
+
         if (turnsOrder[i] >= 0)
             controllers[i].makePlay();
         else
@@ -180,13 +194,13 @@ public class GameController {
     public void play() {
         setup();
 
-        while (!gameHasEnded) 
+        while (!gameHasEnded)
             playRound();
-        
+
     }
 
     public void playWithNoSetup() {
-        while(!gameHasEnded)
+        while (!gameHasEnded)
             playRound();
     }
 

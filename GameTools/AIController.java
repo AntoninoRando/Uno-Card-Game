@@ -23,6 +23,7 @@ public class AIController extends Controller {
             String played = bringer.getCard(i).toString();
             playCard(i);
             System.out.println(bringer.getNickname() + " played " + played);
+            game.winCondition(this);
         }
     }
 
