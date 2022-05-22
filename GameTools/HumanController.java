@@ -136,10 +136,9 @@ public class HumanController extends Controller {
             bringer.hand.remove(index); // !Gli idici sono già diminuiti di 1 rispetto all'input
         }
 
-        if (game.winCondition(this))
-            System.out.println("Well done " + bringer.nickname + ", you won!");
-        
         if (cardListener != null)
             cardListener.cardChanged();
+        
+        game.winCondition(this);
     }
 }

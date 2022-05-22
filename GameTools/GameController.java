@@ -3,6 +3,7 @@ package GameTools;
 import CardsTools.Card;
 import CardsTools.Suit;
 import GUI.CardChangedListener;
+import GUI.GameWonListener;
 
 // !Il GameController e i Controller si parlano in modo stretto: hanno accesso 
 // a qualsiasi componente del gioco ed insieme devono poter modificare ogni regola 
@@ -17,6 +18,8 @@ public class GameController {
     int[] turnsOrder;
     Controller[] controllers;
     CardChangedListener cardListener;
+    GameWonListener gameWonListener;
+    boolean gameHasEnded;
 
     public GameController(Game game, boolean[] bots, int... turnsOrder) {
         this.game = game;
@@ -167,6 +170,8 @@ public class GameController {
         // !Uso un for normale invece che un forEach così che se cambia il turnsOrder
         // non dà errore.
         for (int i = 0; i < turnsOrder.length; i++) {
+            if (gameHasEnded)
+                return;
             int playerNumber = turnsOrder[i];
             playTurn(playerNumber);
         }
@@ -175,13 +180,13 @@ public class GameController {
     public void play() {
         setup();
 
-        while (true) 
+        while (!gameHasEnded) 
             playRound();
         
     }
 
     public void playWithNoSetup() {
-        while(true)
+        while(!gameHasEnded)
             playRound();
     }
 
@@ -192,8 +197,14 @@ public class GameController {
 
     // !Non vorrei dipendesse da un parametro, ma dovrebbe tornare qualcosa che può
     // essere uguagliato per confrontare
-    public boolean winCondition(Controller controller) {
-        return controller.getBringer().getHand().isEmpty();
+    boolean winCondition(Controller controller) {
+        if (!controller.getBringer().getHand().isEmpty())
+            return false;
+
+        System.out.println("Well done " + controller.bringer.nickname + ", you won!");
+        gameWonListener.gameHasBeenWon(controller.bringer.nickname);
+        gameHasEnded = true;
+        return true;
     }
 
     // GETTERS AND SETTERS
@@ -207,5 +218,9 @@ public class GameController {
 
     public void setCardListener(CardChangedListener cardListener) {
         this.cardListener = cardListener;
+    }
+
+    public void setGameWonListener(GameWonListener gameWonListener) {
+        this.gameWonListener = gameWonListener;
     }
 }

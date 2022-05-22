@@ -36,7 +36,7 @@ public class TestGUI {
         Deck smallDeck = new Deck(smallCardSet);
 
         // New players with their controller
-        Player p1 = new Player("Antonino");
+        Player p1 = new Player("Alice");
         Player p2 = new Player("Bot Giovanni");
         Player p3 = new Player("Bot Luca");
 

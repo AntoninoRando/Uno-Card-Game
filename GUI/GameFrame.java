@@ -3,6 +3,7 @@ import java.awt.BorderLayout;
 
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import CardsTools.Card;
 
@@ -23,14 +24,14 @@ public class GameFrame extends JFrame {
         // Iniziamo una partita
         game = currentGame;
         game.setup();
+        game.setCardListener(this::updateCurrentCard);
+        game.setGameWonListener(this::resetPage);
 
         // Il LayoutManager serve a posizionare e ridimensionare correttamente gli elementi all'interno della finestra
         setLayout(new BorderLayout());
 
         // Creiamo i componenti all'interno del frame...
         handPanel = new HandPanel(game.getControllers()[0]);
-        game.setCardListener(this::updateCurrentCard);
-
         terrainCard = new JButton(game.getGame().getCurrentCard().toString());
         // ...e aggiungiamoli (nelle posizioni disponibili nel layout usato)
         add(handPanel, BorderLayout.PAGE_END);
@@ -55,5 +56,15 @@ public class GameFrame extends JFrame {
     private void updateCurrentCard() {
         Card card = game.getGame().getCurrentCard();
         terrainCard.setText(card.toString());
+    }
+
+    private void resetPage(String winnerNick) {
+        getContentPane().removeAll();
+
+        JLabel winLabel = new JLabel("Well done "+winnerNick+", you won!", JLabel.CENTER);
+        add(winLabel);
+
+        revalidate();
+        repaint();
     }
 }
