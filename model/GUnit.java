@@ -1,4 +1,4 @@
-package GameTools;
+package model;
 
 import CardsTools.Card;
 

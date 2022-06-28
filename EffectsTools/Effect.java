@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import GameTools.Controller;
-import GameTools.GameController;
+import model.Controller;
+import model.GameController;
 
 public class Effect {
     // VARIABLES

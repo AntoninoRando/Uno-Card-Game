@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import CardsTools.Card;
-import GameTools.GameController;
+import model.GameController;
 
 public abstract class Observants { // !Potrebbe estendere cardGroup (ma non è static)
     private static List<Card> all = new ArrayList<Card>();

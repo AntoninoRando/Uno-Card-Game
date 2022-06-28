@@ -1,4 +1,4 @@
-package GameTools;
+package model;
 
 import CardsTools.Card;
 import GUI.CardChangedListener;
@@ -7,7 +7,14 @@ public abstract class Controller {
     // !Visbilità default per usarle nel package
     Player bringer;
     GameController game;
-    CardChangedListener cardListener;
+
+    // LISTENERS
+    // !Usato dal model per avvertire che il controller ha provato a giocare una
+    // carta, e quindi si deve aggiornare il model.
+    protected TryingToPlayCardListener tryingToPlayCardListener;
+    // !Usato dalla view per avvertire che il controller ha una carta in meno nella
+    // mano, e quindi si deve aggiornare la view.
+    protected CardChangedListener cardListener;
 
     // CONSTRUCTORS !Non so se vada fatto
 
@@ -27,16 +34,17 @@ public abstract class Controller {
 
     public boolean playCard(int cardPosition) {
         Card card = bringer.getCard(cardPosition);
+        boolean haveCardBeenPlayed = tryingToPlayCardListener.tryToPlayCard(card);
 
-        if (!game.isPlayable(card)) {
+        if (haveCardBeenPlayed)
             return false;
-        }
 
-        game.changeCurrentCard(bringer.removeCard(cardPosition));
-
+        bringer.removeCard(cardPosition);
+        // !Questo cardListener va migliorato, perché è la view che ascolta il
+        // cambiamento
         if (cardListener != null)
             cardListener.cardChanged();
-        
+
         return true;
     }
 
@@ -55,5 +63,9 @@ public abstract class Controller {
 
     public void setCardListener(CardChangedListener cardListener) {
         this.cardListener = cardListener;
+    }
+
+    public void setTryingToPlayCardListener(TryingToPlayCardListener tryingToPlayCardListener) {
+        this.tryingToPlayCardListener = tryingToPlayCardListener;
     }
 }

@@ -10,10 +10,9 @@ import CardsTools.Suit;
 import EffectsTools.Effect;
 
 import GUI.GameFrame;
-
-import GameTools.Game;
-import GameTools.GameController;
-import GameTools.Player;
+import model.Game;
+import model.GameController;
+import model.Player;
 
 public class TestGUI {
     public static void main(String[] args) {

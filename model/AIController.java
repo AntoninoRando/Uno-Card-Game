@@ -1,4 +1,4 @@
-package GameTools;
+package model;
 
 public class AIController extends Controller {
     // CONSTRUCTORS

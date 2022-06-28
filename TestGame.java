@@ -8,10 +8,9 @@ import CardsTools.Deck;
 import CardsTools.Suit;
 
 import EffectsTools.Effect;
-
-import GameTools.Game;
-import GameTools.GameController;
-import GameTools.Player;
+import model.Game;
+import model.GameController;
+import model.Player;
 
 public class TestGame {
     // MAIN

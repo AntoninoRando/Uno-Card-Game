@@ -21,9 +21,8 @@ import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonActionListener;
 
 import CardsTools.Card;
 import CardsTools.Hand;
-
-import GameTools.Controller;
-import GameTools.GUnit;
+import model.Controller;
+import model.GUnit;
 
 public class HandPanel extends JPanel implements ActionListener {
     // VARIABLES

@@ -8,10 +8,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import CardsTools.Card;
+import model.GameController;
 
 import javax.swing.JButton;
-
-import GameTools.GameController;
 
 public class GameFrame extends JFrame {
     private HandPanel handPanel;
