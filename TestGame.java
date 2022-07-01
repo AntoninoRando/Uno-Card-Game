@@ -1,19 +1,18 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
-import CardsTools.Card;
-import CardsTools.Deck;
-import CardsTools.Suit;
-
-import EffectsTools.Effect;
+import controller.Controller;
+import controller.HumanController;
 import model.Game;
-import model.GameController;
+import model.MainLoop;
 import model.Player;
+import model.cards.Card;
+import model.cards.Deck;
+import model.cards.Suit;
+import view.ConsoleOutput;
 
 public class TestGame {
-    // MAIN
     public static void main(String[] args) {
         // Creating the deck and shuffling it
         List<Card> smallCardSet = new ArrayList<Card>();
@@ -23,14 +22,7 @@ public class TestGame {
                     continue;
                 smallCardSet.add(new Card(suit, i));
             }
-            // Special card
-            Card draw2 = new Card(Suit.WILD, 0);
-            Map<String, String> draw2e = new HashMap<String, String>();
-            draw2e.put("play", "draw(2, me)");
-            draw2.addEffect(new Effect(draw2e));
-            smallCardSet.add(draw2);
         }
-
         Deck smallDeck = new Deck(smallCardSet);
 
         // New players with their controller
@@ -38,9 +30,15 @@ public class TestGame {
         Player p2 = new Player("Bot Giovanni");
         Player p3 = new Player("Bot Luca");
 
-        Game game1 = new Game(smallDeck, p1, p2, p3);
-        GameController g1 = new GameController(game1, new boolean[] {false, true, true}, 0, 1, 2);
+        Controller c1 = new HumanController();
+        p1.setController(c1);
 
-        g1.play();
+        TreeMap<Integer, Player> players = new TreeMap<>();
+        players.put(1, p1);
+        players.put(2, p2);
+        players.put(3, p3);
+
+        Game gameFor3 = new Game(players, smallDeck);
+        MainLoop.getInstance().play(gameFor3);
     }
 }

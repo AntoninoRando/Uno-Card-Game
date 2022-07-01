@@ -1,4 +1,4 @@
-package CardsTools;
+package model.cards;
 
 import java.util.Collection;
 import java.util.Collections;

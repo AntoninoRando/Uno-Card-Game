@@ -1,32 +1,17 @@
-package CardsTools;
+package model.cards;
 
-import EffectsTools.Effect;
-import EffectsTools.Selectable;
-
-public class Card implements Selectable<Card>, Comparable<Card> {
+public class Card implements Comparable<Card> {
     // VARIABLES
     private Suit suit;
     private int value;
 
-    private Effect effect = new Effect();
-
     // CONSTRUCTORS
-    public Card(Suit suit, int value, Effect effect) {
-        this.suit = suit;
-        this.value = value;
-        this.effect = effect;
-    }
-
     public Card(Suit suit, int value) {
         this.suit = suit;
         this.value = value;
     }
 
     // METHODS
-    // !In realtà non aggiunge un effetto, ma lo setta proprio, cancellando il precedente...
-    public void addEffect(Effect effect) {
-        this.effect = effect;
-    }
 
     // GETTERS AND SETTERS
     public Suit getSuit() {
@@ -35,10 +20,6 @@ public class Card implements Selectable<Card>, Comparable<Card> {
 
     public int getValue() {
         return value;
-    }
-
-    public Effect getEffect() {
-        return effect;
     }
 
     // CONVERTERS

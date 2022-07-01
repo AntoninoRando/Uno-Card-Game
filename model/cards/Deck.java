@@ -1,4 +1,4 @@
-package CardsTools;
+package model.cards;
 import java.util.List;
 
 public class Deck extends CardGroup {
