@@ -10,7 +10,6 @@ import model.Player;
 import model.cards.Card;
 import model.cards.Deck;
 import model.cards.Suit;
-import view.ConsoleOutput;
 
 public class TestGame {
     public static void main(String[] args) {
