@@ -40,13 +40,19 @@ public class MainLoop implements InputListener {
         }
 
         Player p = game.players.get(source);
-        if (Actions.isPlayable(game.terrainCard, p.hand.get(choice))) {
-            Actions.changeCurrentCard(game, p.hand.remove(choice));
+
+        if (choice == 0) {
+            Actions.dealFromDeck(game, source);
+            handListener.handChanged(p.hand, p.nickname);
+            playTurn(source);
+            enemiesTurn();
+        } else if (Actions.isPlayable(game.terrainCard, p.hand.get(choice - 1))) {
+            Actions.changeCurrentCard(game, p.hand.remove(choice - 1));
             handListener.handChanged(p.hand, p.nickname);
             playTurn(source);
             enemiesTurn();
         } else {
-            Actions.tryChangeCard(game, p.hand.get(choice));
+            Actions.tryChangeCard(game, p.hand.get(choice - 1));
             invalidActionListener.warn("Can't play it now!");
         }
     }
@@ -84,6 +90,7 @@ public class MainLoop implements InputListener {
         Player enemy = game.players.get(game.turn);
         for (Card c : enemy.getHand()) {
             if (Actions.tryChangeCard(game, c)) {
+                enemy.hand.remove(c);
                 playTurn(game.turn);
                 break;
             }

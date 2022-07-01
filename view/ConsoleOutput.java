@@ -43,9 +43,9 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
 
     @Override
     public void handChanged(Hand hand, String nickname) {
-        System.out.println(nickname + "'s hand is:");
+        System.out.println(nickname + "'s hand is:\n0) draw 1");
 
-        int i = 0;
+        int i = 1;
         for (Card c : hand) {
             System.out.println(i + ") " + colors.get(c.getSuit()) + " " + c.getValue());
             i += 1;
