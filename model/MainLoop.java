@@ -2,7 +2,6 @@ package model;
 
 import java.util.Map.Entry;
 
-import controller.Controller;
 import model.cards.Card;
 import model.listeners.EndListener;
 import model.listeners.HandListener;
