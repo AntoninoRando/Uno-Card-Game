@@ -15,13 +15,8 @@ public class TestGame {
     public static void main(String[] args) {
         // Creating the deck and shuffling it
         List<Card> smallCardSet = new ArrayList<Card>();
-        for (int i = 1; i <= 9; i++) {
-            for (Suit suit : Suit.values()) {
-                if (suit == Suit.WILD)
-                    continue;
-                smallCardSet.add(new Card(suit, i));
-            }
-        }
+        for (int i = 1; i <= 10; i++) 
+            smallCardSet.add(new Card(Suit.YELLOW, i));
         Deck smallDeck = new Deck(smallCardSet);
 
         // New players with their controller

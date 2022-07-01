@@ -2,6 +2,8 @@ package model;
 
 import java.util.Map.Entry;
 
+import model.cards.Card;
+
 import model.listeners.HandListener;
 import model.listeners.InputListener;
 import model.listeners.InvalidActionListener;
@@ -41,6 +43,7 @@ public class MainLoop implements InputListener {
             Actions.changeCurrentCard(game, p.hand.remove(choice));
             handListener.handChanged(p.hand, p.nickname);
             playTurn(source);
+            enemiesTurn();
         }
         else {
             Actions.tryChangeCard(game, p.hand.get(choice));
@@ -55,16 +58,31 @@ public class MainLoop implements InputListener {
     public void setup() {
         Actions.shuffle(game);
         for (int i : game.players.keySet()) 
-            Actions.dealFromDeck(game, i, 5);
-        handListener.handChanged(game.players.get(1).hand, game.players.get(1).nickname);
+            Actions.dealFromDeck(game, i, 3);
         Actions.changeCurrentCard(game, Actions.takeFromDeck(game));
+        handListener.handChanged(game.players.get(1).hand, game.players.get(1).nickname);
     }
 
     // This method is invoked when a valid input from the playing user occurs.
     private void playTurn(int i) {
-        game.turn = ++game.turn >= game.players.size() ? 1 : ++game.turn;
-        // TO-DO! It should check for user win, then for game end.
+        if (++game.turn > game.players.size())
+            game.turn = 1;
+    }
 
+    private void enemiesTurn() {
+        while(game.players.get(game.turn).controller == null) {
+            playEnemy();
+        }
+    }
+
+    private void playEnemy() {
+        Player enemy = game.players.get(game.turn);
+        for (Card c : enemy.getHand()) {
+            if (Actions.tryChangeCard(game, c)) {
+                playTurn(game.turn);
+                break;
+            }
+        }
     }
 
     public void play(Game game) {

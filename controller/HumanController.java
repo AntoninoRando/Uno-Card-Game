@@ -7,6 +7,7 @@ public class HumanController extends Controller {
 
     @Override
     public void on() {
+        // TO-DO! Make it start a new thread.
         while (sc.hasNext()) {
             int choice = sc.nextInt();
             inputListener.validate(choice, source);
