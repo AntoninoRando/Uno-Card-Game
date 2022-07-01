@@ -1,6 +1,7 @@
 package view;
 
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,10 +25,21 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
     }
 
     private ConsoleOutput() {
+        consoleContent = new TreeMap<>();
     }
 
     /* CORE */
     /* --------------- */
+    TreeMap<Integer, String> consoleContent;
+
+    private void clear() {
+        System.out.print("\033[H\033[2J");
+    }
+
+    private void rewrite() {
+        consoleContent.forEach((__, s) -> System.out.println(s));
+    }
+
     Map<Suit, String> colors = Stream.of(new Object[][] {
             { Suit.GREEN, "\u001B[32m green\u001B[0m" },
             { Suit.RED, "\u001B[31m red\u001B[0m" },
@@ -37,28 +49,38 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
 
     @Override
     public void cardChanged(Card c) {
-        System.out.print("The terrain card changed in: ");
-        System.out.println(colors.get(c.getSuit()) + " - " + c.getValue());
+        String message = "The terrain card changed in: " + colors.get(c.getSuit()) + " - " + c.getValue();
+        consoleContent.put(0, message);
+
+        clear();
+        rewrite();
     }
 
     @Override
     public void handChanged(Hand hand, String nickname) {
-        System.out.println(nickname + "'s hand is:\n0) draw 1");
-
+        StringBuilder sb = new StringBuilder();
+        sb.append(nickname).append("'s hand is:\n0) draw 1\n");
         int i = 1;
         for (Card c : hand) {
-            System.out.println(i + ") " + colors.get(c.getSuit()) + " " + c.getValue());
+            sb.append(i).append(") ").append(colors.get(c.getSuit())).append(" ").append(c.getValue()).append("\n");
             i += 1;
         }
+        consoleContent.put(1, sb.toString());
+
+        clear();
+        rewrite();
     }
 
     @Override
     public void warn(String message) {
+        clear();
+        rewrite();
         System.out.println(message);
     }
 
     @Override
     public void playerWon(String nickname) {
+        clear();
         System.out.println("Well done " + nickname + ", you won!");
     }
 }
