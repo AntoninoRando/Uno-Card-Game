@@ -2,8 +2,9 @@ package model;
 
 import java.util.Map.Entry;
 
+import controller.Controller;
 import model.cards.Card;
-
+import model.listeners.EndListener;
 import model.listeners.HandListener;
 import model.listeners.InputListener;
 import model.listeners.InvalidActionListener;
@@ -30,22 +31,22 @@ public class MainLoop implements InputListener {
     /* ------------------ */
     private HandListener handListener = ConsoleOutput.getInstance();
     private InvalidActionListener invalidActionListener = ConsoleOutput.getInstance();
-    
+    private EndListener endListener = ConsoleOutput.getInstance();
+
     @Override
     public void validate(int choice, int source) {
         if (source != game.turn) {
             invalidActionListener.warn("This is not your turn!");
             return;
         }
-        
+
         Player p = game.players.get(source);
         if (Actions.isPlayable(game.terrainCard, p.hand.get(choice))) {
             Actions.changeCurrentCard(game, p.hand.remove(choice));
             handListener.handChanged(p.hand, p.nickname);
             playTurn(source);
             enemiesTurn();
-        }
-        else {
+        } else {
             Actions.tryChangeCard(game, p.hand.get(choice));
             invalidActionListener.warn("Can't play it now!");
         }
@@ -57,7 +58,7 @@ public class MainLoop implements InputListener {
 
     public void setup() {
         Actions.shuffle(game);
-        for (int i : game.players.keySet()) 
+        for (int i : game.players.keySet())
             Actions.dealFromDeck(game, i, 3);
         Actions.changeCurrentCard(game, Actions.takeFromDeck(game));
         handListener.handChanged(game.players.get(1).hand, game.players.get(1).nickname);
@@ -65,12 +66,17 @@ public class MainLoop implements InputListener {
 
     // This method is invoked when a valid input from the playing user occurs.
     private void playTurn(int i) {
-        if (++game.turn > game.players.size())
+        if (game.players.get(i).hand.isEmpty()) {
+            game.end = true;
+            endListener.playerWon(game.players.get(i).nickname);
+            for (Player p : game.players.values())
+                p.controller.ifPresent(c -> c.off());
+        } else if (++game.turn > game.players.size())
             game.turn = 1;
     }
 
     private void enemiesTurn() {
-        while(game.players.get(game.turn).controller == null) {
+        while (!game.end && game.players.get(game.turn).controller.isEmpty()) {
             playEnemy();
         }
     }
@@ -89,10 +95,11 @@ public class MainLoop implements InputListener {
         this.game = game;
         game.reset();
         setup();
-        for (Entry<Integer, Player> e : game.players.entrySet()) {
-            e.getValue().controller.setSource(e.getKey());
-            e.getValue().controller.setInputListener(this);
-            e.getValue().controller.on();
-        }
+        for (Entry<Integer, Player> e : game.players.entrySet())
+            e.getValue().controller.ifPresent(c -> {
+                c.setSource(e.getKey());
+                c.setInputListener(this);
+                c.on();
+            });
     }
 }

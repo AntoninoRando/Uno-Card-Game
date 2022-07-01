@@ -7,11 +7,12 @@ import java.util.stream.Stream;
 import model.cards.Suit;
 import model.cards.Card;
 import model.cards.Hand;
+import model.listeners.EndListener;
 import model.listeners.HandListener;
 import model.listeners.InvalidActionListener;
 import model.listeners.TerrainListener;
 
-public class ConsoleOutput implements TerrainListener, HandListener, InvalidActionListener {
+public class ConsoleOutput implements TerrainListener, HandListener, InvalidActionListener, EndListener {
     /* IMPLEMENTING SINGLETON PATTERN */
     /* ------------------------------ */
     private static ConsoleOutput instance;
@@ -54,5 +55,10 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
     @Override
     public void warn(String message) {
         System.out.println(message);
+    }
+
+    @Override
+    public void playerWon(String nickname) {
+        System.out.println("Well done " + nickname + ", you won!");
     }
 }

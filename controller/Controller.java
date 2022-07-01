@@ -22,6 +22,9 @@ public abstract class Controller {
 
     /* CORE METHODS */
     /* ------------ */
-    // Since the method is invoked, the controller is always ready to take input.
+    // Since the method is invoked, the controller is always ready to take inputs.
     public abstract void on();
+
+    // Since the method is invoked, the controller will not take inputs.
+    public abstract void off();
 }

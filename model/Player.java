@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Optional;
+
 import controller.Controller;
 import model.cards.Card;
 import model.cards.Hand;
@@ -11,11 +13,13 @@ public class Player {
     // !Visibilità default per usarle nel package
     String nickname;
     Hand hand;
-    Controller controller;
+    Optional<Controller> controller;
 
     public Player(String nickname, Card... cards) {
         this.nickname = nickname;
         hand = new Hand(cards);
+        
+        controller = Optional.empty();
     }
 
     /* GETTERS AND SETTERS */
@@ -29,7 +33,7 @@ public class Player {
     }
 
     public void setController(Controller c) {
-        controller = c;
+        controller = Optional.of(c);
     }
 
     /* OTHERS */

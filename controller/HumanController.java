@@ -8,9 +8,19 @@ public class HumanController extends Controller {
     @Override
     public void on() {
         // TO-DO! Make it start a new thread.
-        while (sc.hasNext()) {
-            int choice = sc.nextInt();
-            inputListener.validate(choice, source);
+        try {
+            while (sc.hasNext()) {
+                int choice = sc.nextInt();
+                inputListener.validate(choice, source);
+            }
+        } catch (IllegalStateException e) {
+            // When the scanner is closed
+            return;
         }
+    }
+
+    @Override
+    public void off() {
+        sc.close();
     }
 }
