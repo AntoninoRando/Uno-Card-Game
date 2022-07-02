@@ -62,7 +62,7 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
         card.append(colors.get(c.getSuit())).append("/").append(c.getValue());
         chronology.addFirst(card.toString());
 
-        String message = "The terrain card changed in: ".concat(chronologyToString(3));
+        String message = "The terrain card changed in: ".concat(chronologyToString(4));
         consoleContent.put(0, message);
 
         clear();
