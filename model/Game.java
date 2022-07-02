@@ -7,7 +7,7 @@ import model.cards.CardGroup;
 import model.cards.Deck;
 
 /**
- * This class store all the informations regarding the state of the game.
+ * This class stores represent a game state.
  */
 public class Game {
     protected TreeMap<Integer, Player> players;

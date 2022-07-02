@@ -1,32 +1,27 @@
 package model;
 
 import model.cards.Card;
-import model.cards.Suit;
 import model.listeners.TerrainListener;
 import view.ConsoleOutput;
 
 /**
- * This class contains all the actions that modify the state of the game.
- * 
- * If the action modify the view, this class store the listener waiting for the
- * event.
- * 
- * Complex actions can be performed cascading multiple actions.
+ * This class contains several static methods to modify the game state. If an
+ * action should be displayed, a listener will be triggered. Complex actions can
+ * be performed cascading multiple actions.
  */
 public abstract class Actions {
-    /* Listeners */
+    /* LISTENERS */
     /* --------- */
     private static TerrainListener terrainListener = ConsoleOutput.getInstance();
 
-    /* Private methods used by the actions */
-    /* ----------------------------------- */
-    public static boolean isPlayable(Card c, Card toPlay) {
-        if (c.getSuit() == Suit.WILD || toPlay.getSuit() == Suit.WILD)
-            return true;
-        return c.getSuit().equals(toPlay.getSuit()) || c.getValue() == toPlay.getValue();
+    /* PRIVATE METHODS */
+    /* --------------- */
+    public static boolean isPlayable(Card a, Card b) {
+        return a.getSuit() == b.getSuit() || a.getValue() == b.getValue();
     }
 
-    /* All the actions that modify the state of the game */
+    /* ACTIONS */
+    /* ------- */
     public static void changeCurrentCard(Game game, Card c) {
         game.discardPile.add(game.terrainCard);
         game.terrainCard = c;
@@ -70,7 +65,8 @@ public abstract class Actions {
 
         // // !Rende il numero del turno negativo. I numeri negativi, quando incontrati,
         // // vengono resi di nuovo positivi ma vengono trascurati.
-        // // !Alternativamente stavo pensando di modificare e farlo con la priorità: chi
+        // // !Alternativamente stavo pensando di modificare e farlo con la priorità:
+        // chi
         // // ha il numero più alto inizia, ecc...
         // game.turnsOrder[i] = Integer.min(playerNumber, -playerNumber);
     }

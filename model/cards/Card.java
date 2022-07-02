@@ -1,19 +1,17 @@
 package model.cards;
 
 public class Card implements Comparable<Card> {
-    // VARIABLES
     private Suit suit;
     private int value;
+    private String code;
 
-    // CONSTRUCTORS
     public Card(Suit suit, int value) {
         this.suit = suit;
         this.value = value;
     }
 
-    // METHODS
-
-    // GETTERS AND SETTERS
+    /* GETTERS AND SETTERS */
+    /* ------------------- */
     public Suit getSuit() {
         return suit;
     }
@@ -22,19 +20,17 @@ public class Card implements Comparable<Card> {
         return value;
     }
 
-    // CONVERTERS
+    public String getCode() {
+        return code;
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(suit).append(" ").append(value);
         return sb.toString();
     }
-
-    // COMPARABLE METHODS
-    @Override // Used to order card.
+    @Override
     public int compareTo(Card o) {
-        // !Non so se sia giusto usare == per gli enum
-        if (suit != o.suit) 
-            return suit.compareTo(o.suit);
-        return Integer.compare(value, o.value);
+        return suit != o.suit ? suit.compareTo(o.suit) : Integer.compare(value, o.value);
     }
 }
