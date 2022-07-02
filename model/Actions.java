@@ -43,7 +43,7 @@ public abstract class Actions {
 
     public static void dealFromDeck(Game game, int i) {
         Card c = takeFromDeck(game);
-        game.players.get(i).addCard(c);
+        game.getPlayer(i).addCard(c);
     }
 
     public static void dealFromDeck(Game game, int i, int times) {

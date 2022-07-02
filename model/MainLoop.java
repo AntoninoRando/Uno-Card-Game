@@ -35,26 +35,21 @@ public class MainLoop implements InputListener {
 
     @Override
     public void validate(int choice, Player source) {
-        if (!game.players.get(game.turn).equals(source)) {
+        if (!game.getPlayer().equals(source)) {
             invalidActionListener.warn("This is not your turn!");
-            return;
-        }
-
-        Player p = game.players.get(game.turn);
-
-        if (choice == 0) {
-            Actions.dealFromDeck(game, game.turn);
-            handListener.handChanged(p.hand, p.nickname);
+        } else if (choice == 0) {
+            Actions.dealFromDeck(game, game.getTurn());
+            handListener.handChanged(source.hand, source.nickname);
             drawListener.playerDrew("");
-            playTurn(game.turn);
+            playTurn(game.getTurn());
             enemiesTurn();
-        } else if (Actions.isPlayable(game.terrainCard, p.hand.get(choice - 1))) {
-            Actions.changeCurrentCard(game, p.hand.remove(choice - 1));
-            handListener.handChanged(p.hand, p.nickname);
-            playTurn(game.turn);
+        } else if (Actions.isPlayable(game.terrainCard, source.hand.get(choice - 1))) {
+            Actions.changeCurrentCard(game, source.hand.remove(choice - 1));
+            handListener.handChanged(source.hand, source.nickname);
+            playTurn(game.getTurn());
             enemiesTurn();
         } else {
-            Actions.tryChangeCard(game, p.hand.get(choice - 1));
+            Actions.tryChangeCard(game, source.hand.get(choice - 1));
             invalidActionListener.warn("Can't play it now!");
         }
     }
@@ -65,39 +60,38 @@ public class MainLoop implements InputListener {
 
     public void setup() {
         Actions.shuffle(game);
-        for (int i : game.players.keySet())
+        for (int i = 1; i <= game.countPlayers(); i++)
             Actions.dealFromDeck(game, i, 5);
         Actions.changeCurrentCard(game, Actions.takeFromDeck(game));
-        handListener.handChanged(game.players.get(1).hand, game.players.get(1).nickname);
+        handListener.handChanged(game.getPlayer(1).hand, game.getPlayer(1).nickname);
     }
 
     // This method is invoked when a valid input from the playing user occurs.
     private void playTurn(int i) {
-        if (game.players.get(i).hand.isEmpty()) {
-            game.end = true;
-            endListener.playerWon(game.players.get(i).nickname);
-        } else if (++game.turn > game.players.size())
-            game.turn = 1;
+        if (game.getPlayer(i).hand.isEmpty()) {
+            game.end();
+            endListener.playerWon(game.getPlayer(i).nickname);
+        }
+        game.nextTurn();
     }
 
     private void enemiesTurn() {
-        while (!game.end && !game.players.get(game.turn).isHuman) {
+        while (!game.isOver() && !game.getPlayer().isHuman) 
             playEnemy();
-        }
     }
 
     private void playEnemy() {
-        Player enemy = game.players.get(game.turn);
+        Player enemy = game.getPlayer();
         for (Card c : enemy.getHand()) {
             if (Actions.tryChangeCard(game, c)) {
                 enemy.hand.remove(c);
-                playTurn(game.turn);
+                playTurn(game.getTurn());
                 return;
             }
         }
-        Actions.dealFromDeck(game, game.turn);
+        Actions.dealFromDeck(game, game.getTurn());
         drawListener.playerDrew("");
-        playTurn(game.turn);
+        playTurn(game.getTurn());
     }
 
     public void play(Game game, Controller... users) {
