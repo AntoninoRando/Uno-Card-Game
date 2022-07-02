@@ -14,7 +14,7 @@ public class HumanController extends Controller {
                 inputListener.validate(choice, source);
             }
         } catch (IllegalStateException e) {
-            // When the scanner is closed
+            // Scanner closed
             return;
         }
     }

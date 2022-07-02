@@ -24,12 +24,12 @@ public class TestGame {
         Deck smallDeck = new Deck(smallCardSet);
 
         // New players with their controller
-        Player p1 = new Player("Antonino");
-        Player p2 = new Player("Bot Giovanni");
-        Player p3 = new Player("Bot Luca");
+        Player p1 = new Player("Antonino", true);
+        Player p2 = new Player("Bot Giovanni", false);
+        Player p3 = new Player("Bot Luca", false);
 
         Controller c1 = new HumanController();
-        p1.setController(c1);
+        c1.setSource(p1);
 
         TreeMap<Integer, Player> players = new TreeMap<>();
         players.put(1, p1);
@@ -37,6 +37,6 @@ public class TestGame {
         players.put(3, p3);
 
         Game gameFor3 = new Game(players, smallDeck);
-        MainLoop.getInstance().play(gameFor3);
+        MainLoop.getInstance().play(gameFor3, c1);
     }
 }

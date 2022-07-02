@@ -1,18 +1,23 @@
 package controller;
 
+import model.Player;
 import model.listeners.InputListener;
 
+/**
+ * This class enables a player to take choices (input) that modify the game
+ * state.
+ */
 public abstract class Controller {
-    protected int source;
+    protected Player source;
     protected InputListener inputListener;
 
     /* GETTERS AND SETTERS */
     /* ------------------- */
-    public int getSource() {
+    public Player getSource() {
         return source;
     }
 
-    public void setSource(int s) {
+    public void setSource(Player s) {
         source = s;
     }
 

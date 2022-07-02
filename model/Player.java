@@ -1,8 +1,5 @@
 package model;
 
-import java.util.Optional;
-
-import controller.Controller;
 import model.cards.Card;
 import model.cards.Hand;
 
@@ -12,14 +9,13 @@ import model.cards.Hand;
 public class Player {
     // !Visibilità default per usarle nel package
     String nickname;
+    boolean isHuman;
     Hand hand;
-    Optional<Controller> controller;
 
-    public Player(String nickname, Card... cards) {
+    public Player(String nickname, boolean isHuman, Card... cards) {
         this.nickname = nickname;
+        this.isHuman = isHuman;
         hand = new Hand(cards);
-        
-        controller = Optional.empty();
     }
 
     /* GETTERS AND SETTERS */
@@ -30,10 +26,6 @@ public class Player {
     
     public Hand getHand() {
         return hand;
-    }
-
-    public void setController(Controller c) {
-        controller = Optional.of(c);
     }
 
     /* OTHERS */
