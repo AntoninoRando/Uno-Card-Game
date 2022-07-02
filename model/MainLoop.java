@@ -3,6 +3,7 @@ package model;
 import java.util.Map.Entry;
 
 import model.cards.Card;
+import model.listeners.DrawListener;
 import model.listeners.EndListener;
 import model.listeners.HandListener;
 import model.listeners.InputListener;
@@ -31,6 +32,7 @@ public class MainLoop implements InputListener {
     private HandListener handListener = ConsoleOutput.getInstance();
     private InvalidActionListener invalidActionListener = ConsoleOutput.getInstance();
     private EndListener endListener = ConsoleOutput.getInstance();
+    private DrawListener drawListener = ConsoleOutput.getInstance();
 
     @Override
     public void validate(int choice, int source) {
@@ -44,6 +46,7 @@ public class MainLoop implements InputListener {
         if (choice == 0) {
             Actions.dealFromDeck(game, source);
             handListener.handChanged(p.hand, p.nickname);
+            drawListener.playerDrew("");
             playTurn(source);
             enemiesTurn();
         } else if (Actions.isPlayable(game.terrainCard, p.hand.get(choice - 1))) {
@@ -64,7 +67,7 @@ public class MainLoop implements InputListener {
     public void setup() {
         Actions.shuffle(game);
         for (int i : game.players.keySet())
-            Actions.dealFromDeck(game, i, 3);
+            Actions.dealFromDeck(game, i, 5);
         Actions.changeCurrentCard(game, Actions.takeFromDeck(game));
         handListener.handChanged(game.players.get(1).hand, game.players.get(1).nickname);
     }
@@ -92,9 +95,12 @@ public class MainLoop implements InputListener {
             if (Actions.tryChangeCard(game, c)) {
                 enemy.hand.remove(c);
                 playTurn(game.turn);
-                break;
+                return;
             }
         }
+        Actions.dealFromDeck(game, game.turn);
+        drawListener.playerDrew("");
+        playTurn(game.turn);
     }
 
     public void play(Game game) {

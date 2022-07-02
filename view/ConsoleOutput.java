@@ -1,5 +1,6 @@
 package view;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -8,12 +9,13 @@ import java.util.stream.Stream;
 import model.cards.Suit;
 import model.cards.Card;
 import model.cards.Hand;
+import model.listeners.DrawListener;
 import model.listeners.EndListener;
 import model.listeners.HandListener;
 import model.listeners.InvalidActionListener;
 import model.listeners.TerrainListener;
 
-public class ConsoleOutput implements TerrainListener, HandListener, InvalidActionListener, EndListener {
+public class ConsoleOutput implements TerrainListener, HandListener, InvalidActionListener, EndListener, DrawListener {
     /* IMPLEMENTING SINGLETON PATTERN */
     /* ------------------------------ */
     private static ConsoleOutput instance;
@@ -30,7 +32,8 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
 
     /* CORE */
     /* --------------- */
-    TreeMap<Integer, String> consoleContent;
+    private TreeMap<Integer, String> consoleContent;
+    private LinkedList<String> chronology = new LinkedList<>();
 
     private void clear() {
         System.out.print("\033[H\033[2J");
@@ -38,6 +41,12 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
 
     private void rewrite() {
         consoleContent.forEach((__, s) -> System.out.println(s));
+    }
+
+    private String chronologyToString(int pretty) {
+        if (pretty > chronology.size())
+            pretty = chronology.size();
+        return String.join(" <=== ", chronology.subList(0, pretty));
     }
 
     Map<Suit, String> colors = Stream.of(new Object[][] {
@@ -49,7 +58,11 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
 
     @Override
     public void cardChanged(Card c) {
-        String message = "The terrain card changed in: " + colors.get(c.getSuit()) + " - " + c.getValue();
+        StringBuilder card = new StringBuilder(3);
+        card.append(colors.get(c.getSuit())).append("/").append(c.getValue());
+        chronology.addFirst(card.toString());
+
+        String message = "The terrain card changed in: ".concat(chronologyToString(3));
         consoleContent.put(0, message);
 
         clear();
@@ -81,6 +94,17 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
     @Override
     public void playerWon(String nickname) {
         clear();
-        System.out.println("Well done " + nickname + ", you won!");
+        System.out.println("Well done ".concat(nickname).concat(", you won!"));
+    }
+
+    @Override
+    public void playerDrew(String nickname) {
+        chronology.addFirst("draw");
+
+        String message = "The terrain card changed in: ".concat(chronologyToString(4));
+        consoleContent.put(0, message);
+
+        clear();
+        rewrite();
     }
 }
