@@ -1,7 +1,7 @@
 package controller;
 
 import model.Player;
-import model.listeners.InputListener;
+import model.events.InputListener;
 
 /**
  * This class enables a player to take choices (input) that modify the game

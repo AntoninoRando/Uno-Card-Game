@@ -4,17 +4,58 @@ import java.util.TreeMap;
 
 import controller.Controller;
 import controller.HumanController;
+import model.Game;
 import model.MainLoop;
 import model.Player;
 import model.cards.Card;
 import model.cards.Deck;
 import model.cards.Suit;
 import model.effects.EffectBuilder;
+import model.events.EventListener;
 
 public class TestGame {
     public static void main(String[] args) {
         /* STANDARD DECK */
         /* ------------- */
+        EffectBuilder cc = new EffectBuilder(4);
+        cc.askForInput("Pick a new color: \"red\", \"blue\", \"green\", \"yellow\":\n")
+                .addChangePlayCondition((__) -> false) // Qualsiasi carta giocata prima della scelta del giocatore non
+                                                       // sarà valida.
+                .addKeepTurn()
+                .addEvent("InputGiven", new EventListener() {
+                    @Override
+                    public void update(String eventType, Object data) {
+                        Suit con;
+                        switch ((String) data) {
+                            case "red":
+                                con = Suit.RED;
+                                break;
+                            case "blue":
+                                con = Suit.BLUE;
+                                break;
+                            case "green":
+                                con = Suit.GREEN;
+                                break;
+                            case "yellow":
+                                con = Suit.YELLOW;
+                                break;
+                            default:
+                                con = Suit.WILD;
+                                break;
+                        }
+                        Game.getInstance().setPlayConditon((card) -> card.getSuit() == con);
+                        // We remove this functionality after this choice.
+                        MainLoop.getInstance().events.unsubscribe("InputGiven", this);
+                        // After playing the next card, reset the old condition.
+                        MainLoop.getInstance().events.subscribe("CardChanged", (t_, d_) -> {
+                            Game.getInstance().setPlayConditonToDefault();
+                        });
+                        // Passa il turno al giocatore successivo
+                        MainLoop.getInstance().playTurn(Game.getInstance().getTurn());
+                        MainLoop.getInstance().enemiesTurn();
+                    }
+                });
+
         EffectBuilder draw2 = new EffectBuilder(3);
         draw2.directTargetToFollowing(1).addDraw(2).addBlockTurn();
 
@@ -24,6 +65,11 @@ public class TestGame {
         List<Card> standardSet = new ArrayList<Card>(108);
         for (Suit color : Suit.values()) {
             if (color == Suit.WILD) {
+                for (int i = 1; i < 9; i++) {
+                    Card changeColor = new Card(color, -5);
+                    changeColor.addEffect(cc.build());
+                    standardSet.add(changeColor);
+                }
                 continue;
             }
             for (int i = 1; i < 10; i++) {
@@ -32,7 +78,7 @@ public class TestGame {
             }
             standardSet.add(new Card(color, 0));
             standardSet.add(new Card(color, 0));
-            
+
             Card d2a = new Card(color, -2);
             d2a.addEffect(draw2.build());
             standardSet.add(d2a);

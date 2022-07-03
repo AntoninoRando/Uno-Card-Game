@@ -10,8 +10,10 @@ public class HumanController extends Controller {
         // TO-DO! Make it start a new thread.
         try {
             while (sc.hasNext()) {
-                int choice = sc.nextInt();
-                inputListener.validate(choice, source);
+                if (sc.hasNextInt())
+                    inputListener.validate(sc.nextInt(), source);
+                else
+                    inputListener.validate(sc.next(), source);
             }
         } catch (IllegalStateException e) {
             // Scanner closed

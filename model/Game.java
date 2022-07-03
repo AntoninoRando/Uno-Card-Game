@@ -32,23 +32,24 @@ public class Game {
 
     private Game() {
         discardPile = new CardGroup();
-        playCondition = (card) -> {
-            Suit aS = terrainCard.getSuit();
-            Suit bS = card.getSuit();
-            return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || terrainCard.getValue() == card.getValue();
-        };
+        playCondition = defaultPlayCondition;
     }
 
     /* FIELDS */
     /* ------ */
-    private TreeMap<Integer, Player> players;
+    protected TreeMap<Integer, Player> players;
     private int turn;
 
     protected Deck deck;
     protected Card terrainCard;
     protected CardGroup discardPile;
 
-    protected Predicate<Card> playCondition;
+    private Predicate<Card> playCondition;
+    private Predicate<Card> defaultPlayCondition = (card) -> {
+        Suit aS = terrainCard.getSuit();
+        Suit bS = card.getSuit();
+        return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || terrainCard.getValue() == card.getValue();
+    };
 
     private boolean end;
 
@@ -82,6 +83,10 @@ public class Game {
         return turn;
     }
 
+    public void setTurn(int i) {
+        turn = i % countPlayers();
+    }
+
     public int getTurn(Player p) {
         return players.entrySet().stream()
                 .filter(entry -> p.equals(entry.getValue()))
@@ -96,6 +101,14 @@ public class Game {
 
     public boolean isOver() {
         return end;
+    }
+
+    public void setPlayConditon(Predicate<Card> newCondition) {
+        playCondition = newCondition;
+    }
+
+    public void setPlayConditonToDefault() {
+        playCondition = defaultPlayCondition;
     }
 
     public boolean isPlayable(Card c) {

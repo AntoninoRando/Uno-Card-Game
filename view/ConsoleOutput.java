@@ -88,9 +88,9 @@ public class ConsoleOutput implements EventListener {
     }
 
     public void warn(String message) {
+        consoleContent.put(2, message);
         clear();
         rewrite();
-        System.out.println(message);
     }
 
     public void playerWon(Player player) {

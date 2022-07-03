@@ -6,7 +6,7 @@ import controller.Controller;
 import model.cards.Card;
 import model.cards.Deck;
 import model.events.EventManager;
-import model.listeners.InputListener;
+import model.events.InputListener;
 import view.ConsoleOutput;
 
 /**
@@ -45,13 +45,11 @@ public class MainLoop implements InputListener {
             enemiesTurn();
         } else if (game.isPlayable(source.hand.get(choice - 1))) {
             Card toPlay = source.hand.remove(choice - 1);
-
-            toPlay.getEffect().ifPresent(e -> e.dispatch(toPlay, game.getTurn(source)));
-
             Actions.changeCurrentCard(toPlay);
             events.notify("HandChanged", source);
             events.notify("CardChanged", toPlay);
 
+            toPlay.getEffect().ifPresent(e -> e.dispatch(toPlay, game.getTurn(source)));
             playTurn(game.getTurn());
             enemiesTurn();
         } else {
@@ -60,12 +58,18 @@ public class MainLoop implements InputListener {
         }
     }
 
+    @Override
+    public void validate(String choice, Player source) {
+        events.notify("InputGiven", choice);
+    }
+
     /* MAIN LOOP LOGIC */
     /* --------------- */
     private Game game;
 
     public void setup() {
         Actions.shuffle();
+
         for (int i = 0; i < game.countPlayers(); i++)
             Actions.dealFromDeck(i, 7);
         
@@ -76,8 +80,13 @@ public class MainLoop implements InputListener {
     }
 
     // This method is invoked when a valid input from the playing user occurs.
-    private void playTurn(int i) {
+    public void playTurn(int i) {
         Player p = game.getPlayer(i);
+
+        if (p == null) {
+            game.nextTurn();
+            return;
+        }
 
         if (p.hand.isEmpty()) {
             game.end();
@@ -88,7 +97,7 @@ public class MainLoop implements InputListener {
         }
     }
 
-    private void enemiesTurn() {
+    public void enemiesTurn() {
         while (!game.isOver() && !game.getPlayer().isHuman)
             playEnemy();
     }
