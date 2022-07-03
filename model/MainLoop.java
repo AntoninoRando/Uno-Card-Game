@@ -75,7 +75,7 @@ public class MainLoop implements InputListener {
     public void setup() {
         Actions.shuffle();
         for (int i = 0; i < game.countPlayers(); i++)
-            Actions.dealFromDeck(i, 5);
+            Actions.dealFromDeck(i, 7);
         Actions.changeCurrentCard(Actions.takeFromDeck());
         handListener.handChanged(game.getPlayer(0).hand, game.getPlayer(0).nickname);
     }
