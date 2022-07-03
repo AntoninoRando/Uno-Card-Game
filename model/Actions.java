@@ -63,6 +63,10 @@ public abstract class Actions {
         game.discardPile.add(0, c);
     }
 
+    public static void skipTurn() {
+        Game.getInstance().nextTurn();
+    }
+
     public static void changeTurnsOrder(int... newOrder) {
         // TO-DO!
     }

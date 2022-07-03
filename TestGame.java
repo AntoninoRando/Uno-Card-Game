@@ -18,6 +18,10 @@ public class TestGame {
         eb.addDraw(2);
         Effect draw2 = eb.build();
 
+        EffectBuilder eb2 = new EffectBuilder(2);
+        eb2.directTargetToFollowing(1).addBlockTurn();
+        Effect blockNext = eb2.build();
+
         // Creating the deck and shuffling it
         List<Card> smallCardSet = new ArrayList<Card>();
         for (int i = 1; i <= 10; i++) {
@@ -28,6 +32,9 @@ public class TestGame {
                 smallCardSet.add(c);
             }
         }
+        Card blocker = new Card(Suit.WILD, 0);
+        blocker.addEffect(blockNext);
+        smallCardSet.add(blocker);
         Deck smallDeck = new Deck(smallCardSet);
 
         // New players with their controller

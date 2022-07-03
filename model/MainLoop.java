@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import controller.Controller;
 import model.cards.Card;
 import model.cards.Deck;
+import model.events.EventManager;
 import model.listeners.DrawListener;
 import model.listeners.EndListener;
 import model.listeners.HandListener;
@@ -27,7 +28,12 @@ public class MainLoop implements InputListener {
     }
 
     private MainLoop() {
+        events = new EventManager();
     }
+
+    /* EVENTS */
+    /* ------ */
+    public EventManager events;
 
     /* INTERFACES METHODS */
     /* ------------------ */
@@ -81,6 +87,7 @@ public class MainLoop implements InputListener {
             endListener.playerWon(game.getPlayer(i).nickname);
         }
         game.nextTurn();
+        events.notify("PlayerTurn", game.getTurn());
     }
 
     private void enemiesTurn() {
