@@ -7,15 +7,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import model.cards.Suit;
+import model.events.EventListener;
+import model.Player;
 import model.cards.Card;
 import model.cards.Hand;
-import model.listeners.DrawListener;
-import model.listeners.EndListener;
-import model.listeners.HandListener;
-import model.listeners.InvalidActionListener;
-import model.listeners.TerrainListener;
 
-public class ConsoleOutput implements TerrainListener, HandListener, InvalidActionListener, EndListener, DrawListener {
+public class ConsoleOutput implements EventListener {
     /* IMPLEMENTING SINGLETON PATTERN */
     /* ------------------------------ */
     private static ConsoleOutput instance;
@@ -57,7 +54,6 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
             { Suit.WILD, "\u001B[36m wild\u001B[0m" }
     }).collect(Collectors.toMap(p -> (Suit) p[0], p -> (String) p[1]));
 
-    @Override
     public void cardChanged(Card c) {
         StringBuilder card = new StringBuilder(3);
         card.append(colors.get(c.getSuit())).append("/").append(c.getValue());
@@ -70,8 +66,9 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
         rewrite();
     }
 
-    @Override
-    public void handChanged(Hand hand, String nickname) {
+    public void handChanged(Player player) {
+        Hand hand = player.getHand();
+        String nickname = player.getNickname();
         StringBuilder sb = new StringBuilder();
         sb.append(nickname).append("'s hand is:\n0) draw 1\n");
         int i = 1;
@@ -90,21 +87,18 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
         rewrite();
     }
 
-    @Override
     public void warn(String message) {
         clear();
         rewrite();
         System.out.println(message);
     }
 
-    @Override
-    public void playerWon(String nickname) {
+    public void playerWon(Player player) {
         clear();
-        System.out.println("Well done ".concat(nickname).concat(", you won!"));
+        System.out.println("Well done ".concat(player.getNickname()).concat(", you won!"));
     }
 
-    @Override
-    public void playerDrew(String nickname) {
+    public void playerDrew(Player player) {
         chronology.addFirst("draw");
 
         String message = "The terrain card changed in: ".concat(chronologyToString(4));
@@ -112,5 +106,26 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
 
         clear();
         rewrite();
+    }
+
+    @Override
+    public void update(String eventType, Object data) {
+        switch (eventType) {
+            case "PlayerDrew":
+                playerDrew((Player) data);
+                break;
+            case "PlayerWon":
+                playerWon((Player) data);
+                break;
+            case "Warn":
+                warn((String) data);
+                break;
+            case "HandChanged":
+                handChanged((Player) data);
+                break;
+            case "CardChanged":
+                cardChanged((Card) data);
+                break;
+        }
     }
 }

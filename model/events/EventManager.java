@@ -23,6 +23,6 @@ public class EventManager {
 
     public void notify(String eventType, Object data) {
         listeners.putIfAbsent(eventType, new LinkedList<>());
-        listeners.get(eventType).forEach(e -> e.update(data));
+        listeners.get(eventType).forEach(e -> e.update(eventType, data));
     }
 }

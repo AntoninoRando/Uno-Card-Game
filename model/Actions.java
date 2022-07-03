@@ -1,9 +1,6 @@
 package model;
 
 import model.cards.Card;
-import model.cards.Suit;
-import model.listeners.TerrainListener;
-import view.ConsoleOutput;
 
 /**
  * This class contains several static methods to modify the game state. If an
@@ -11,30 +8,17 @@ import view.ConsoleOutput;
  * be performed cascading multiple actions.
  */
 public abstract class Actions {
-    /* LISTENERS */
-    /* --------- */
-    private static TerrainListener terrainListener = ConsoleOutput.getInstance();
-
-    /* PRIVATE METHODS */
-    /* --------------- */
-    public static boolean isPlayable(Card a, Card b) {
-        Suit aS = a.getSuit();
-        Suit bS = b.getSuit();
-        return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || a.getValue() == b.getValue();
-    }
-
     /* ACTIONS */
     /* ------- */
     public static void changeCurrentCard(Card c) {
         Game game = Game.getInstance();
         game.discardPile.add(game.terrainCard);
         game.terrainCard = c;
-        terrainListener.cardChanged(c);
     }
 
     public static boolean tryChangeCard(Card c) {
         Game game = Game.getInstance();
-        if (!isPlayable(game.terrainCard, c))
+        if (!game.isPlayable(c))
             return false;
         changeCurrentCard(c);
         return true;

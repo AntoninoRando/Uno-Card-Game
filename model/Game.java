@@ -2,13 +2,22 @@ package model;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 
 import model.cards.Card;
 import model.cards.CardGroup;
 import model.cards.Deck;
+import model.cards.Suit;
 
 /**
- * This class stores represent a game state.
+ * This class represents a game frame. Think of this class as a node
+ * in a finite state machine. The transitions between nodes are
+ * performed by the MainLoop. Any destination node is still represent by this
+ * class, but with different values in its fields.
+ * <hr>
+ * Following this analogy, the Game can not modify itself, but it can only
+ * return its values to the requesters. The MainLoop will modify the Game's
+ * fileds.
  */
 public class Game {
     /* IMPLEMENTING SINGLETON PATTERN */
@@ -23,8 +32,15 @@ public class Game {
 
     private Game() {
         discardPile = new CardGroup();
+        playCondition = (card) -> {
+            Suit aS = terrainCard.getSuit();
+            Suit bS = card.getSuit();
+            return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || terrainCard.getValue() == card.getValue();
+        };
     }
 
+    /* FIELDS */
+    /* ------ */
     private TreeMap<Integer, Player> players;
     private int turn;
 
@@ -32,8 +48,12 @@ public class Game {
     protected Card terrainCard;
     protected CardGroup discardPile;
 
+    protected Predicate<Card> playCondition;
+
     private boolean end;
 
+    /* GETTERS AND SETTERS */
+    /* ------------------- */
     public void setPlayers(TreeMap<Integer, Player> players) {
         this.players = players;
     }
@@ -42,8 +62,8 @@ public class Game {
         this.deck = deck;
     }
 
-    protected void reset() {
-        // TO-DO!
+    protected static void reset() {
+        instance = null;
     }
 
     public Player getPlayer() {
@@ -76,6 +96,10 @@ public class Game {
 
     public boolean isOver() {
         return end;
+    }
+
+    public boolean isPlayable(Card c) {
+        return playCondition.test(c);
     }
 
     public void end() {

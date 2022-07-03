@@ -51,7 +51,7 @@ public class EffectBuilder {
         steps[i] = () -> {
             EventListener blocker = new EventListener() {
                 @Override
-                public void update(Object data) {
+                public void update(String __, Object data) {
                     if ((int) data != eff.target)
                         return;
                     Actions.skipTurn();
