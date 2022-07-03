@@ -76,7 +76,7 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
         sb.append(nickname).append("'s hand is:\n0) draw 1\n");
         int i = 1;
         for (Card c : hand) {
-            sb.append(i).append(") ").append(colors.get(c.getSuit())).append(" ").append(c.getValue());
+            sb.append(i).append(")\t").append(colors.get(c.getSuit())).append(" ").append(c.getValue());
             if (c.getValue() == 7)
                 sb.append(" (effect: draw 2)");
             sb.append("\n");

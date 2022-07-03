@@ -22,7 +22,6 @@ public class Game {
     }
 
     private Game() {
-        turn = 1;
         discardPile = new CardGroup();
     }
 
@@ -52,8 +51,7 @@ public class Game {
     }
 
     public Player getPlayer(int theirTurn) {
-        // theirTurn = Integer.max(theirTurn % countPlayers(), 1);
-        return players.get(theirTurn);
+        return players.get(theirTurn % countPlayers());
     }
 
     public int countPlayers() {
@@ -72,8 +70,8 @@ public class Game {
     }
 
     public void nextTurn() {
-        if (++turn > countPlayers())
-            turn = 1;
+        if (++turn >= countPlayers())
+            turn = 0;
     }
 
     public boolean isOver() {

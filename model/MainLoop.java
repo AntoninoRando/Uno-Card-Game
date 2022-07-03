@@ -68,10 +68,10 @@ public class MainLoop implements InputListener {
 
     public void setup() {
         Actions.shuffle();
-        for (int i = 1; i <= game.countPlayers(); i++)
+        for (int i = 0; i < game.countPlayers(); i++)
             Actions.dealFromDeck(i, 5);
         Actions.changeCurrentCard(Actions.takeFromDeck());
-        handListener.handChanged(game.getPlayer(1).hand, game.getPlayer(1).nickname);
+        handListener.handChanged(game.getPlayer(0).hand, game.getPlayer(0).nickname);
     }
 
     // This method is invoked when a valid input from the playing user occurs.

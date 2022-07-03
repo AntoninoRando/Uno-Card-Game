@@ -63,19 +63,18 @@ public abstract class Actions {
         game.discardPile.add(0, c);
     }
 
-    public static void changeTurnsOrder(Game game, int... newOrder) {
+    public static void changeTurnsOrder(int... newOrder) {
         // TO-DO!
     }
 
-    public static void blockTurn(Game game, int i) {
+    public static void blockTurn(int i) {
         // TO-DO!
         // int playerNumber = game.turnsOrder[i];
 
         // // !Rende il numero del turno negativo. I numeri negativi, quando incontrati,
         // // vengono resi di nuovo positivi ma vengono trascurati.
         // // !Alternativamente stavo pensando di modificare e farlo con la priorità:
-        // chi
-        // // ha il numero più alto inizia, ecc...
+        // // chi ha il numero più alto inizia, ecc...
         // game.turnsOrder[i] = Integer.min(playerNumber, -playerNumber);
     }
 

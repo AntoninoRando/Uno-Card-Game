@@ -39,9 +39,9 @@ public class TestGame {
         c1.setSource(p1);
 
         TreeMap<Integer, Player> players = new TreeMap<>();
-        players.put(1, p1);
-        players.put(2, p2);
-        players.put(3, p3);
+        players.put(0, p1);
+        players.put(1, p2);
+        players.put(2, p3);
 
         MainLoop.getInstance().play(players, smallDeck, c1);
     }
