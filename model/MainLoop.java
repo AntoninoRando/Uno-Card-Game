@@ -47,8 +47,13 @@ public class MainLoop implements InputListener {
             playTurn(game.getTurn());
             enemiesTurn();
         } else if (Actions.isPlayable(game.terrainCard, source.hand.get(choice - 1))) {
-            Actions.changeCurrentCard(source.hand.remove(choice - 1));
+            Card toPlay = source.hand.remove(choice - 1);
+
+            toPlay.getEffect().ifPresent(e -> e.dispatch(toPlay, game.getTurn(source)));
+
+            Actions.changeCurrentCard(toPlay);
             handListener.handChanged(source.hand, source.nickname);
+            
             playTurn(game.getTurn());
             enemiesTurn();
         } else {

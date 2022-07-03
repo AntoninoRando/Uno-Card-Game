@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 import model.cards.Card;
@@ -61,6 +62,13 @@ public class Game {
 
     public int getTurn() {
         return turn;
+    }
+
+    public int getTurn(Player p) {
+        return players.entrySet().stream()
+                .filter(entry -> p.equals(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .findFirst().get();
     }
 
     public void nextTurn() {

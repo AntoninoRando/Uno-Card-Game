@@ -53,7 +53,8 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
             { Suit.GREEN, "\u001B[32m green\u001B[0m" },
             { Suit.RED, "\u001B[31m red\u001B[0m" },
             { Suit.YELLOW, "\u001B[33m yellow\u001B[0m" },
-            { Suit.BLUE, "\u001B[34m blue\u001B[0m" }
+            { Suit.BLUE, "\u001B[34m blue\u001B[0m" },
+            { Suit.WILD, "\u001B[36m wild\u001B[0m" }
     }).collect(Collectors.toMap(p -> (Suit) p[0], p -> (String) p[1]));
 
     @Override
@@ -75,7 +76,10 @@ public class ConsoleOutput implements TerrainListener, HandListener, InvalidActi
         sb.append(nickname).append("'s hand is:\n0) draw 1\n");
         int i = 1;
         for (Card c : hand) {
-            sb.append(i).append(") ").append(colors.get(c.getSuit())).append(" ").append(c.getValue()).append("\n");
+            sb.append(i).append(") ").append(colors.get(c.getSuit())).append(" ").append(c.getValue());
+            if (c.getValue() == 7)
+                sb.append(" (effect: draw 2)");
+            sb.append("\n");
             i += 1;
         }
         consoleContent.put(1, sb.toString());

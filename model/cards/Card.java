@@ -1,13 +1,21 @@
 package model.cards;
 
+import java.util.Optional;
+
+import model.effects.Effect;
+
 public class Card implements Comparable<Card> {
     private Suit suit;
     private int value;
     private int ID;
 
+    private Optional<Effect> effect;
+
     public Card(Suit suit, int value) {
         this.suit = suit;
         this.value = value;
+
+        effect = Optional.empty();
     }
 
     /* GETTERS AND SETTERS */
@@ -22,6 +30,14 @@ public class Card implements Comparable<Card> {
 
     public int getID() {
         return ID;
+    }
+
+    public Optional<Effect> getEffect() {
+        return effect;
+    }
+
+    public void addEffect(Effect e) {
+        effect = Optional.of(e);
     }
 
     public String toString() {

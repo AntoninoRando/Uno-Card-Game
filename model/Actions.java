@@ -1,6 +1,7 @@
 package model;
 
 import model.cards.Card;
+import model.cards.Suit;
 import model.listeners.TerrainListener;
 import view.ConsoleOutput;
 
@@ -17,7 +18,9 @@ public abstract class Actions {
     /* PRIVATE METHODS */
     /* --------------- */
     public static boolean isPlayable(Card a, Card b) {
-        return a.getSuit() == b.getSuit() || a.getValue() == b.getValue();
+        Suit aS = a.getSuit();
+        Suit bS = b.getSuit();
+        return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || a.getValue() == b.getValue();
     }
 
     /* ACTIONS */

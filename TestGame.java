@@ -9,16 +9,24 @@ import model.Player;
 import model.cards.Card;
 import model.cards.Deck;
 import model.cards.Suit;
+import model.effects.Effect;
+import model.effects.EffectBuilder;
 
 public class TestGame {
     public static void main(String[] args) {
+        EffectBuilder eb = new EffectBuilder(1);
+        eb.addDraw(2);
+        Effect draw2 = eb.build();
+
         // Creating the deck and shuffling it
         List<Card> smallCardSet = new ArrayList<Card>();
         for (int i = 1; i <= 10; i++) {
-            smallCardSet.add(new Card(Suit.YELLOW, i));
-            smallCardSet.add(new Card(Suit.RED, i));
-            smallCardSet.add(new Card(Suit.BLUE, i));
-            smallCardSet.add(new Card(Suit.GREEN, i));
+            for (Suit color: Suit.values()) {
+                Card c = new Card(color, i);
+                if (i == 7)
+                    c.addEffect(draw2);
+                smallCardSet.add(c);
+            }
         }
         Deck smallDeck = new Deck(smallCardSet);
 
