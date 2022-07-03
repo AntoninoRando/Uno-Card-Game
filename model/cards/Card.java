@@ -3,7 +3,7 @@ package model.cards;
 public class Card implements Comparable<Card> {
     private Suit suit;
     private int value;
-    private String code;
+    private int ID;
 
     public Card(Suit suit, int value) {
         this.suit = suit;
@@ -20,8 +20,8 @@ public class Card implements Comparable<Card> {
         return value;
     }
 
-    public String getCode() {
-        return code;
+    public int getID() {
+        return ID;
     }
 
     public String toString() {

@@ -4,7 +4,6 @@ import java.util.TreeMap;
 
 import controller.Controller;
 import controller.HumanController;
-import model.Game;
 import model.MainLoop;
 import model.Player;
 import model.cards.Card;
@@ -36,7 +35,6 @@ public class TestGame {
         players.put(2, p2);
         players.put(3, p3);
 
-        Game gameFor3 = new Game(players, smallDeck);
-        MainLoop.getInstance().play(gameFor3, c1);
+        MainLoop.getInstance().play(players, smallDeck, c1);
     }
 }

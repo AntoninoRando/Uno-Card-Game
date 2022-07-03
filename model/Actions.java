@@ -22,36 +22,41 @@ public abstract class Actions {
 
     /* ACTIONS */
     /* ------- */
-    public static void changeCurrentCard(Game game, Card c) {
+    public static void changeCurrentCard(Card c) {
+        Game game = Game.getInstance();
         game.discardPile.add(game.terrainCard);
         game.terrainCard = c;
         terrainListener.cardChanged(c);
     }
 
-    public static boolean tryChangeCard(Game game, Card c) {
+    public static boolean tryChangeCard(Card c) {
+        Game game = Game.getInstance();
         if (!isPlayable(game.terrainCard, c))
             return false;
-        changeCurrentCard(game, c);
+        changeCurrentCard(c);
         return true;
     }
 
-    public static Card takeFromDeck(Game game) {
+    public static Card takeFromDeck() {
+        Game game = Game.getInstance();
         if (game.deck.isEmpty())
-            shuffle(game);
+            shuffle();
         return game.deck.remove(0);
     }
 
-    public static void dealFromDeck(Game game, int i) {
-        Card c = takeFromDeck(game);
+    public static void dealFromDeck(int i) {
+        Game game = Game.getInstance();
+        Card c = takeFromDeck();
         game.getPlayer(i).addCard(c);
     }
 
-    public static void dealFromDeck(Game game, int i, int times) {
+    public static void dealFromDeck(int i, int times) {
         while (times-- > 0)
-            dealFromDeck(game, i);
+            dealFromDeck(i);
     }
 
-    public static void discardCard(Game game, Card c) {
+    public static void discardCard(Card c) {
+        Game game = Game.getInstance();
         game.discardPile.add(0, c);
     }
 
@@ -71,7 +76,8 @@ public abstract class Actions {
         // game.turnsOrder[i] = Integer.min(playerNumber, -playerNumber);
     }
 
-    public static void shuffle(Game game) {
+    public static void shuffle() {
+        Game game = Game.getInstance();
         game.deck.addAll(game.discardPile);
         game.deck.shuffle();
         game.discardPile.clear();

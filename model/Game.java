@@ -10,6 +10,21 @@ import model.cards.Deck;
  * This class stores represent a game state.
  */
 public class Game {
+    /* IMPLEMENTING SINGLETON PATTERN */
+    /* ------------------------------ */
+    private static Game instance;
+
+    public static Game getInstance() {
+        if (instance == null)
+            instance = new Game();
+        return instance;
+    }
+
+    private Game() {
+        turn = 1;
+        discardPile = new CardGroup();
+    }
+
     private TreeMap<Integer, Player> players;
     private int turn;
 
@@ -19,12 +34,12 @@ public class Game {
 
     private boolean end;
 
-    public Game(TreeMap<Integer, Player> players, Deck deck) {
+    public void setPlayers(TreeMap<Integer, Player> players) {
         this.players = players;
-        this.deck = deck;
+    }
 
-        turn = 1;
-        discardPile = new CardGroup();
+    public void setDeck(Deck deck) {
+        this.deck = deck;
     }
 
     protected void reset() {
@@ -36,6 +51,7 @@ public class Game {
     }
 
     public Player getPlayer(int theirTurn) {
+        // theirTurn = Integer.max(theirTurn % countPlayers(), 1);
         return players.get(theirTurn);
     }
 
