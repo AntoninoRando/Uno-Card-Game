@@ -11,6 +11,7 @@ public class Player {
     String nickname;
     boolean isHuman;
     Hand hand;
+    int ID;
 
     public Player(String nickname, boolean isHuman, Card... cards) {
         this.nickname = nickname;
