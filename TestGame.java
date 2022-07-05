@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import controller.Controller;
 import controller.HumanController;
 import model.Game;
+import model.Loop;
 import model.MainLoop;
 import model.Player;
 import model.cards.Card;
@@ -12,6 +13,7 @@ import model.cards.Deck;
 import model.cards.Suit;
 import model.effects.EffectBuilder;
 import model.events.EventListener;
+import view.ConsoleOutput;
 
 public class TestGame {
     public static void main(String[] args) {
@@ -111,14 +113,14 @@ public class TestGame {
 
         /* LOOP */
         /* ---- */
-        MainLoop.getInstance().play(players, standardDeck, c1);
-
-        // String[] toListen = new String[] {"cardPlayed", "playerDrew", "turnStart", "invalidChoice", "warning", "turnEnd"};
-        // try {
-        //     Loop.getInstance().play(ConsoleOutput.getInstance(), toListen, players, standardDeck, c1);
-        // } catch (InterruptedException e) {
-        //     // TODO Auto-generated catch block
-        //     e.printStackTrace();
-        // }
+        // MainLoop.getInstance().play(players, standardDeck, c1);
+        ConsoleOutput displayer = ConsoleOutput.getInstance();
+        String[] listening = new String[] { "playerDrew", "PlayerWon", "warning", "turnStart", "cardPlayed" };
+        try {
+            Loop.getInstance().play(displayer, listening, players, standardDeck, c1);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

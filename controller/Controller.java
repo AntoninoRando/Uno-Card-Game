@@ -7,7 +7,7 @@ import model.events.InputListener;
  * This class enables a player to take choices (input) that modify the game
  * state.
  */
-public abstract class Controller {
+public abstract class Controller extends Thread {
     protected Player source;
     protected InputListener inputListener;
 

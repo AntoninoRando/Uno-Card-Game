@@ -119,11 +119,8 @@ public class MainLoop implements InputListener {
 
     public void play(TreeMap<Integer, Player> players, Deck deck, Controller... users) {
         ConsoleOutput displayer = ConsoleOutput.getInstance();
-        events.subscribe("PlayerDrew", displayer);
-        events.subscribe("PlayerWon", displayer);
-        events.subscribe("Warn", displayer);
-        events.subscribe("HandChanged", displayer);
-        events.subscribe("CardChanged", displayer);
+        for (String eventType : displayer.getEventsListening())
+            events.subscribe(eventType, displayer);
 
         Game.reset();
         game = Game.getInstance();

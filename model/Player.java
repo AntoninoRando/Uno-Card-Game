@@ -29,6 +29,14 @@ public class Player {
         return hand;
     }
 
+    public int getID() {
+        return ID;
+    }
+
+    public boolean isHuman() {
+        return isHuman;
+    }
+
     /* OTHERS */
     /* ------ */
     protected void addCard(Card card) {

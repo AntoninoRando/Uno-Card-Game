@@ -3,6 +3,7 @@ package view;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -27,27 +28,51 @@ public class ConsoleOutput implements EventListener {
 
     private ConsoleOutput() {
         consoleContent = new TreeMap<>();
-
+        chronology = new LinkedList<>();
         listening = new HashMap<>();
-        listening.put("PlayerDrew", (data) -> playerDrew((Player) data));
+        colors = Stream.of(new Object[][] {
+                { Suit.GREEN, "\u001B[32m green\u001B[0m" },
+                { Suit.RED, "\u001B[31m red\u001B[0m" },
+                { Suit.YELLOW, "\u001B[33m yellow\u001B[0m" },
+                { Suit.BLUE, "\u001B[34m blue\u001B[0m" },
+                { Suit.WILD, "\u001B[36m wild\u001B[0m" }
+        }).collect(Collectors.toMap(p -> (Suit) p[0], p -> (String) p[1]));
+
+        // listening.put("PlayerDrew", (data) -> playerDrew((Player) data));
+        // listening.put("PlayerWon", (data) -> playerWon((Player) data));
+        // listening.put("Warn", (data) -> warning((String) data));
+        // listening.put("HandChanged", (data) -> handChanged((Player) data));
+        // listening.put("CardChanged", (data) -> cardChanged((Card) data));
+
+        listening.put("playerDrew", (data) -> playerDrew((Player) data));
         listening.put("PlayerWon", (data) -> playerWon((Player) data));
-        listening.put("Warn", (data) -> warn((String) data));
-        listening.put("HandChanged", (data) -> handChanged((Player) data));
-        listening.put("CardChanged", (data) -> cardChanged((Card) data));
+        listening.put("warning", (data) -> warning((String) data));
+        listening.put("turnStart", (data) -> handChanged((Player) data));
+        listening.put("cardPlayed", (data) -> cardChanged((Card) data));
     }
 
     /* CORE */
     /* --------------- */
     private TreeMap<Integer, String> consoleContent;
-    private LinkedList<String> chronology = new LinkedList<>();
+    private LinkedList<String> chronology;
     private Map<String, Consumer<Object>> listening;
+    private Map<Suit, String> colors;
+
+    public Set<String> getEventsListening() {
+        return listening.keySet();
+    }
 
     private void clear() {
         System.out.print("\033[H\033[2J");
     }
 
-    private void rewrite() {
-        consoleContent.forEach((__, s) -> System.out.println(s));
+    private void write() {
+        consoleContent.values().forEach(System.out::println);
+    }
+
+    private void updateView() {
+        clear();
+        write();
     }
 
     private String chronologyToString(int pretty) {
@@ -55,14 +80,6 @@ public class ConsoleOutput implements EventListener {
             pretty = chronology.size();
         return String.join(" <=== ", chronology.subList(0, pretty));
     }
-
-    Map<Suit, String> colors = Stream.of(new Object[][] {
-            { Suit.GREEN, "\u001B[32m green\u001B[0m" },
-            { Suit.RED, "\u001B[31m red\u001B[0m" },
-            { Suit.YELLOW, "\u001B[33m yellow\u001B[0m" },
-            { Suit.BLUE, "\u001B[34m blue\u001B[0m" },
-            { Suit.WILD, "\u001B[36m wild\u001B[0m" }
-    }).collect(Collectors.toMap(p -> (Suit) p[0], p -> (String) p[1]));
 
     public void cardChanged(Card c) {
         StringBuilder card = new StringBuilder(3);
@@ -72,16 +89,17 @@ public class ConsoleOutput implements EventListener {
         String message = "The terrain card changed in: ".concat(chronologyToString(4));
         consoleContent.put(0, message);
 
-        clear();
-        rewrite();
+        updateView();
     }
 
     public void handChanged(Player player) {
+        if (!player.isHuman())
+            return;
         Hand hand = player.getHand();
         String nickname = player.getNickname();
         StringBuilder sb = new StringBuilder();
-        sb.append(nickname).append("'s hand is:\n0) draw 1\n");
-        int i = 1;
+        sb.append(nickname).append("'s hand is:\n");
+        int i = 0;
         for (Card c : hand) {
             sb.append(i)
                     .append(")\t")
@@ -93,14 +111,12 @@ public class ConsoleOutput implements EventListener {
         }
         consoleContent.put(1, sb.toString());
 
-        clear();
-        rewrite();
+        updateView();
     }
 
-    public void warn(String message) {
+    public void warning(String message) {
         consoleContent.put(2, message);
-        clear();
-        rewrite();
+        updateView();
     }
 
     public void playerWon(Player player) {
@@ -109,13 +125,12 @@ public class ConsoleOutput implements EventListener {
     }
 
     public void playerDrew(Player player) {
-        chronology.addFirst("draw");
+        chronology.addFirst(player.getNickname() + " drew");
 
         String message = "The terrain card changed in: ".concat(chronologyToString(4));
         consoleContent.put(0, message);
 
-        clear();
-        rewrite();
+        updateView();
     }
 
     @Override

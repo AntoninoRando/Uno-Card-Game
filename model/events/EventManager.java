@@ -25,8 +25,7 @@ public class EventManager {
     }
 
     public void notify(String eventType, Object data) {
-        listeners.putIfAbsent(eventType, new LinkedList<>());
-        listeners.get(eventType).forEach(e -> e.update(eventType, data));
+        listeners.getOrDefault(eventType, List.of()).forEach(e -> e.update(eventType, data));
     }
 
     /* CUSTOM FIELDS */
@@ -34,15 +33,20 @@ public class EventManager {
     private Map<EventListener, Object> waiting;
 
     public Object waitFor(String eventType) throws InterruptedException {
+        EventManager self = this;
         EventListener e = new EventListener() {
             @Override
             public void update(String eventType, Object data) {
                 waiting.put(this, data);
-                notify();
+                synchronized (self) {
+                    self.notify();
+                }
             }
         };
         subscribe(eventType, e);
-        wait();
+        synchronized (self) {
+            wait();
+        }
         unsubscribe(eventType, e);
         return waiting.get(e);
     }

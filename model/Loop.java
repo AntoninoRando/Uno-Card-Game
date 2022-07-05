@@ -43,7 +43,7 @@ public class Loop {
         setupView(displayer, eventsToListen);
         setupGame();
         for (Controller c : users)
-            c.on();
+            c.start();
 
         boolean isTurnOver;
         while (!g.isOver) {
@@ -118,7 +118,6 @@ public class Loop {
                     events.notify("cardPlayed", c);
                     return true;
                 } else {
-                    events.notify("invalidChoice", null);
                     events.notify("warning", "Can't play it now!");
                     return false;
                 }
