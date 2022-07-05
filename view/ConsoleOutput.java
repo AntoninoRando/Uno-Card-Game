@@ -1,8 +1,10 @@
 package view;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,12 +27,20 @@ public class ConsoleOutput implements EventListener {
 
     private ConsoleOutput() {
         consoleContent = new TreeMap<>();
+
+        listening = new HashMap<>();
+        listening.put("PlayerDrew", (data) -> playerDrew((Player) data));
+        listening.put("PlayerWon", (data) -> playerWon((Player) data));
+        listening.put("Warn", (data) -> warn((String) data));
+        listening.put("HandChanged", (data) -> handChanged((Player) data));
+        listening.put("CardChanged", (data) -> cardChanged((Card) data));
     }
 
     /* CORE */
     /* --------------- */
     private TreeMap<Integer, String> consoleContent;
     private LinkedList<String> chronology = new LinkedList<>();
+    private Map<String, Consumer<Object>> listening;
 
     private void clear() {
         System.out.print("\033[H\033[2J");
@@ -110,22 +120,8 @@ public class ConsoleOutput implements EventListener {
 
     @Override
     public void update(String eventType, Object data) {
-        switch (eventType) {
-            case "PlayerDrew":
-                playerDrew((Player) data);
-                break;
-            case "PlayerWon":
-                playerWon((Player) data);
-                break;
-            case "Warn":
-                warn((String) data);
-                break;
-            case "HandChanged":
-                handChanged((Player) data);
-                break;
-            case "CardChanged":
-                cardChanged((Card) data);
-                break;
-        }
+        listening.getOrDefault(eventType, (__) -> {
+            throw new Error("The ConsoleOutput was listening for \"" + eventType + "\" but it can't handle this event");
+        }).accept(data);
     }
 }

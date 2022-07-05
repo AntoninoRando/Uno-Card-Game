@@ -109,6 +109,16 @@ public class TestGame {
         players.put(1, p2);
         players.put(2, p3);
 
+        /* LOOP */
+        /* ---- */
         MainLoop.getInstance().play(players, standardDeck, c1);
+
+        // String[] toListen = new String[] {"cardPlayed", "playerDrew", "turnStart", "invalidChoice", "warning", "turnEnd"};
+        // try {
+        //     Loop.getInstance().play(ConsoleOutput.getInstance(), toListen, players, standardDeck, c1);
+        // } catch (InterruptedException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
     }
 }

@@ -32,11 +32,6 @@ public class Game {
 
     private Game() {
         discardPile = new CardGroup();
-        defaultPlayCondition = (card) -> {
-            Suit aS = terrainCard.getSuit();
-            Suit bS = card.getSuit();
-            return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || terrainCard.getValue() == card.getValue();
-        };
         playCondition = defaultPlayCondition;
     }
 
@@ -54,7 +49,11 @@ public class Game {
     CardGroup discardPile;
 
     Predicate<Card> playCondition;
-    Predicate<Card> defaultPlayCondition;
+    final Predicate<Card> defaultPlayCondition = (card) -> {
+        Suit aS = terrainCard.getSuit();
+        Suit bS = card.getSuit();
+        return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || terrainCard.getValue() == card.getValue();
+    };
 
     boolean isOver;
 

@@ -12,6 +12,7 @@ public class EventManager {
 
     public EventManager() {
         listeners = new HashMap<>();
+        waiting = new HashMap<>();
     }
 
     public void subscribe(String eventType, EventListener listener) {
@@ -30,16 +31,19 @@ public class EventManager {
 
     /* CUSTOM FIELDS */
     /* ------------- */
-    private Map<Integer, Object> waiting;
-    private int freeSpot;
+    private Map<EventListener, Object> waiting;
 
     public Object waitFor(String eventType) throws InterruptedException {
-        subscribe(eventType, (__, choice) -> {
-            waiting.put(freeSpot, choice);
-            notify();
-        });
+        EventListener e = new EventListener() {
+            @Override
+            public void update(String eventType, Object data) {
+                waiting.put(this, data);
+                notify();
+            }
+        };
+        subscribe(eventType, e);
         wait();
-        freeSpot++;
-        return waiting.get(freeSpot - 1);
+        unsubscribe(eventType, e);
+        return waiting.get(e);
     }
 }
