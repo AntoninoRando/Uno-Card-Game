@@ -153,8 +153,8 @@ public class Loop implements InputListener {
         events.notify("playerWon", player);
     }
 
-    /* INPUTLISTENER METHODS */
-    /* --------------------- */
+    /* INPUTLISTENER */
+    /* ------------- */
     // TODO aggiustare come funzionano i thread: ogni controller umano ha un suo
     // thread. I metodi seguenti devono funzionare nel thread del controller, per
     // non fermare l'esecuzione del loop. Per adesso sembri funzioni, ma non sono

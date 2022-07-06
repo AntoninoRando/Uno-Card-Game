@@ -7,7 +7,6 @@ import model.cards.Hand;
  * This class contains all the info about the player state.
  */
 public class Player {
-    // TODO Visibilità default per usarle nel package
     String nickname;
     boolean isHuman;
     Hand hand;
@@ -24,6 +23,10 @@ public class Player {
     public String getNickname() {
         return nickname;
     }
+
+    public boolean isHuman() {
+        return isHuman;
+    }
     
     public Hand getHand() {
         return hand;
@@ -33,15 +36,10 @@ public class Player {
         return ID;
     }
 
-    public boolean isHuman() {
-        return isHuman;
-    }
-
     /* OTHERS */
     /* ------ */
     protected void addCard(Card card) {
         hand.add(card);
-        // !Potrebbe essere inefficiente e spiacevole sortare ad ogni pescata
-        hand.arrange();
+        hand.arrange(); // TODO Potrebbe essere inefficiente e spiacevole sortare ad ogni pescata
     }
 }

@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 
 import model.Actions;
 import model.Game;
-import model.MainLoop;
 import model.cards.Card;
 
 public class EffectBuilder {

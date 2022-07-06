@@ -20,8 +20,8 @@ import model.cards.Suit;
  * fileds.
  */
 public class Game {
-    /* IMPLEMENTING SINGLETON PATTERN */
-    /* ------------------------------ */
+    /* SINGLETON PATTERN */
+    /* ----------------- */
     private static Game instance;
 
     public static Game getInstance() {
