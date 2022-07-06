@@ -34,11 +34,11 @@ public class MainLoop implements InputListener {
     /* INTERFACES METHODS */
     /* ------------------ */
     @Override
-    public void validate(int choice, Player source) {
+    public void accept(int choice, Player source) {
         if (!game.getPlayer().equals(source)) {
             events.notify("Warn", "This is not your turn!");
         } else if (choice == 0) {
-            Actions.dealFromDeck(game.getTurn());
+            Actions.dealFromDeck(source);
             events.notify("PlayerDrew", source);
             events.notify("HandChanged", source);
             playTurn(game.getTurn());
@@ -59,7 +59,7 @@ public class MainLoop implements InputListener {
     }
 
     @Override
-    public void validate(String choice, Player source) {
+    public void accept(String choice, Player source) {
         events.notify("InputGiven", choice);
     }
 
@@ -71,7 +71,7 @@ public class MainLoop implements InputListener {
         Actions.shuffle();
 
         for (int i = 0; i < game.countPlayers(); i++)
-            Actions.dealFromDeck(i, 7);
+            Actions.dealFromDeck(game.getPlayer(i), 7);
         
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
@@ -112,7 +112,7 @@ public class MainLoop implements InputListener {
                 return;
             }
         }
-        Actions.dealFromDeck(game.getTurn());
+        Actions.dealFromDeck(enemy);
         events.notify("PlayerDrew", enemy);
         playTurn(game.getTurn());
     }
@@ -130,7 +130,7 @@ public class MainLoop implements InputListener {
 
         for (Controller c : users) {
             c.setInputListener(this);
-            c.on();
+            c.run();
         }
     }
 }

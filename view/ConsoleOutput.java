@@ -44,8 +44,11 @@ public class ConsoleOutput implements EventListener {
         // listening.put("HandChanged", (data) -> handChanged((Player) data));
         // listening.put("CardChanged", (data) -> cardChanged((Card) data));
 
-        listening.put("playerDrew", (data) -> playerDrew((Player) data));
-        listening.put("PlayerWon", (data) -> playerWon((Player) data));
+        listening.put("playerDrew", (data) -> { 
+            playerDrew((Player) data);
+            handChanged((Player) data);
+        });
+        listening.put("playerWon", (data) -> playerWon((Player) data));
         listening.put("warning", (data) -> warning((String) data));
         listening.put("turnStart", (data) -> handChanged((Player) data));
         listening.put("cardPlayed", (data) -> cardChanged((Card) data));

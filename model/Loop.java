@@ -1,6 +1,7 @@
 package model;
 
 import model.events.EventManager;
+import model.events.InputListener;
 import model.events.EventListener;
 
 import java.util.TreeMap;
@@ -9,7 +10,7 @@ import controller.Controller;
 import model.cards.Card;
 import model.cards.Deck;
 
-public class Loop {
+public class Loop implements InputListener {
     /* IMPLEMENTING SINGLETON PATTERN */
     /* ------------------------------ */
     private static Loop instance;
@@ -21,7 +22,6 @@ public class Loop {
     }
 
     private Loop() {
-        events = new EventManager();
     }
 
     /* ------------------------------ */
@@ -32,18 +32,27 @@ public class Loop {
     private Object choice;
     private String choiceType;
 
-    public void play(EventListener displayer, String[] eventsToListen, TreeMap<Integer, Player> players, Deck deck,
-            Controller... users)
-            throws InterruptedException {
+    public void setupView(EventListener displayer, String[] eventsToListen) {
+        events = new EventManager();
+
+        for (String event : eventsToListen)
+            events.subscribe(event, displayer);
+    }
+
+    public void setupGame(TreeMap<Integer, Player> players, Deck deck, Controller... users) {
         Game.reset();
         g = Game.getInstance();
         g.setPlayers(players);
         g.setDeck(deck);
 
-        setupView(displayer, eventsToListen);
-        setupGame();
-        for (Controller c : users)
+        for (Controller c : users) {
+            c.setInputListener(this);
             c.start();
+        }
+    }
+
+    public void play() throws InterruptedException {
+        setupFirstTurn();
 
         boolean isTurnOver;
         while (!g.isOver) {
@@ -54,25 +63,25 @@ public class Loop {
                 makeChoice();
                 parseChoice();
                 isTurnOver = resolveChoice();
+
+                if (g.winCondition.test(player)) {
+                    endGame();
+                    return;
+                }
             }
 
             turnEnd();
         }
     }
 
-    public void setupView(EventListener displayer, String[] eventsToListen) {
-        for (String event : eventsToListen)
-            events.subscribe(event, displayer);
-    }
-
-    private void setupGame() {
+    private void setupFirstTurn() {
         Actions.shuffle();
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
         events.notify("cardPlayed", firstCard);
 
-        for (int i = 0; i < g.countPlayers(); i++)
-            Actions.dealFromDeck(i, 7);
+        for (Player p : g.players.values())
+            Actions.dealFromDeck(p, 7);
         player = g.getPlayer(0);
         events.notify("playerDrew", player);
     }
@@ -85,11 +94,13 @@ public class Loop {
 
     private void makeChoice() throws InterruptedException {
         if (player.isHuman)
-            choice = events.waitFor("choiceMade" + player.ID);
-        else // enemy decision
+            synchronized (this) {
+                wait();
+            }
+        // enemy decision
+        else
             player.getHand().stream().filter(g::isPlayable).findAny()
                     .ifPresentOrElse((c) -> choice = c, () -> choice = "draw");
-
     }
 
     private void parseChoice() {
@@ -122,7 +133,7 @@ public class Loop {
                     return false;
                 }
             case "draw":
-                Actions.dealFromDeck(1, g.getTurn(player));
+                Actions.dealFromDeck(player);
                 events.notify("playerDrew", player);
                 return true;
             default:
@@ -136,5 +147,41 @@ public class Loop {
         player = g.getPlayer((g.turn + 1) % g.countPlayers());
         choice = null;
         choiceType = null;
+    }
+
+    private void endGame() {
+        events.notify("playerWon", player);
+    }
+
+    /* INPUTLISTENER METHODS */
+    /* --------------------- */
+    // TODO aggiustare come funzionano i thread: ogni controller umano ha un suo
+    // thread. I metodi seguenti devono funzionare nel thread del controller, per
+    // non fermare l'esecuzione del loop. Per adesso sembri funzioni, ma non sono
+    // sicuro.
+    @Override
+    public void accept(int choice, Player source) {
+        synchronized (this) {
+            // We use == instead of equals because they have to be the same object
+            if (source != player) {
+                events.notify("warning", "This is not your turn!");
+                return;
+            }
+            this.choice = source.getHand().get(choice);
+            notify();
+        }
+    }
+
+    @Override
+    public void accept(String choice, Player source) {
+        synchronized (this) {
+            // We use == instead of equals because they have to be the same object
+            if (source != player) {
+                events.notify("warning", "This is not your turn!");
+                return;
+            }
+            this.choice = choice;
+            notify();
+        }
     }
 }

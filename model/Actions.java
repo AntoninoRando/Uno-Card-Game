@@ -31,15 +31,14 @@ public abstract class Actions {
         return game.deck.remove(0);
     }
 
-    public static void dealFromDeck(int i) {
-        Game game = Game.getInstance();
+    public static void dealFromDeck(Player p) {
         Card c = takeFromDeck();
-        game.getPlayer(i).addCard(c);
+        p.addCard(c);
     }
 
-    public static void dealFromDeck(int i, int times) {
+    public static void dealFromDeck(Player p, int times) {
         while (times-- > 0)
-            dealFromDeck(i);
+            dealFromDeck(p);
     }
 
     public static void discardCard(Card c) {

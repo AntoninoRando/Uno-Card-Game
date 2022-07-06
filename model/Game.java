@@ -33,6 +33,7 @@ public class Game {
     private Game() {
         discardPile = new CardGroup();
         playCondition = defaultPlayCondition;
+        winCondition = defaultWinCondition;
     }
 
     static void reset() {
@@ -53,6 +54,11 @@ public class Game {
         Suit aS = terrainCard.getSuit();
         Suit bS = card.getSuit();
         return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || terrainCard.getValue() == card.getValue();
+    };
+
+    Predicate<Player> winCondition;
+    final Predicate<Player> defaultWinCondition = (player) -> {
+        return player.hand.isEmpty();
     };
 
     boolean isOver;

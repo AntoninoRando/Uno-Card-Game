@@ -11,7 +11,7 @@ import model.cards.Card;
 
 public class EffectBuilder {
     private int i;
-    private Runnable[] steps;
+    private Runnable[] steps; // TODO non so se chiamare run su runnable fa partire un nuovo thread
     private Effect eff;
 
     public EffectBuilder(int capacity) {
@@ -44,11 +44,12 @@ public class EffectBuilder {
         return this;
     }
 
-    public EffectBuilder addDraw(int times) {
-        steps[i] = () -> Actions.dealFromDeck(eff.target, times);
-        i++;
-        return this;
-    }
+    // TODO sistemare
+    // public EffectBuilder addDraw(int times) {
+    //     steps[i] = () -> Actions.dealFromDeck(eff.target, times);
+    //     i++;
+    //     return this;
+    // }
 
     public EffectBuilder addBlockTurn() {
         steps[i] = () -> {

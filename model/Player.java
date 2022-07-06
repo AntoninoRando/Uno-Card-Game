@@ -7,7 +7,7 @@ import model.cards.Hand;
  * This class contains all the info about the player state.
  */
 public class Player {
-    // !Visibilità default per usarle nel package
+    // TODO Visibilità default per usarle nel package
     String nickname;
     boolean isHuman;
     Hand hand;
