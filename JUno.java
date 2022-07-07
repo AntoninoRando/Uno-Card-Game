@@ -14,7 +14,7 @@ import model.cards.Suit;
 
 import view.ConsoleOutput;
 
-public class TestGame {
+public class JUno {
     public static void main(String[] args) {
         /* STANDARD DECK */
         /* ------------- */
