@@ -79,7 +79,7 @@ public class Loop implements InputListener {
         setupFirstTurn();
 
         boolean isTurnOver;
-        while (!g.isOver) {
+        while (!g.isOver()) {
             turnStart(player);
 
             isTurnOver = false;
@@ -88,7 +88,7 @@ public class Loop implements InputListener {
                 parseChoice();
                 isTurnOver = resolveChoice();
 
-                if (g.winCondition.test(player)) {
+                if (g.didPlayerWin(player)) {
                     endGame();
                     return;
                 }
@@ -105,7 +105,7 @@ public class Loop implements InputListener {
         Actions.changeCurrentCard(firstCard);
         events.notify("cardPlayed", firstCard);
 
-        for (Player p : g.players.values())
+        for (Player p : g.players())
             Actions.dealFromDeck(p, 7);
         player = g.getPlayer(0);
         events.notify("playerDrew", player);
@@ -113,7 +113,7 @@ public class Loop implements InputListener {
 
     private void turnStart(Player p) {
         events.notify("turnStart", p);
-        g.turn = g.getTurn(p);
+        g.setTurn(p);
         player = p;
     }
 
@@ -156,7 +156,7 @@ public class Loop implements InputListener {
 
     private void turnEnd() {
         events.notify("turnEnd", player);
-        player = g.getPlayer((g.turn + 1) % g.countPlayers());
+        player = g.getPlayer((g.getTurn() + 1) % g.countPlayers());
         choice = null;
         choiceType = null;
     }

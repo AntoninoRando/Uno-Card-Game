@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Predicate;
@@ -42,37 +43,29 @@ public class Game {
 
     /* FIELDS */
     /* ------ */
-    TreeMap<Integer, Player> players;
-    int turn;
+    private TreeMap<Integer, Player> players;
+    private int turn;
 
-    Deck deck;
-    Card terrainCard;
-    CardGroup discardPile;
+    protected Deck deck;
+    protected Card terrainCard;
+    protected CardGroup discardPile;
 
-    Predicate<Card> playCondition;
-    final Predicate<Card> defaultPlayCondition = (card) -> {
+    private Predicate<Card> playCondition;
+    private final Predicate<Card> defaultPlayCondition = (card) -> {
         Suit aS = terrainCard.getSuit();
         Suit bS = card.getSuit();
         return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || terrainCard.getValue() == card.getValue();
     };
 
-    Predicate<Player> winCondition;
-    final Predicate<Player> defaultWinCondition = (player) -> {
+    private Predicate<Player> winCondition;
+    private final Predicate<Player> defaultWinCondition = (player) -> {
         return player.hand.isEmpty();
     };
 
-    boolean isOver;
+    private boolean isOver;
 
     /* GETTERS AND SETTERS */
     /* ------------------- */
-    public void setPlayers(TreeMap<Integer, Player> players) {
-        this.players = players;
-    }
-
-    public void setDeck(Deck deck) {
-        this.deck = deck;
-    }
-
     public Player getPlayer() {
         return players.get(turn);
     }
@@ -85,12 +78,29 @@ public class Game {
         return players.size();
     }
 
+    public Collection<Player> players() {
+        return players.values();
+    }
+
+    public void setPlayers(TreeMap<Integer, Player> players) {
+        this.players = players;
+    }
+
+    public void setDeck(Deck deck) {
+        this.deck = deck;
+    }
+
+
     public int getTurn() {
         return turn;
     }
 
     public void setTurn(int i) {
         turn = i % countPlayers();
+    }
+
+    public void setTurn(Player p) {
+        turn = getTurn(p);
     }
 
     public int getTurn(Player p) {
@@ -109,16 +119,24 @@ public class Game {
         return isOver;
     }
 
+    public boolean isPlayable(Card c) {
+        return playCondition.test(c);
+    }
+
     public void setPlayConditon(Predicate<Card> newCondition) {
         playCondition = newCondition;
     }
 
-    public void setPlayConditonToDefault() {
+    public void restorePlayCondition() {
         playCondition = defaultPlayCondition;
     }
 
-    public boolean isPlayable(Card c) {
-        return playCondition.test(c);
+    public boolean didPlayerWin(Player p) {
+        return winCondition.test(p);
+    }
+
+    public void restoreWinCondition() {
+        winCondition = defaultWinCondition;
     }
 
     public void end() {
