@@ -4,7 +4,9 @@ import model.events.EventManager;
 import model.events.InputListener;
 import model.events.EventListener;
 
+import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.function.Supplier;
 
 import controller.Controller;
 import model.cards.Card;
@@ -22,11 +24,31 @@ public class Loop implements InputListener {
     }
 
     private Loop() {
+        choiceTypes = new HashMap<>();
+        choiceTypes.put("card", () -> {
+            Card c = (Card) choice;
+            if (Actions.tryChangeCard(c)) {
+                player.hand.remove(c);
+                c.getEffect().ifPresent(e -> e.cast(player, c));
+                events.notify("cardPlayed", c);
+                return true;
+            } else {
+                events.notify("warning", "Can't play it now!");
+                return false;
+            }
+        });
+        choiceTypes.put("draw", () -> {
+            Actions.dealFromDeck(player);
+            events.notify("playerDrew", player);
+            return true;
+        });
     }
 
     /* ------------------------------ */
 
     public EventManager events;
+    public HashMap<String, Supplier<Boolean>> choiceTypes;
+
     private Game g;
     private Player player;
     private Object choice;
@@ -50,6 +72,8 @@ public class Loop implements InputListener {
             c.start();
         }
     }
+
+    /* ------------------------------ */
 
     public void play() throws InterruptedException {
         setupFirstTurn();
@@ -75,6 +99,7 @@ public class Loop implements InputListener {
     }
 
     private void setupFirstTurn() {
+        events.notify("gameStart", null);
         Actions.shuffle();
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
@@ -87,12 +112,13 @@ public class Loop implements InputListener {
     }
 
     private void turnStart(Player p) {
+        events.notify("turnStart", p);
         g.turn = g.getTurn(p);
         player = p;
-        events.notify("turnStart", p);
     }
 
     private void makeChoice() throws InterruptedException {
+        events.notify("playerChoosing", player);
         if (player.isHuman)
             synchronized (this) {
                 wait();
@@ -104,6 +130,7 @@ public class Loop implements InputListener {
     }
 
     private void parseChoice() {
+        events.notify("processingChoice", choice);
         if (choice instanceof Card)
             choiceType = "card";
         else if (choice instanceof String) {
@@ -120,26 +147,11 @@ public class Loop implements InputListener {
 
     // Return true if after the method player's turn should end, false otherwise
     private boolean resolveChoice() {
-        switch (choiceType) {
-            case "card":
-                Card c = (Card) choice;
-                if (Actions.tryChangeCard(c)) {
-                    player.hand.remove(c);
-                    c.getEffect().ifPresent(e -> e.dispatch(c, g.getTurn(player)));
-                    events.notify("cardPlayed", c);
-                    return true;
-                } else {
-                    events.notify("warning", "Can't play it now!");
-                    return false;
-                }
-            case "draw":
-                Actions.dealFromDeck(player);
-                events.notify("playerDrew", player);
-                return true;
-            default:
-                events.notify("warning", "Invalid choice!");
-                return false;
-        }
+        events.notify("resolvingChoice", choice);
+        return choiceTypes.getOrDefault(choiceType, () -> {
+            events.notify("warning", "Invalid choice!");
+            return false;
+        }).get();
     }
 
     private void turnEnd() {

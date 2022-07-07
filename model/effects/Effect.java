@@ -1,15 +1,19 @@
 package model.effects;
-
 import model.cards.Card;
+import model.Player;
 
-public abstract class Effect {
-    protected int target;
-    protected int source;
-    protected Card card;
+@FunctionalInterface
+public interface Effect {
+    public void cast(Player performer, Card source);
 
-    public abstract void dispatch(Card card, int source);
+    public default Effect andThen(Effect after) {
+        return (performer, source) -> {
+            this.cast(performer, source);
+            after.cast(performer, source);
+        };
+    }
 
-    protected void changeTarget(int newTarget) {
-        target = newTarget;
+    public static Effect ofNothing() {
+        return (__, ___) -> {};
     }
 }

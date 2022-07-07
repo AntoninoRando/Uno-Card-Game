@@ -6,40 +6,37 @@ import java.util.function.Predicate;
 
 import model.Actions;
 import model.Game;
+import model.Player;
 import model.cards.Card;
 
 public class EffectBuilder {
-    private int i;
-    private Runnable[] steps; // TODO non so se chiamare run su runnable fa partire un nuovo thread
-    private Effect eff;
+    private Player source;
+    private Player target;
+    private Card card;
+    
+    private Effect[] steps;
+    private int count;
 
     public EffectBuilder(int capacity) {
-        steps = new Runnable[capacity];
+        steps = new Effect[capacity];
     }
 
     public Effect build() {
-        eff = new Effect() {
-            @Override
-            public void dispatch(Card card, int source) {
-                this.card = card;
-                this.source = source;
-                this.target = source;
-                for (Runnable step : steps) 
-                    step.run();
-            }    
-        };
+        Effect eff = Effect.ofNothing();
+        for (Effect step : steps) 
+            eff = eff.andThen(step);
         return eff;
     }
 
     public EffectBuilder addForceGround() {
-        steps[i] = () -> Actions.changeCurrentCard(eff.card);
-        i++;
+        steps[count] = () -> Actions.changeCurrentCard(card);
+        count++;
         return this;
     }
 
     public EffectBuilder addTryGround() {
-        steps[i] = () -> Actions.tryChangeCard(eff.card);
-        i++;
+        steps[count] = () -> Actions.tryChangeCard(card);
+        count++;
         return this;
     }
 
@@ -51,7 +48,7 @@ public class EffectBuilder {
     // }
 
     public EffectBuilder addBlockTurn() {
-        steps[i] = () -> {
+        steps[count] = () -> {
             EventListener blocker = new EventListener() {
                 @Override
                 public void update(String __, Object data) {
@@ -68,10 +65,8 @@ public class EffectBuilder {
     }
 
     public EffectBuilder addChangePlayCondition(Predicate<Card> newCondition) {
-        steps[i] = () -> {
-            Game.getInstance().setPlayConditon(newCondition);
-        };
-        i++;
+        steps[count] = () -> Game.getInstance().setPlayConditon(newCondition);
+        count++;
         return this;
     }
 

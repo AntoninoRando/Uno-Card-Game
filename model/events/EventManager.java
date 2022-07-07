@@ -25,7 +25,8 @@ public class EventManager {
     }
 
     public void notify(String eventType, Object data) {
-        listeners.getOrDefault(eventType, List.of()).forEach(e -> e.update(eventType, data));
+        if (listeners.containsKey(eventType))
+            listeners.get(eventType).forEach(e -> e.update(eventType, data));
     }
 
     /* CUSTOM FIELDS */
