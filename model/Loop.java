@@ -2,7 +2,8 @@ package model;
 
 import model.events.EventManager;
 import model.events.InputListener;
-import model.events.EventListener;
+import view.Displayer;
+import view.GameFX;
 
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -25,6 +26,8 @@ public class Loop implements InputListener {
 
     private Loop() {
         choiceTypes = new HashMap<>();
+        events = new EventManager();
+
         choiceTypes.put("card", () -> {
             Card c = (Card) choice;
             if (Actions.tryChangeCard(c)) {
@@ -48,17 +51,17 @@ public class Loop implements InputListener {
 
     public EventManager events;
     public HashMap<String, Supplier<Boolean>> choiceTypes;
+    private Displayer disp;
 
     private Game g;
     private Player player;
     private Object choice;
     private String choiceType;
 
-    public void setupView(EventListener displayer, String[] eventsToListen) {
-        events = new EventManager();
-
-        for (String event : eventsToListen)
-            events.subscribe(event, displayer);
+    public void setupView(Displayer displayer) {
+        disp = displayer;
+        for (String event : disp.getEventsListening())
+            events.subscribe(event, disp);
     }
 
     public void setupGame(TreeMap<Integer, Player> players, Deck deck, Controller... users) {
@@ -99,16 +102,18 @@ public class Loop implements InputListener {
     }
 
     private void setupFirstTurn() {
-        events.notify("gameStart", null);
-        Actions.shuffle();
-        Card firstCard = Actions.takeFromDeck();
-        Actions.changeCurrentCard(firstCard);
-        events.notify("cardPlayed", firstCard);
+        synchronized (GameFX.getInstance()) {
+            Actions.shuffle();
+            Card firstCard = Actions.takeFromDeck();
+            Actions.changeCurrentCard(firstCard);
+            events.notify("cardPlayed", firstCard);
 
-        for (Player p : g.players())
-            Actions.dealFromDeck(p, 7);
-        player = g.getPlayer(0);
-        events.notify("playerDrew", player);
+            for (Player p : g.players())
+                Actions.dealFromDeck(p, 7);
+            player = g.getPlayer(0);
+            events.notify("playerDrew", player);
+        }
+        events.notify("gameStart", player);
     }
 
     private void turnStart(Player p) {
@@ -126,7 +131,7 @@ public class Loop implements InputListener {
         // enemy decision
         else
             player.getHand().stream().filter(g::isPlayable).findAny()
-                    .ifPresentOrElse((c) -> choice = c, () -> choice = "draw");
+                    .ifPresentOrElse(c -> choice = c, () -> choice = "draw");
     }
 
     private void parseChoice() {

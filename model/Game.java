@@ -51,14 +51,14 @@ public class Game {
     protected CardGroup discardPile;
 
     private Predicate<Card> playCondition;
-    private final Predicate<Card> defaultPlayCondition = (card) -> {
+    private final Predicate<Card> defaultPlayCondition = card -> {
         Suit aS = terrainCard.getSuit();
         Suit bS = card.getSuit();
         return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || terrainCard.getValue() == card.getValue();
     };
 
     private Predicate<Player> winCondition;
-    private final Predicate<Player> defaultWinCondition = (player) -> {
+    private final Predicate<Player> defaultWinCondition = player -> {
         return player.hand.isEmpty();
     };
 

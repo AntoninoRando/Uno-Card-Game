@@ -1,27 +1,37 @@
+package model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
 import controller.Controller;
 import controller.HumanController;
-
-import model.Loop;
-import model.Player;
-
 import model.cards.Card;
 import model.cards.Deck;
 import model.cards.Suit;
 
-import view.ConsoleOutput;
+import view.GameFX;
 
-public class JUno {
+public class JUno extends Thread {
+    @Override
+    public void run() {
+        setName("JUNO");
+        test();
+    }
+
+    public JUno() {
+    }
+
     public static void main(String[] args) {
+        new JUno().start();
+    }
+
+    public static void test() {
         /* STANDARD DECK */
         /* ------------- */
         List<Card> standardSet = new ArrayList<Card>(108);
         for (Suit color : Suit.values()) {
             if (color == Suit.WILD) {
-                for (int i = 1; i < 9; i++) 
+                for (int i = 1; i < 9; i++)
                     standardSet.add(new Card(color, 0));
                 continue;
             }
@@ -48,12 +58,11 @@ public class JUno {
         players.put(1, p2);
         players.put(2, p3);
 
-
-        ConsoleOutput displayer = ConsoleOutput.getInstance();
-        String[] listening = new String[] { "playerDrew", "playerWon", "warning", "turnStart", "cardPlayed" };
+        // ConsoleOutput displayer = ConsoleOutput.getInstance();
+        // String[] listening = new String[] { "playerDrew", "playerWon", "warning", "turnStart", "cardPlayed" };
         try {
             Loop match = Loop.getInstance();
-            match.setupView(displayer, listening);
+            match.setupView(GameFX.getInstance());
             match.setupGame(players, standardDeck, c1);
             match.play();
         } catch (InterruptedException e) {
