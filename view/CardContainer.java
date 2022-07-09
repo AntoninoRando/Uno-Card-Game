@@ -1,6 +1,7 @@
 package view;
 
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -8,35 +9,50 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import model.cards.Card;
 
-public class CardContainer {
-    private Card card;
-    private static Path imgFolder = Paths.get("C:\\Users\\anton\\OneDrive\\Desktop\\AllUnoCards"); // TODO non so se vanno bene per qualsiasi sistema operativo quei separatori
+public class CardContainer extends ImageView {
+    // TODO non so se vanno bene per qualsiasi sistema operativo quei separatori
+    private static Path imgFolder = Paths.get("C:\\Users\\anton\\OneDrive\\Desktop\\AllUnoCards");
     private Path imgPath;
-    private ImageView node;
-    private double scaleX = 0.3;
-    private double scaleY = 0.3;
 
     public CardContainer(Card card) {
-        this.card = card;
-        loadImage();
-    }
-
-    private void loadImage() {
+        getStyleClass().add("card");
         imgPath = imgFolder.resolve(card.toString().concat(".png"));
-
+        if (Files.notExists(imgPath))
+            imgPath = imgFolder.resolve("MISSING.png");
         try {
-            Image img = new Image(imgPath.toUri().toURL().toExternalForm());
-            node = new ImageView(img);
-            node.setScaleX(scaleX);
-            node.setScaleY(scaleY);
-            new Draggable().makeDraggable(node);
+            loadImage();
         } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new Error("Error while loading the image of: " + card.toString());
         }
     }
 
-    public ImageView getNode() {
-        return node;
+    private void loadImage() throws MalformedURLException {
+        Image img = new Image(imgPath.toUri().toURL().toExternalForm());
+        setImage(img);
+        setPreserveRatio(true);
+        setFitWidth(150);
+        makeDraggable();
+    }
+
+    /* -------------------------------- */
+    private double mouseAnchorX;
+    private double mouseAnchorY;
+
+    public void makeDraggable() {
+        setOnMousePressed(e -> {
+            mouseAnchorX = e.getSceneX() - getTranslateX();
+            mouseAnchorY = e.getSceneY() - getTranslateY();
+        });
+
+        setOnMouseDragged(e -> {
+            setTranslateX(e.getSceneX() - mouseAnchorX);
+            setTranslateY(e.getSceneY() - mouseAnchorY);
+        });
+
+        setOnMouseReleased(e -> {
+            // TODO clear changes if the card wasn't released in the play zone
+            setTranslateX(0);
+            setTranslateY(0);
+        });
     }
 }
