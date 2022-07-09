@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javafx.geometry.Bounds;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import model.cards.Card;
@@ -37,6 +38,7 @@ public class CardContainer extends ImageView {
     /* -------------------------------- */
     private double mouseAnchorX;
     private double mouseAnchorY;
+    public static Bounds playzoneBounds;
 
     public void makeDraggable() {
         setOnMousePressed(e -> {
@@ -51,8 +53,10 @@ public class CardContainer extends ImageView {
 
         setOnMouseReleased(e -> {
             // TODO clear changes if the card wasn't released in the play zone
-            setTranslateX(0);
-            setTranslateY(0);
+            if (!playzoneBounds.contains(e.getSceneX(), e.getSceneY())) {
+                setTranslateX(0);
+                setTranslateY(0);
+            }
         });
     }
 }

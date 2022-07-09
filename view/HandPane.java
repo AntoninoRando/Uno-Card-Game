@@ -22,15 +22,15 @@ public class HandPane extends HBox {
 
     public void addCard(ImageView card) {
         getChildren().add(card);
-        adjustPositions();
+        adjustCards();
     }
 
     public void addCards(Collection<? extends ImageView> cards) {
         getChildren().addAll(cards);
-        adjustPositions();
+        adjustCards();
     }
 
-    private void adjustPositions() {
+    private void adjustCards() {
         // int n = getChildren().size();
         // int[] rotate =  cardPositions.get(n);
 

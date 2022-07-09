@@ -8,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class GameFX extends Displayer {
@@ -31,9 +30,12 @@ public class GameFX extends Displayer {
     /* ---------------------------------------- */
     private BorderPane background;
     private HandPane hand;
+    private PlayzonePane playzone;
 
     private Pane createContent() {
-        background = new BorderPane(new Text("Hello!"));
+        background = new BorderPane();
+        playzone = new PlayzonePane();
+        background.setCenter(playzone);
 
         // TODO non ho capito come funziona tutto cio... in logica doveva far fittare l'handPane nel background
         AnchorPane anchorPane = new AnchorPane();
@@ -54,6 +56,8 @@ public class GameFX extends Displayer {
         scene.getStylesheets().add(getClass().getResource("Style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
+
+        CardContainer.playzoneBounds = playzone.localToScene(playzone.getBoundsInLocal());
     }
 
     public static void main(String[] args) {
@@ -66,6 +70,14 @@ public class GameFX extends Displayer {
         if (eventType.equals("gameStart"))
             Platform.runLater(() -> {
                 Player player = (Player) data;
+                while(player.getHand() == null) {
+                    try {
+                        wait(100);
+                    } catch (InterruptedException e) {
+                        // TODO non so se sia giusto quello che ho fatto ma faccio aspettare nel caso la logica di gioco stia caricando la mano del giocatore mentre la scena sia già pronta.
+                        e.printStackTrace();
+                    }
+                }
                 for (int i = 0; i < player.getHand().size(); i++)
                     hand.addCard(new CardContainer(player.getHand().get(i)));
             });
