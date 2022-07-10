@@ -5,6 +5,7 @@ import model.JUno;
 
 import java.util.Collection;
 
+import controller.DragControl;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -64,7 +65,7 @@ public class GameFX extends Displayer {
         stage.setScene(scene);
         stage.show();
 
-        CardContainer.setDontResetZone(playzone.localToScene(playzone.getBoundsInLocal()));
+        DragControl.setDontResetZone(playzone.localToScene(playzone.getBoundsInLocal()));
         new JUno().start();
     }
 
@@ -76,6 +77,7 @@ public class GameFX extends Displayer {
     public void update(String eventType, Object data) {
         if (eventType.equals("gameStart"))
             Platform.runLater(() -> {
+                @SuppressWarnings("unchecked") // TODO non penso si debba fare
                 Collection<Player> players = (Collection<Player>) data;
                 for (Player player : players) {
                     if (player.isHuman()) {
@@ -87,8 +89,9 @@ public class GameFX extends Displayer {
                                 e.printStackTrace();
                             }
                         }
-                        for (int i = 0; i < player.getHand().size(); i++)
-                            hand.addCard(new CardContainer(player.getHand().get(i)));
+                        for (int i = 0; i < player.getHand().size(); i++) {
+                            hand.addCard(player.getHand().get(i).getGuiContainer());
+                        }
                     } else {
                         enemies.addEnemy(player);
                     }

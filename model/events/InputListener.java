@@ -6,4 +6,6 @@ public interface InputListener {
     public abstract void accept(int choice, Player source); 
 
     public abstract void accept(String choice, Player source);
+
+    public abstract void accept(Object choice, Player source);
 }

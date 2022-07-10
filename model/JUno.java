@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import controller.ConsoleController;
 import controller.Controller;
+import controller.FXController;
 import model.cards.Card;
 import model.cards.Deck;
 import model.cards.Suit;
@@ -50,7 +50,7 @@ public class JUno extends Thread {
         Player p2 = new Player("Bot Giovanni", false);
         Player p3 = new Player("Bot Luca", false);
 
-        Controller c1 = new ConsoleController();
+        Controller c1 = new FXController();
         c1.setSource(p1);
 
         TreeMap<Integer, Player> players = new TreeMap<>();

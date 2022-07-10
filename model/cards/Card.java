@@ -3,6 +3,7 @@ package model.cards;
 import java.util.Optional;
 
 import model.effects.Effect;
+import view.CardContainer;
 
 public class Card implements Comparable<Card> {
     private Suit suit;
@@ -45,8 +46,20 @@ public class Card implements Comparable<Card> {
         sb.append(suit).append(" ").append(value);
         return sb.toString();
     }
+
     @Override
     public int compareTo(Card o) {
         return suit != o.suit ? suit.compareTo(o.suit) : Integer.compare(value, o.value);
+    }
+
+    /* ------------------------- */
+    private CardContainer guiContainer;
+
+    public CardContainer getGuiContainer() {
+        // We inizialize this filed only when needed, since not every card must be seen in the gui.
+        if (guiContainer == null)
+            guiContainer = new CardContainer(this);
+        return guiContainer;
+        // TODO fare che si distrugge il guiContiner quando non si vede la carta nella gui
     }
 }

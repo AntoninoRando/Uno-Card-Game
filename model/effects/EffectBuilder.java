@@ -1,32 +1,34 @@
 package model.effects;
 
-import model.events.EventListener;
+// TODO all
 
-import java.util.function.Predicate;
+// import model.events.EventListener;
 
-import model.Actions;
-import model.Game;
-import model.Player;
-import model.cards.Card;
+// import java.util.function.Predicate;
+
+// import model.Actions;
+// import model.Game;
+// import model.Player;
+// import model.cards.Card;
 
 public class EffectBuilder {
-    private Player source;
-    private Player target;
-    private Card card;
+    // private Player source;
+    // private Player target;
+    // private Card card;
     
-    private Effect[] steps;
-    private int count;
+    // private Effect[] steps;
+    // private int count;
 
-    public EffectBuilder(int capacity) {
-        steps = new Effect[capacity];
-    }
+    // public EffectBuilder(int capacity) {
+    //     steps = new Effect[capacity];
+    // }
 
-    public Effect build() {
-        Effect eff = Effect.ofNothing();
-        for (Effect step : steps) 
-            eff = eff.andThen(step);
-        return eff;
-    }
+    // public Effect build() {
+    //     Effect eff = Effect.ofNothing();
+    //     for (Effect step : steps) 
+    //         eff = eff.andThen(step);
+    //     return eff;
+    // }
 
     // public EffectBuilder addForceGround() {
     //     steps[count] = () -> Actions.changeCurrentCard(card);

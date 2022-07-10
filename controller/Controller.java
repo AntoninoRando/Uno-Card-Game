@@ -1,5 +1,8 @@
 package controller;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import model.Player;
 import model.events.InputListener;
 
@@ -10,6 +13,21 @@ import model.events.InputListener;
 public abstract class Controller extends Thread {
     protected Player source;
     protected InputListener inputListener;
+    protected List<Control> controls;
+
+    public Controller() {
+        controls = new LinkedList<>();
+    }
+
+    public void addControl(Control control) {
+        controls.add(control);
+    }
+
+    public void sendInput(Object choice) {
+        inputListener.accept(choice, source);
+    }
+
+    public abstract void setupPlayer();
 
     /* GETTERS AND SETTERS */
     /* ------------------- */

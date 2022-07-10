@@ -58,6 +58,8 @@ public class Loop implements InputListener {
     private Object choice;
     private String choiceType;
 
+    private Controller[] users;
+
     public void setupView(Displayer displayer) {
         disp = displayer;
         for (String event : disp.getEventsListening())
@@ -70,6 +72,7 @@ public class Loop implements InputListener {
         g.setPlayers(players);
         g.setDeck(deck);
 
+        this.users = users;
         for (Controller c : users) {
             c.setInputListener(this);
             c.start();
@@ -112,8 +115,12 @@ public class Loop implements InputListener {
                 Actions.dealFromDeck(p, 7);
             player = g.getPlayer(0);
             events.notify("playerDrew", player);
+
+            for (Controller c : users)
+            c.setupPlayer();
+
+            events.notify("gameStart", g.players());
         }
-        events.notify("gameStart", g.players());
     }
 
     private void turnStart(Player p) {
@@ -200,5 +207,14 @@ public class Loop implements InputListener {
             this.choice = choice;
             notify();
         }
+    }
+
+    @Override
+    public void accept(Object choice, Player source) {
+        if (source != player) {
+            events.notify("warning", "This is not your turn!");
+            return;
+        }
+        // TODO
     }
 }

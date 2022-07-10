@@ -1,7 +1,11 @@
 package controller;
 
-import view.CardContainer;
+import model.cards.Card;
 
 public class FXController extends Controller {
-    CardContainer card;
+    @Override
+    public void setupPlayer() {
+        for (Card card : source.getHand())
+            new DragControl(card.getGuiContainer(), this);
+    }
 }

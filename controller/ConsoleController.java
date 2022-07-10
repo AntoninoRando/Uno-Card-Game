@@ -20,7 +20,13 @@ public class ConsoleController extends Controller {
     @Override
     public void interrupt() {
         // TODO non so se sia questo il metodo per chiudere il thread
-        super.interrupt();
         sc.close();
+        super.interrupt();
+    }
+
+    @Override
+    public void setupPlayer() {
+        // TODO Auto-generated method stub
+        
     }
 }
