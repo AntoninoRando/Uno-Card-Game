@@ -16,8 +16,8 @@
 }
 
 .playzone {
-    -fx-background-color: #1111;
-    background-color: #1111;
+    -fx-background-color: lightskyblue;
+    background-color:lightskyblue;
 
     -fx-border-color: #000000;
     border-color: #000000;
@@ -26,8 +26,32 @@
     border-width: 5px;
 }
 
-/* .card:hover {
-    -fx-scale-x: 1.5;
-    -fx-scale-y: 1.5;
-    -fx-scale-z: 1.5;
-} */
+.enemies {
+    -fx-background-color: #1111;
+    background-color: #1111;
+
+    -fx-border-color: #000000;
+    border-color: #000000;
+
+    -fx-border-width: 5px;
+    border-width: 5px;
+
+    -fx-padding: 10px;
+    padding: 10px;
+}
+
+.enemy {
+    -fx-font-size: 16px;
+    font-size: 16px;
+
+    -fx-padding: 2px;
+    padding: 2px;
+}
+
+.enemies .title {
+    -fx-font-size: 25px;
+    font-size: 25px;
+
+    -fx-font-weight: bold;
+    font-weight: bold;
+}

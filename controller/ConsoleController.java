@@ -2,7 +2,7 @@ package controller;
 
 import java.util.Scanner;
 
-public class HumanController extends Controller {
+public class ConsoleController extends Controller {
     Scanner sc = new Scanner(System.in);
 
     @Override

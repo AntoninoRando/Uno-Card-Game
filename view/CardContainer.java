@@ -37,7 +37,7 @@ public class CardContainer extends ImageView {
         setPreserveRatio(true);
         setFitWidth(150);
         makeDraggable();
-        makeZommable(1.1);
+        makeZommable(0.5);
     }
 
     /* -------------------------------- */
@@ -51,6 +51,11 @@ public class CardContainer extends ImageView {
 
     private void makeDraggable() {
         setOnMousePressed(e -> {
+            // When hovered the card is zoomed, so we reset the original size
+            if (getScaleX() != 1.0 || getScaleY() != 1.0) {
+                setScaleX(1.0);
+                setScaleY(1.0);
+            }
             mouseAnchorX = e.getSceneX() - getTranslateX();
             mouseAnchorY = e.getSceneY() - getTranslateY();
         });
@@ -71,21 +76,22 @@ public class CardContainer extends ImageView {
         });
     }
 
-    private final ScaleTransition zoomIn = new ScaleTransition(Duration.millis(300.0), this);
-    private final ScaleTransition zoomOut = new ScaleTransition(Duration.millis(300.0), this);
+    private final ScaleTransition zoomIn = new ScaleTransition(Duration.millis(100.0), this);
+    private final ScaleTransition zoomOut = new ScaleTransition(Duration.millis(100.0), this);
 
-    // TODO migliorare perche' e' un po' lagghi
+    // TODO migliorare perche' e' un po' lagghi e ogni tanto si bugga
     private void makeZommable(Double scalingFactor) {
-        zoomIn.setByX(scalingFactor);
-        zoomIn.setByY(scalingFactor);
-
         setOnMouseEntered(e -> {
-            if (getScaleX() < scalingFactor || getScaleY() < scalingFactor)
+            if (getScaleX() <= 1.0 || getScaleY() <= 1.0) {
+                // 1 + scalingFactor  = getScaleX() + x
+                zoomIn.setByX(1 + scalingFactor - getScaleX());
+                zoomIn.setByY(1 + scalingFactor - getScaleY());
                 zoomIn.play();
+            }
         });
 
         setOnMouseExited(e -> {
-            if (getScaleX() != 1 || getScaleY() != 1) {
+            if (getScaleX() != 1.0 || getScaleY() != 1.0) {
                 // 1 = getScaleX() - x 
                 zoomOut.setByX(1 - getScaleX());
                 zoomOut.setByY(1 - getScaleY());

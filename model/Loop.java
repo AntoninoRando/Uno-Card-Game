@@ -113,7 +113,7 @@ public class Loop implements InputListener {
             player = g.getPlayer(0);
             events.notify("playerDrew", player);
         }
-        events.notify("gameStart", player);
+        events.notify("gameStart", g.players());
     }
 
     private void turnStart(Player p) {
