@@ -42,7 +42,8 @@ public class GameFX extends Displayer {
         enemies = new EnemyPane();
         background.setLeft(enemies);
 
-        // TODO non ho capito come funziona tutto cio... in logica doveva far fittare l'handPane nel background
+        // TODO non ho capito come funziona tutto cio... in logica doveva far fittare
+        // l'handPane nel background
         AnchorPane anchorPane = new AnchorPane();
         background.setBottom(anchorPane);
         hand = new HandPane();
@@ -51,6 +52,8 @@ public class GameFX extends Displayer {
         AnchorPane.setBottomAnchor(hand, 0.0);
         AnchorPane.setLeftAnchor(hand, 0.0);
         AnchorPane.setRightAnchor(hand, 0.0);
+
+        background.setRight(DeckContainer.getInstance());
 
         playzone = new PlayzonePane();
         background.setCenter(playzone);
@@ -80,19 +83,7 @@ public class GameFX extends Displayer {
                 @SuppressWarnings("unchecked") // TODO non penso si debba fare
                 Collection<Player> players = (Collection<Player>) data;
                 for (Player player : players) {
-                    if (player.isHuman()) {
-                        while(player.getHand() == null) {
-                            try {
-                                wait(100);
-                            } catch (InterruptedException e) {
-                                // TODO non so se sia giusto quello che ho fatto ma faccio aspettare nel caso la logica di gioco stia caricando la mano del giocatore mentre la scena sia già pronta.
-                                e.printStackTrace();
-                            }
-                        }
-                        for (int i = 0; i < player.getHand().size(); i++) {
-                            hand.addCard(player.getHand().get(i).getGuiContainer());
-                        }
-                    } else {
+                    if (!player.isHuman()) {
                         enemies.addEnemy(player);
                     }
                 }
