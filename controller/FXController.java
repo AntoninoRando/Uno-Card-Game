@@ -6,6 +6,6 @@ public class FXController extends Controller {
     @Override
     public void setupPlayer() {
         for (Card card : source.getHand())
-            new DragControl(card.getGuiContainer(), this);
+            new DragControl(card, this);
     }
 }

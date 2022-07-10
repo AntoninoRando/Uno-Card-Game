@@ -6,16 +6,19 @@ import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
+import model.cards.Card;
 import view.CardContainer;
 
 public class DragControl extends Control {
+    private Card card;
     private CardContainer toDrag;
 
-    public DragControl(CardContainer toDrag, Controller handler) {
+    public DragControl(Card toDrag, Controller handler) {
         super(handler);
 
-        this.toDrag = toDrag;
-        execute = () -> handler.sendInput(toDrag);
+        card = toDrag;
+        this.toDrag = card.getGuiContainer();
+        execute = () -> handler.sendInput(card);
         applyDraggability();
     }
 

@@ -39,9 +39,6 @@ public class GameFX extends Displayer {
     private Pane createContent() {
         background = new BorderPane();
 
-        playzone = new PlayzonePane();
-        background.setCenter(playzone);
-
         enemies = new EnemyPane();
         background.setLeft(enemies);
 
@@ -54,6 +51,9 @@ public class GameFX extends Displayer {
         AnchorPane.setBottomAnchor(hand, 0.0);
         AnchorPane.setLeftAnchor(hand, 0.0);
         AnchorPane.setRightAnchor(hand, 0.0);
+
+        playzone = new PlayzonePane();
+        background.setCenter(playzone);
 
         return background;
     }

@@ -34,6 +34,7 @@ public class Loop implements InputListener {
                 player.hand.remove(c);
                 c.getEffect().ifPresent(e -> e.cast(player, c));
                 events.notify("cardPlayed", c);
+                events.notify("playerHandChanged", player);
                 return true;
             } else {
                 events.notify("warning", "Can't play it now!");
@@ -211,9 +212,14 @@ public class Loop implements InputListener {
 
     @Override
     public void accept(Object choice, Player source) {
-        if (source != player) {
-            events.notify("warning", "This is not your turn!");
-            return;
+        synchronized (this) {
+            // We use == instead of equals because they have to be the same object
+            if (source != player) {
+                events.notify("warning", "This is not your turn!");
+                return;
+            }
+            this.choice = choice;
+            notify();
         }
         // TODO
     }

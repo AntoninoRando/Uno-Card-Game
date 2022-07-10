@@ -18,7 +18,7 @@ public class PlayzonePane extends StackPane implements EventListener {
 
     private void updateTerrainCard(Card c) {
         terrainCard = new CardContainer(c);
-        getChildren().add(0, terrainCard);
+        getChildren().add(terrainCard);
     }
 
     @Override
