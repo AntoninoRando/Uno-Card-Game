@@ -4,10 +4,14 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
+import javafx.animation.ScaleTransition;
+import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 import model.cards.Card;
 
 public class CardContainer extends ImageView {
@@ -33,14 +37,19 @@ public class CardContainer extends ImageView {
         setPreserveRatio(true);
         setFitWidth(150);
         makeDraggable();
+        makeZommable(1.1);
     }
 
     /* -------------------------------- */
     private double mouseAnchorX;
     private double mouseAnchorY;
-    public static Bounds playzoneBounds;
+    private static Optional<Bounds> dontResetZone = Optional.empty();
 
-    public void makeDraggable() {
+    public static void setDontResetZone(Bounds bounds) {
+        dontResetZone = Optional.of(bounds);
+    }
+
+    private void makeDraggable() {
         setOnMousePressed(e -> {
             mouseAnchorX = e.getSceneX() - getTranslateX();
             mouseAnchorY = e.getSceneY() - getTranslateY();
@@ -52,10 +61,35 @@ public class CardContainer extends ImageView {
         });
 
         setOnMouseReleased(e -> {
-            // TODO clear changes if the card wasn't released in the play zone
-            if (!playzoneBounds.contains(e.getSceneX(), e.getSceneY())) {
-                setTranslateX(0);
-                setTranslateY(0);
+            if (dontResetZone.isPresent() && dontResetZone.get().contains(e.getSceneX(), e.getSceneY()))
+                return;
+            TranslateTransition reset = new TranslateTransition(Duration.millis(300.0));
+            reset.setNode(this);
+            reset.setByX(mouseAnchorX - e.getSceneX()); // setTranslateX(0);
+            reset.setByY(mouseAnchorY - e.getSceneY()); // setTranslateY(0);
+            reset.play();
+        });
+    }
+
+    private final ScaleTransition zoomIn = new ScaleTransition(Duration.millis(300.0), this);
+    private final ScaleTransition zoomOut = new ScaleTransition(Duration.millis(300.0), this);
+
+    // TODO migliorare perche' e' un po' lagghi
+    private void makeZommable(Double scalingFactor) {
+        zoomIn.setByX(scalingFactor);
+        zoomIn.setByY(scalingFactor);
+
+        setOnMouseEntered(e -> {
+            if (getScaleX() < scalingFactor || getScaleY() < scalingFactor)
+                zoomIn.play();
+        });
+
+        setOnMouseExited(e -> {
+            if (getScaleX() != 1 || getScaleY() != 1) {
+                // 1 = getScaleX() - x 
+                zoomOut.setByX(1 - getScaleX());
+                zoomOut.setByY(1 - getScaleY());
+                zoomOut.play();
             }
         });
     }

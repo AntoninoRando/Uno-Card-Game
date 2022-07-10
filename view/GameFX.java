@@ -57,7 +57,7 @@ public class GameFX extends Displayer {
         stage.setScene(scene);
         stage.show();
 
-        CardContainer.playzoneBounds = playzone.localToScene(playzone.getBoundsInLocal());
+        CardContainer.setDontResetZone(playzone.localToScene(playzone.getBoundsInLocal()));
     }
 
     public static void main(String[] args) {
