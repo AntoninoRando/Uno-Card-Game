@@ -2,10 +2,10 @@ package controller;
 
 import javafx.scene.Node;
 
-public class DrawControl extends Control {
+public class ControlDraw extends Control {
     private Node drawNode;
 
-    protected DrawControl(Node drawNode, Controller handler) {
+    protected ControlDraw(Node drawNode, Controller handler) {
         super(handler);
         this.drawNode = drawNode;
         execute = () -> handler.sendInput("draw");

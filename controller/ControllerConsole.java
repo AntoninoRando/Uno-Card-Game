@@ -2,12 +2,12 @@ package controller;
 
 import java.util.Scanner;
 
-public class ConsoleController extends Controller {
+public class ControllerConsole extends Controller {
     Scanner sc = new Scanner(System.in);
 
     @Override
     public void run() {
-        setName("Thread of " + source.getNickname());
+        setName(source.getNickname() + "'s controller Thread");
 
         while (sc.hasNext()) {
             if (sc.hasNextInt())
@@ -25,7 +25,13 @@ public class ConsoleController extends Controller {
     }
 
     @Override
-    public void setupPlayer() {
+    public void setupControls() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void update(String eventType, Object data) {
         // TODO Auto-generated method stub
         
     }

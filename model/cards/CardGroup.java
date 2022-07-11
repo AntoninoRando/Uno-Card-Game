@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import model.events.EventManager;
+
 // !Visto che le carte nel gruppo potrebbero cambiare per via di molti effetti, 
 // potrei aggiungere un metodo che permette di iterare anche se viene modificato 
 // il cardGroup
 public class CardGroup implements Collection<Card> {
     // VARIABLES
     protected List<Card> cards = new LinkedList<Card>();
+    public EventManager observers = new EventManager();
 
     // CONSTRUCTORS
     public CardGroup(Card... cards) {
@@ -35,6 +38,7 @@ public class CardGroup implements Collection<Card> {
 
     public void add(int index, Card card) {
         cards.add(index, card);
+        observers.notify("add", card);
     }
 
     public int indexOf(Card c) {
@@ -116,12 +120,18 @@ public class CardGroup implements Collection<Card> {
 
     @Override
     public boolean add(Card e) {
-        return cards.add(e);
+        cards.add(e);
+        observers.notify("add", e);
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends Card> c) {
-        return cards.addAll(c);
+        if(cards.addAll(c)) {
+            observers.notify("add", c);
+            return true;
+        }
+        return false;
     }
 
     @Override

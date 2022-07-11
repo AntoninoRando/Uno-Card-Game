@@ -116,7 +116,7 @@ public class Loop implements InputListener {
         events.notify("playerDrew", player);
 
         for (Controller c : users)
-            c.setupPlayer();
+            c.setupControls();
 
         events.notify("gameStart", g.players());
 

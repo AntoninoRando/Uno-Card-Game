@@ -56,15 +56,14 @@ public class App extends Displayer {
         stage.setFullScreen(true);
         stage.setFullScreenExitHint("");
 
+        // TODO Non so se sia corretto...
+        stage.setOnCloseRequest(e -> System.exit(0));
+
         stage.setScene(addContent());
 
         new JUno().start();
         
         stage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
     @Override
@@ -79,5 +78,9 @@ public class App extends Displayer {
                 }
             }
         });
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
