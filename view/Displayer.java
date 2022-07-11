@@ -1,5 +1,6 @@
 package view;
 
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,11 +15,11 @@ public abstract class Displayer extends Application implements EventListener {
         return this;
     }
 
-    Displayer(Set<String> events) {
+    public Displayer(Set<String> events) {
         eventsListening = events;
     }
 
-    Displayer(String... events) {
+    public Displayer(String... events) {
         eventsListening = new HashSet<>();
         for (String e : events)
             addEventToListen(e);

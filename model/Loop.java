@@ -3,7 +3,6 @@ package model;
 import model.events.EventManager;
 import model.events.InputListener;
 import view.Displayer;
-import view.GameFX;
 
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -106,22 +105,21 @@ public class Loop implements InputListener {
     }
 
     private void setupFirstTurn() {
-        synchronized (GameFX.getInstance()) {
-            Actions.shuffle();
-            Card firstCard = Actions.takeFromDeck();
-            Actions.changeCurrentCard(firstCard);
-            events.notify("cardPlayed", firstCard);
+        Actions.shuffle();
+        Card firstCard = Actions.takeFromDeck();
+        Actions.changeCurrentCard(firstCard);
+        events.notify("cardPlayed", firstCard);
 
-            for (Player p : g.players())
-                Actions.dealFromDeck(p, 7);
-            player = g.getPlayer(0);
-            events.notify("playerDrew", player);
+        for (Player p : g.players())
+            Actions.dealFromDeck(p, 7);
+        player = g.getPlayer(0);
+        events.notify("playerDrew", player);
 
-            for (Controller c : users)
+        for (Controller c : users)
             c.setupPlayer();
 
-            events.notify("gameStart", g.players());
-        }
+        events.notify("gameStart", g.players());
+
     }
 
     private void turnStart(Player p) {

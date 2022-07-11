@@ -11,9 +11,17 @@ import model.Player;
 import model.events.EventListener;
 
 public class EnemyPane extends VBox implements EventListener {
-    private Map<Player, Label> labels;
+    /* SINGLETON */
+    /* --------- */
+    private static EnemyPane instance;
 
-    public EnemyPane() {
+    public static EnemyPane getInstance() {
+        if (instance == null)
+            instance = new EnemyPane();
+        return instance;
+    }
+
+    private EnemyPane() {
         labels = new HashMap<>(3);
 
         getStyleClass().add("enemies");
@@ -26,6 +34,10 @@ public class EnemyPane extends VBox implements EventListener {
         Loop.getInstance().events.subscribe("playerDrew", this);
         Loop.getInstance().events.subscribe("playerHandChanged", this);
     }
+
+    /* ---------------------------------------- */
+
+    private Map<Player, Label> labels;
 
     public void addEnemy(Player enemy) {
         Label playerNick = new Label(enemy.getNickname() + " " + enemy.getHand().size());

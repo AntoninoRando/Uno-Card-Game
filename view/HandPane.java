@@ -11,6 +11,24 @@ import model.cards.Card;
 import model.events.EventListener;
 
 public class HandPane extends HBox implements EventListener {
+    /* SINGLETON */
+    /* --------- */
+    private static HandPane instance;
+
+    public static HandPane getInstance() {
+        if (instance == null)
+            instance = new HandPane();
+        return instance;
+    }
+
+    private HandPane() {
+        cardsStored = new HashSet<>();
+        getStyleClass().add("hand");
+        Loop.getInstance().events.subscribe("playerDrew", this);
+    }
+
+    /* ---------------------------------------- */
+
     // private final HashMap<Integer, int[]> cardPositions = (HashMap<Integer, int[]>) Stream.of(new Object[][] {
     //         { 1, new int[] { 0 } },
     //         { 2, new int[] { -2, 2 } },
@@ -21,12 +39,6 @@ public class HandPane extends HBox implements EventListener {
     //         { 7, new int[] { -6, -4, -2, 0, 2, 4, 6 } }
     // }).collect(Collectors.toMap(p -> (int) p[0], p -> (int[]) p[1]));
     private Set<Card> cardsStored;
-
-    public HandPane() {
-        cardsStored = new HashSet<>();
-        getStyleClass().add("hand");
-        Loop.getInstance().events.subscribe("playerDrew", this);
-    }
 
     public void addCard(Card card) {
         getChildren().add(card.getGuiContainer());

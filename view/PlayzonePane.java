@@ -7,14 +7,25 @@ import model.cards.Card;
 import model.events.EventListener;
 
 public class PlayzonePane extends StackPane implements EventListener {
-    CardContainer terrainCard;
+    /* SINGLETON */
+    /* --------- */
+    private static PlayzonePane instance;
 
-    public PlayzonePane() {
+    public static PlayzonePane getInstance() {
+        if (instance == null)
+            instance = new PlayzonePane();
+        return instance;
+    }
+
+    private PlayzonePane() {
         Loop.getInstance().events.subscribe("cardPlayed", this);
         getStyleClass().add("playzone");
         setMaxHeight(400);
         setMaxWidth(400);
     }
+
+    /* ---------------------------------------- */
+    CardContainer terrainCard;
 
     private void updateTerrainCard(Card c) {
         terrainCard = new CardContainer(c);

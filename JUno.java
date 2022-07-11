@@ -1,15 +1,15 @@
-package model;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
 import controller.Controller;
 import controller.FXController;
+import model.Loop;
+import model.Player;
 import model.cards.Card;
 import model.cards.Deck;
 import model.cards.Suit;
-
-import view.GameFX;
 
 public class JUno extends Thread {
     @Override
@@ -62,7 +62,7 @@ public class JUno extends Thread {
         // String[] listening = new String[] { "playerDrew", "playerWon", "warning", "turnStart", "cardPlayed" };
         try {
             Loop match = Loop.getInstance();
-            match.setupView(GameFX.getInstance());
+            match.setupView(App.getInstance());
             match.setupGame(players, standardDeck, c1);
             match.play();
         } catch (InterruptedException e) {
