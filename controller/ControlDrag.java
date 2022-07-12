@@ -1,32 +1,45 @@
 package controller;
 
-import java.util.Optional;
-
+import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
-import javafx.geometry.Bounds;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
+import model.Game;
 import model.cards.Card;
 import view.CardContainer;
+import view.HandPane;
+import view.PlayzonePane;
+import view.TerrainPane;
 
 public class ControlDrag extends Control {
     public ControlDrag(Card card, Controller handler) {
         super(handler);
 
-        execute = () -> handler.sendInput(card);
+        execute = () -> {
+            if (!Game.getInstance().isPlayable(card)) {
+                card.getGuiContainer().setTranslateX(0);
+                card.getGuiContainer().setTranslateY(0);
+                return;
+            }
+            animatePlaying(card.getGuiContainer(), (e) -> {
+                handler.sendInput(card);
+                HandPane.getInstance().removeCard(card.getGuiContainer());
+            });
+        };
+
         applyDraggability(card.getGuiContainer());
     }
 
     /* DRAGGABILITY */
     /* ------------- */
-    // TODO c'e un bug che se dragghi una carta mentre sta tornando nella posizione iniziale, quella vola via
+    // TODO c'e un bug che se dragghi una carta mentre sta tornando nella posizione
+    // iniziale, quella vola via
     private double mouseAnchorX;
     private double mouseAnchorY;
-    private static Optional<Bounds> target = Optional.empty();
-
-    public static void setDontResetZone(Bounds bounds) {
-        target = Optional.of(bounds);
-    }
+    private static Node target = PlayzonePane.getInstance();
 
     private void dragStart(MouseEvent e, CardContainer source) {
         // When we drag we want the Node to be in its original size
@@ -45,13 +58,43 @@ public class ControlDrag extends Control {
     }
 
     private void dragEnd(MouseEvent e, CardContainer source) {
-        if (!target.isPresent() || !target.get().contains(e.getSceneX(), e.getSceneY())) {
+        // TODO == perche they have to be the same
+        if (e.getPickResult().getIntersectedNode() == target) 
+            execute.run();
+        else {
             TranslateTransition reset = new TranslateTransition(Duration.millis(300.0), source);
             reset.setByX(mouseAnchorX - e.getSceneX()); // correspond to setTranslateX(0);
             reset.setByY(mouseAnchorY - e.getSceneY()); // correspond to setTranslateY(0);
             reset.play();
-        } else
-            execute.run();
+        }
+    }
+
+    private void animatePlaying(CardContainer source, EventHandler<ActionEvent> onFinish) {
+        TranslateTransition moveToCenter = new TranslateTransition(Duration.millis(100.0), source);
+
+        double xSource = source.localToScene(source.getBoundsInLocal()).getCenterX();
+        double ySource = source.localToScene(source.getBoundsInLocal()).getCenterY();
+        TerrainPane terrainCard = TerrainPane.getInstance();
+        double xTc = terrainCard.localToScene(terrainCard.getBoundsInLocal()).getCenterX();
+        double yTc = terrainCard.localToScene(terrainCard.getBoundsInLocal()).getCenterY();
+
+        moveToCenter.setByX(xTc-xSource); // xSource + translate = xPz -> translate = xPz-xSource
+        moveToCenter.setByY(yTc-ySource);
+        moveToCenter.play();
+
+        ScaleTransition zoom = new ScaleTransition(Duration.millis(150.0), source);
+        zoom.setByX(0.3);
+        zoom.setByY(0.3);
+        ScaleTransition zoomOut = new ScaleTransition(Duration.millis(100.0), source);
+        zoomOut.setByX(-0.3);
+        zoomOut.setByY(-0.3);
+        zoomOut.setDelay(Duration.millis(100.0));
+
+        zoom.setOnFinished(e -> {
+            zoomOut.play();
+            onFinish.handle(e);
+        });
+        zoom.play();
     }
 
     public void applyDraggability(CardContainer source) {

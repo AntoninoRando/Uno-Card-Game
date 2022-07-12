@@ -38,15 +38,22 @@ public class HandPane extends HBox implements EventListener {
     //         { 6, new int[] { -6, -4, -2, 0, 2, 4, 6 } },
     //         { 7, new int[] { -6, -4, -2, 0, 2, 4, 6 } }
     // }).collect(Collectors.toMap(p -> (int) p[0], p -> (int[]) p[1]));
-    private Set<Card> cardsStored;
+    private Set<CardContainer> cardsStored;
 
     public void addCard(Card card) {
         getChildren().add(card.getGuiContainer());
-        cardsStored.add(card);
+        cardsStored.add(card.getGuiContainer());
+        adjustCards();
+    }
+
+    public void removeCard(CardContainer cardGuContainer) {
+        getChildren().remove(cardGuContainer);
+        cardsStored.remove(cardGuContainer);
         adjustCards();
     }
 
     private void adjustCards() {
+        // TODO
     }
 
     @Override
@@ -57,7 +64,7 @@ public class HandPane extends HBox implements EventListener {
                 if (!p.isHuman())
                     return;
                 p.getHand().forEach(card -> {
-                    if (!cardsStored.contains(card))
+                    if (!cardsStored.contains(card.getGuiContainer()))
                         addCard(card);
                 });
             }

@@ -2,17 +2,22 @@ import java.util.Collection;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
+
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
 import model.Player;
+
 import view.DeckContainer;
 import view.Displayer;
 import view.EnemyPane;
 import view.HandPane;
 import view.PlayzonePane;
+import view.TerrainPane;
 
 public class App extends Displayer {
-        /* SINGLETON */
+    /* SINGLETON */
     /* --------- */
     private static App instance;
 
@@ -31,20 +36,19 @@ public class App extends Displayer {
     /* ---------------------------------------- */
 
     private Scene addContent() {
-        BorderPane root = new BorderPane();
+        StackPane root = new StackPane();
+        root.setId("background");
         Scene scene = new Scene(root, 1000, 600);
         scene.getStylesheets().add(getClass().getResource("view\\Style.css").toExternalForm());
 
-        EnemyPane enemies = EnemyPane.getInstance();
-        root.setLeft(enemies);
+        BorderPane gameElements = new BorderPane();
+        gameElements.setLeft(EnemyPane.getInstance());
+        gameElements.setRight(DeckContainer.getInstance());
+        gameElements.setCenter(TerrainPane.getInstance());
+        gameElements.setBottom(HandPane.getInstance());
 
-        root.setRight(DeckContainer.getInstance());
-
-        HandPane hand = HandPane.getInstance();
-        root.setBottom(hand);
-
-        PlayzonePane playzone = PlayzonePane.getInstance();
-        root.setCenter(playzone);
+        root.getChildren().add(gameElements);
+        root.getChildren().add(PlayzonePane.getInstance());
 
         return scene;
     }
@@ -62,22 +66,22 @@ public class App extends Displayer {
         stage.setScene(addContent());
 
         new JUno().start();
-        
+
         stage.show();
     }
 
     @Override
     public void update(String eventType, Object data) {
         if (eventType.equals("gameStart"))
-        Platform.runLater(() -> {
-            @SuppressWarnings("unchecked") // TODO non penso si debba fare
-            Collection<Player> players = (Collection<Player>) data;
-            for (Player player : players) {
-                if (!player.isHuman()) {
-                    EnemyPane.getInstance().addEnemy(player);
+            Platform.runLater(() -> {
+                @SuppressWarnings("unchecked") // TODO non penso si debba fare
+                Collection<Player> players = (Collection<Player>) data;
+                for (Player player : players) {
+                    if (!player.isHuman()) {
+                        EnemyPane.getInstance().addEnemy(player);
+                    }
                 }
-            }
-        });
+            });
     }
 
     public static void main(String[] args) {

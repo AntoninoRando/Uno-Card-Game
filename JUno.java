@@ -47,7 +47,7 @@ public class JUno extends Thread {
 
         // New players with their controller
         Player p1 = new Player("Antonino", true);
-        Player p2 = new Player("Bot Giovanni", false);
+        Player p2 = new Player("Top Princessess", false);
         Player p3 = new Player("Bot Luca", false);
 
         Controller c1 = new ControllerFX();
