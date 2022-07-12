@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.Collection;
 
 import javafx.application.Platform;
@@ -5,6 +6,8 @@ import javafx.scene.Scene;
 
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 import model.Player;
@@ -66,6 +69,10 @@ public class App extends Displayer {
         stage.setScene(addContent());
 
         new JUno().start();
+
+        Media sound = new Media(new File("resources/soundtrack.mp3").toURI().toString());
+        MediaPlayer soundPlayer = new MediaPlayer(sound);
+        soundPlayer.play();
 
         stage.show();
     }
