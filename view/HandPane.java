@@ -4,7 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import model.Loop;
 import model.Player;
 import model.cards.Card;
@@ -25,19 +27,12 @@ public class HandPane extends HBox implements EventListener {
         cardsStored = new HashSet<>();
         getStyleClass().add("hand");
         Loop.getInstance().events.subscribe("playerDrew", this);
+        setSpacing(-30.0);
+        setTranslateY(40.0);
+        assignCenter(1500.0);
     }
 
     /* ---------------------------------------- */
-
-    // private final HashMap<Integer, int[]> cardPositions = (HashMap<Integer, int[]>) Stream.of(new Object[][] {
-    //         { 1, new int[] { 0 } },
-    //         { 2, new int[] { -2, 2 } },
-    //         { 3, new int[] { -2, 0, 2 } },
-    //         { 4, new int[] { -4, -2, 2, -2 } },
-    //         { 5, new int[] { -4, -2, 0, 2, 4 } },
-    //         { 6, new int[] { -6, -4, -2, 0, 2, 4, 6 } },
-    //         { 7, new int[] { -6, -4, -2, 0, 2, 4, 6 } }
-    // }).collect(Collectors.toMap(p -> (int) p[0], p -> (int[]) p[1]));
     private Set<CardContainer> cardsStored;
 
     public void addCard(Card card) {
@@ -52,8 +47,66 @@ public class HandPane extends HBox implements EventListener {
         adjustCards();
     }
 
+    /* ----------------------------------------- */
+
+    private double cardsGap, handW;
+    private double cardWidth = 150.0;
+
+    private void adjustCardsGap() {
+        handW = Stage.getWindows().get(0).getWidth() - 200*2;
+        // handW = (cardsGap + cardWith) * cardsNumber
+        double gap = handW/cardsStored.size() - cardWidth;
+        if (gap >= -30)
+            gap = -30;
+        setSpacing(gap);
+    }
+
+    private final double handX = 0;
+    private final double handY = 0;
+    private double centerX, centerY, radius;
+
+    private void assignCenter(double y) {
+        centerX = handX;
+        centerY = y;
+        radius = y;
+    }
+
+    private double getNodeX(Node node) {
+        int position = getChildren().indexOf(node) + 1;
+        int n = cardsStored.size();
+        position = position - n/2;
+        return (cardsGap + cardWidth / 2) * position;
+    }
+
+    private double getNodeY(Node node) {
+        return handY;
+    }
+
+    private double findOnCircleY(Node node) {
+        // (x-x0)^2 + (y-y0)^2 = r^2 -> y = y0 +- sqrt{-(x-x0)^2 + r^2}
+        double nodeX = getNodeX(node);
+        double sol = centerY - Math.sqrt(-Math.pow(nodeX - centerX, 2) + Math.pow(radius, 2));
+        return sol; // TODO scegliere la soluzione corretta
+    }
+
+    // TODO Fare caching dei valori così da non doverli ripetere e metterli in una
+    // variabile final.
+    private void adjustNodeY(Node node) {
+        node.setTranslateY(findOnCircleY(node) - getNodeY(node));
+    }
+
+    private void pointCenter(Node node) {
+        double angle1 = Math.atan2(handY - centerY, handX - centerX);
+        double angle2 = Math.atan2(getNodeY(node) - centerY, getNodeX(node) - centerX);
+        node.setRotate(Math.toDegrees(angle2 - angle1));
+    }
+
     private void adjustCards() {
-        // TODO
+        adjustCardsGap();
+        for (Node node : getChildren()) {
+            adjustNodeY(node);
+            pointCenter(node);
+        }
     }
 
     @Override

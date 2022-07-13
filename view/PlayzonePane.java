@@ -15,7 +15,8 @@ public class PlayzonePane extends Pane {
 
     private PlayzonePane() {
         getStyleClass().add("playzone");
-        setMaxHeight(400);
-        setMaxWidth(400);
+        setMaxHeight(400.0);
+        setMaxWidth(400.0);
+        setTranslateY(-130.0);
     }
 }
