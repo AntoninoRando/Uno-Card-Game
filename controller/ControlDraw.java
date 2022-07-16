@@ -3,16 +3,13 @@ package controller;
 import javafx.scene.Node;
 
 public class ControlDraw extends Control {
-    private Node drawNode;
-
     protected ControlDraw(Node drawNode, Controller handler) {
         super(handler);
-        this.drawNode = drawNode;
         execute = () -> handler.sendInput("draw");
-        applyDrawability();
+        applyDrawability(drawNode);
     }
 
-    public void applyDrawability() {
+    public void applyDrawability(Node drawNode) {
         drawNode.setOnMouseClicked(e -> execute.run());
     }
 }

@@ -45,6 +45,7 @@ public class Loop implements InputListener {
             events.notify("playerDrew", player);
             return true;
         });
+        choiceTypes.put("null", () -> false);
     }
 
     /* ------------------------------ */
@@ -149,9 +150,13 @@ public class Loop implements InputListener {
                 case "draw":
                     choiceType = "draw";
                     break;
-                default:
-                    choiceType = "draw";
+                case "unoDeclared":
+                    choiceType = "null";
+                    startUnoTimer();
                     break;
+                default:
+                    throw new Error(
+                            "The Loop said: someone notifyed me \"" + choice + "\" but I can't handle that event!");
             }
         }
     }
@@ -220,5 +225,28 @@ public class Loop implements InputListener {
             notify();
         }
         // TODO
+    }
+
+    /* -------------------------------------- */
+    // TODO creare un Action o Effect che si chiama "startTimerWithFinalEffect" e
+    // fare che questo metodo lo usa
+    private void startUnoTimer() {
+        Thread timer = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e) {
+                }
+
+                Actions.dealFromDeck(player, 4);
+                events.notify("playerDrew", player);
+            }
+        };
+        // TODO non mi piace che usi questo evento perche se qualco effetto fa giocare
+        // una carta viene attivato comunque. Si potrebbe fare che si possono aggiungere
+        // gli eventi da firare all'inizio di una fase di gioco, tipo la parseChoice
+        events.subscribe("cardPlayed", (event, card) -> timer.interrupt());
+        timer.start();
     }
 }

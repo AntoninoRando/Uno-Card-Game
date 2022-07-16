@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+// TODO creare classe EventType, gestire meglio gli eventi del tipo che se ci sono due eventi con lo stesso tipo vengono accorpati in un solo metodo da eseguire
 public class EventManager {
     /* OBSERVER PATTERN */
     /* ---------------- */

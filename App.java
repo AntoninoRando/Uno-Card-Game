@@ -63,7 +63,7 @@ public class App extends Displayer {
         stage.setFullScreenExitHint("");
 
         // TODO Non so se sia corretto...
-        stage.setOnCloseRequest(e -> Platform.exit());
+        stage.setOnCloseRequest(e -> System.exit(0));
 
         stage.setScene(addContent());
 

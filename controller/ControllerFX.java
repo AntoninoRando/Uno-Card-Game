@@ -2,6 +2,7 @@ package controller;
 
 import model.cards.Card;
 import view.DeckContainer;
+import view.PlayzonePane;
 
 public class ControllerFX extends Controller {
     public void dragControlOnCard(Card card) {
@@ -12,7 +13,10 @@ public class ControllerFX extends Controller {
     public void setupControls() {
         for (Card card : source.getHand())
             dragControlOnCard(card);
+        
         new ControlDraw(DeckContainer.getInstance(), this);
+
+        new ControlDeclareUno(PlayzonePane.getInstance(), this);
     }
 
     @Override

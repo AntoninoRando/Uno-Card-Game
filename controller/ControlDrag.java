@@ -5,6 +5,7 @@ import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import model.Game;
@@ -58,6 +59,9 @@ public class ControlDrag extends Control {
     }
 
     private void dragEnd(MouseEvent e, CardContainer source) {
+        if (e.getButton().equals(MouseButton.SECONDARY)) 
+            return;
+        
         // TODO == perche they have to be the same
         if (e.getPickResult().getIntersectedNode() == target) 
             execute.run();
