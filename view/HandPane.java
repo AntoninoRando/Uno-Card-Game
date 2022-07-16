@@ -53,9 +53,9 @@ public class HandPane extends HBox implements EventListener {
     private double cardWidth = 150.0;
 
     private void adjustCardsGap() {
-        handW = Stage.getWindows().get(0).getWidth() - 200*2;
+        handW = Stage.getWindows().get(0).getWidth() - 200 * 2;
         // handW = (cardsGap + cardWith) * cardsNumber
-        double gap = handW/cardsStored.size() - cardWidth;
+        double gap = handW / cardsStored.size() - cardWidth;
         if (gap >= -30)
             gap = -30;
         setSpacing(gap);
@@ -74,7 +74,9 @@ public class HandPane extends HBox implements EventListener {
     private double getNodeX(Node node) {
         int position = getChildren().indexOf(node) + 1;
         int n = cardsStored.size();
-        position = position - n/2;
+        // TODO la calcola male la posizione, infatti il problema della curvatura si
+        // trova qua
+        position = position - (n % 2 == 0 ? n / 2 : (n + 1) / 2);
         return (cardsGap + cardWidth / 2) * position;
     }
 

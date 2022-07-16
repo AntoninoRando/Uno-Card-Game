@@ -43,7 +43,7 @@ public class EnemyPane extends VBox implements EventListener {
         Label playerNick = new Label(enemy.getNickname() + " " + enemy.getHand().size());
         playerNick.getStyleClass().add("enemy");
 
-        if (labels.containsKey(enemy)) 
+        if (labels.containsKey(enemy))
             getChildren().remove(labels.get(enemy)); // removing the old label if present
 
         getChildren().add(playerNick);
