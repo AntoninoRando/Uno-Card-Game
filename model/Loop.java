@@ -5,6 +5,7 @@ import model.events.InputListener;
 import view.Displayer;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
@@ -30,9 +31,17 @@ public class Loop implements InputListener {
         choiceTypes.put("card", () -> {
             Card c = (Card) choice;
             if (Actions.tryChangeCard(c)) {
+                unoDeclared.ifPresent(x -> {
+                    if (x == 1) {
+                        Actions.dealFromDeck(player, 4);
+                        events.notify("playerDrew", player);
+                    }
+                });
+
                 player.hand.remove(c);
                 c.getEffect().ifPresent(e -> e.cast(player, c));
                 events.notify("cardPlayed", c);
+
                 events.notify("playerHandChanged", player);
                 return true;
             } else {
@@ -44,6 +53,10 @@ public class Loop implements InputListener {
             Actions.dealFromDeck(player);
             events.notify("playerDrew", player);
             return true;
+        });
+        choiceTypes.put("unoDeclared", () -> {
+            startUnoTimer();
+            return false;
         });
         choiceTypes.put("null", () -> false);
     }
@@ -60,6 +73,9 @@ public class Loop implements InputListener {
     private String choiceType;
 
     private Controller[] users;
+
+    // 1 = must be declared, 0 = declared, empty = don't needed
+    private Optional<Integer> unoDeclared = Optional.empty();
 
     public void setupView(Displayer displayer) {
         disp = displayer;
@@ -127,6 +143,8 @@ public class Loop implements InputListener {
         events.notify("turnStart", p);
         g.setTurn(p);
         player = p;
+
+        unoDeclared = player.getHand().size() == 2 ? Optional.of(1) : Optional.empty();
     }
 
     private void makeChoice() throws InterruptedException {
@@ -151,8 +169,7 @@ public class Loop implements InputListener {
                     choiceType = "draw";
                     break;
                 case "unoDeclared":
-                    choiceType = "null";
-                    startUnoTimer();
+                    choiceType = "unoDeclared";
                     break;
                 default:
                     throw new Error(
@@ -231,22 +248,22 @@ public class Loop implements InputListener {
     // TODO creare un Action o Effect che si chiama "startTimerWithFinalEffect" e
     // fare che questo metodo lo usa
     private void startUnoTimer() {
-        Thread timer = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    sleep(5000);
-                } catch (InterruptedException e) {
-                }
+        unoDeclared.ifPresent(state -> {
+            if (state != 1)
+                return;
 
-                Actions.dealFromDeck(player, 4);
-                events.notify("playerDrew", player);
-            }
-        };
-        // TODO non mi piace che usi questo evento perche se qualco effetto fa giocare
-        // una carta viene attivato comunque. Si potrebbe fare che si possono aggiungere
-        // gli eventi da firare all'inizio di una fase di gioco, tipo la parseChoice
-        events.subscribe("cardPlayed", (event, card) -> timer.interrupt());
-        timer.start();
+            unoDeclared = Optional.of(0);
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        sleep(5000);
+                    } catch (InterruptedException e) {
+                    }
+    
+                    unoDeclared = Optional.of(1); // TODO c'è un bug
+                }
+            }.start();
+        });
     }
 }

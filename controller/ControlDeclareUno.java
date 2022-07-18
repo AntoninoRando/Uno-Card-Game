@@ -2,6 +2,8 @@ package controller;
 
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Pane;
+import view.animations.UnoText;
 
 public class ControlDeclareUno extends Control {
     protected ControlDeclareUno(Node unoNode, Controller handler) {
@@ -25,6 +27,6 @@ public class ControlDeclareUno extends Control {
     /* ----------------------------------- */
 
     public void animate(Node unoNode) {
-        unoNode.setStyle("-fx-background-color: rgba(0, 255, 255, 0.50);");
+        UnoText.play((Pane) unoNode.getParent());
     }
 }
