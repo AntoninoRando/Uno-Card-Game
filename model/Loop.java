@@ -252,6 +252,8 @@ public class Loop implements InputListener {
             if (state != 1)
                 return;
 
+            events.notify("unoDeclared", player);
+
             unoDeclared = Optional.of(0);
             new Thread() {
                 @Override

@@ -17,6 +17,8 @@ import view.EnemyPane;
 import view.HandPane;
 import view.PlayzonePane;
 import view.TerrainPane;
+import view.animations.AnimationLayer;
+import view.animations.Animations;
 
 public class App extends Displayer {
     /* SINGLETON */
@@ -30,7 +32,7 @@ public class App extends Displayer {
     }
 
     public App() {
-        super("gameStart");
+        super("gameStart", "unoDeclared");
         if (instance == null)
             instance = this;
     }
@@ -50,7 +52,10 @@ public class App extends Displayer {
         gameElements.setBottom(HandPane.getInstance());
 
         root.getChildren().add(gameElements);
+        root.getChildren().add(AnimationLayer.getInstance());
         root.getChildren().add(PlayzonePane.getInstance());
+
+        Animations.UNO_TEXT.load();
 
         return scene;
     }
@@ -88,6 +93,8 @@ public class App extends Displayer {
                     }
                 }
             });
+        else if (eventType.equals("unoDeclared"))
+            Platform.runLater(() -> Animations.UNO_TEXT.play());
     }
 
     public static void main(String[] args) {
