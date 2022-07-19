@@ -5,7 +5,6 @@ import model.events.InputListener;
 import view.Displayer;
 
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
@@ -14,7 +13,7 @@ import model.cards.Card;
 import model.cards.Deck;
 
 public class Loop implements InputListener {
-    /* IMPLEMENTING SINGLETON PATTERN */
+    /* SINGLETON */
     /* ------------------------------ */
     private static Loop instance;
 
@@ -31,16 +30,14 @@ public class Loop implements InputListener {
         choiceTypes.put("card", () -> {
             Card c = (Card) choice;
             if (Actions.tryChangeCard(c)) {
-                unoDeclared.ifPresent(x -> {
-                    if (x == 1) {
-                        Actions.dealFromDeck(player, 4);
-                        events.notify("playerDrew", player);
-                    }
-                });
-
                 player.hand.remove(c);
-                c.getEffect().ifPresent(e -> e.cast(player, c));
+                c.getEffect().ifPresent(e -> e.cast());
                 events.notify("cardPlayed", c);
+
+                if (player.getHand().size() == 1 && !unoDeclared) {
+                    Actions.dealFromDeck(player, 1);
+                    events.notify("playerDrew", player);
+                }
 
                 events.notify("playerHandChanged", player);
                 return true;
@@ -58,7 +55,15 @@ public class Loop implements InputListener {
             startUnoTimer();
             return false;
         });
-        choiceTypes.put("null", () -> false);
+        choiceTypes.put("cardPosition", () -> {
+            try {
+                choice = player.getHand().get((int) choice);
+                return choiceTypes.get("card").get();
+            } catch (IndexOutOfBoundsException e) {
+                events.notify("warning", "Invalid selection!");
+                return false;
+            }
+        });
     }
 
     /* ------------------------------ */
@@ -74,8 +79,7 @@ public class Loop implements InputListener {
 
     private Controller[] users;
 
-    // 1 = must be declared, 0 = declared, empty = don't needed
-    private Optional<Integer> unoDeclared = Optional.empty();
+    private boolean unoDeclared;
 
     public void setupView(Displayer displayer) {
         disp = displayer;
@@ -143,13 +147,10 @@ public class Loop implements InputListener {
         events.notify("turnStart", p);
         g.setTurn(p);
         player = p;
-
-        unoDeclared = player.getHand().size() == 2 ? Optional.of(1) : Optional.empty();
     }
 
     private void makeChoice() throws InterruptedException {
-        events.notify("playerChoosing", player);
-        if (player.isHuman)
+        if (player.isHuman())
             synchronized (this) {
                 wait();
             }
@@ -160,7 +161,6 @@ public class Loop implements InputListener {
     }
 
     private void parseChoice() {
-        events.notify("processingChoice", choice);
         if (choice instanceof Card)
             choiceType = "card";
         else if (choice instanceof String) {
@@ -175,23 +175,25 @@ public class Loop implements InputListener {
                     throw new Error(
                             "The Loop said: someone notifyed me \"" + choice + "\" but I can't handle that event!");
             }
+        } else if (choice instanceof Integer) {
+            choiceType = "cardPosition";
         }
     }
 
     // Return true if after the method player's turn should end, false otherwise
     private boolean resolveChoice() {
-        events.notify("resolvingChoice", choice);
         return choiceTypes.getOrDefault(choiceType, () -> {
             events.notify("warning", "Invalid choice!");
             return false;
         }).get();
     }
 
-    private void turnEnd() {
+    protected void turnEnd() {
         events.notify("turnEnd", player);
         player = g.getPlayer((g.getTurn() + 1) % g.countPlayers());
         choice = null;
         choiceType = null;
+        unoDeclared = false;
     }
 
     private void endGame() {
@@ -200,36 +202,6 @@ public class Loop implements InputListener {
 
     /* INPUTLISTENER */
     /* ------------- */
-    // TODO aggiustare come funzionano i thread: ogni controller umano ha un suo
-    // thread. I metodi seguenti devono funzionare nel thread del controller, per
-    // non fermare l'esecuzione del loop. Per adesso sembri funzioni, ma non sono
-    // sicuro.
-    @Override
-    public void accept(int choice, Player source) {
-        synchronized (this) {
-            // We use == instead of equals because they have to be the same object
-            if (source != player) {
-                events.notify("warning", "This is not your turn!");
-                return;
-            }
-            this.choice = source.getHand().get(choice);
-            notify();
-        }
-    }
-
-    @Override
-    public void accept(String choice, Player source) {
-        synchronized (this) {
-            // We use == instead of equals because they have to be the same object
-            if (source != player) {
-                events.notify("warning", "This is not your turn!");
-                return;
-            }
-            this.choice = choice;
-            notify();
-        }
-    }
-
     @Override
     public void accept(Object choice, Player source) {
         synchronized (this) {
@@ -241,31 +213,26 @@ public class Loop implements InputListener {
             this.choice = choice;
             notify();
         }
-        // TODO
     }
 
     /* -------------------------------------- */
-    // TODO creare un Action o Effect che si chiama "startTimerWithFinalEffect" e
-    // fare che questo metodo lo usa
     private void startUnoTimer() {
-        unoDeclared.ifPresent(state -> {
-            if (state != 1)
-                return;
+        Player unoer = player;
+        events.notify("unoDeclared", unoer);
+        unoDeclared = true;
 
-            events.notify("unoDeclared", player);
-
-            unoDeclared = Optional.of(0);
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        sleep(5000);
-                    } catch (InterruptedException e) {
-                    }
-    
-                    unoDeclared = Optional.of(1); // TODO c'è un bug
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e) {
                 }
-            }.start();
-        });
+                // We use == because they have to be the same. We check if it is still the unoer
+                // turn because we don't want to modify the unoDeclared for others player.
+                if (unoer == player)
+                    unoDeclared = false;
+            }
+        }.start();
     }
 }

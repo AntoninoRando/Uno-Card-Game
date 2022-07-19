@@ -1,19 +1,21 @@
 package model.effects;
 import model.cards.Card;
+
+import java.util.LinkedList;
+
 import model.Player;
 
-@FunctionalInterface
-public interface Effect {
-    public void cast(Player performer, Card source);
+public class Effect {
+    Player sourcePlayer;
+    Card sourceCard;
+    Player target;
+    LinkedList<Runnable> steps = new LinkedList<>();
 
-    public default Effect andThen(Effect after) {
-        return (performer, source) -> {
-            this.cast(performer, source);
-            after.cast(performer, source);
-        };
-    }
+    public void cast() {
+        steps.forEach(Runnable::run);
+    };
 
-    public static Effect ofNothing() {
-        return (__, ___) -> {};
+    public void merge(Effect after) {
+        steps.addAll(after.steps);
     }
 }

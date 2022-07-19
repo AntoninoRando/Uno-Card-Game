@@ -7,10 +7,10 @@ import model.cards.Hand;
  * This class contains all the info about the player state.
  */
 public class Player {
-    String nickname;
+    private String nickname;
     boolean isHuman;
     Hand hand;
-    int ID;
+    private int ID;
 
     public Player(String nickname, boolean isHuman, Card... cards) {
         this.nickname = nickname;
@@ -27,7 +27,7 @@ public class Player {
     public boolean isHuman() {
         return isHuman;
     }
-    
+
     public Hand getHand() {
         return hand;
     }

@@ -54,7 +54,7 @@ public class Game {
     private final Predicate<Card> defaultPlayCondition = card -> {
         Suit aS = terrainCard.getSuit();
         Suit bS = card.getSuit();
-        return aS == Suit.WILD || bS == Suit.WILD ? true : aS == bS || terrainCard.getValue() == card.getValue();
+        return aS == Suit.WILD || bS == Suit.WILD || aS == bS || terrainCard.getValue() == card.getValue();
     };
 
     private Predicate<Player> winCondition;
@@ -108,11 +108,6 @@ public class Game {
                 .filter(entry -> p.equals(entry.getValue()))
                 .map(Map.Entry::getKey)
                 .findFirst().get();
-    }
-
-    public void nextTurn() {
-        if (++turn >= countPlayers())
-            turn = 0;
     }
 
     public boolean isOver() {

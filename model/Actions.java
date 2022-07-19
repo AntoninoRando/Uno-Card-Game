@@ -47,7 +47,7 @@ public abstract class Actions {
     }
 
     public static void skipTurn() {
-        Game.getInstance().nextTurn();
+        Loop.getInstance().turnEnd();
     }
 
     public static void changeTurnsOrder(int... newOrder) {

@@ -57,7 +57,7 @@ public class Animation {
         for (int i = 1; i < images.length; i++) {
             ImageView img = images[i];
             t.getKeyFrames()
-                    .add(new KeyFrame(Duration.millis(100.0 * i), e -> animation.getChildren().setAll(img)));
+                    .add(new KeyFrame(Duration.millis(60.0 * i), e -> animation.getChildren().setAll(img)));
         }
 
         AnimationLayer.getInstance().getChildren().add(animation);
