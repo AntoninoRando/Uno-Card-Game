@@ -30,16 +30,16 @@ public class Loop implements InputListener {
         choiceTypes.put("card", () -> {
             Card c = (Card) choice;
             if (Actions.tryChangeCard(c)) {
-                player.hand.remove(c);
-                c.getEffect().ifPresent(e -> e.cast());
+                g.getPlayer().hand.remove(c);
+                c.getEffect().ifPresent(effect -> effect.cast(g.getPlayer(), c));
                 events.notify("cardPlayed", c);
 
-                if (player.getHand().size() == 1 && !unoDeclared) {
-                    Actions.dealFromDeck(player, 1);
-                    events.notify("playerDrew", player);
+                if (g.getPlayer().getHand().size() == 1 && !unoDeclared) {
+                    Actions.dealFromDeck(g.getPlayer(), 1);
+                    events.notify("playerDrew", g.getPlayer());
                 }
 
-                events.notify("playerHandChanged", player);
+                events.notify("playerHandChanged", g.getPlayer());
                 return true;
             } else {
                 events.notify("warning", "Can't play it now!");
@@ -47,8 +47,8 @@ public class Loop implements InputListener {
             }
         });
         choiceTypes.put("draw", () -> {
-            Actions.dealFromDeck(player);
-            events.notify("playerDrew", player);
+            Actions.dealFromDeck(g.getPlayer());
+            events.notify("playerDrew", g.getPlayer());
             return true;
         });
         choiceTypes.put("unoDeclared", () -> {
@@ -57,7 +57,7 @@ public class Loop implements InputListener {
         });
         choiceTypes.put("cardPosition", () -> {
             try {
-                choice = player.getHand().get((int) choice);
+                choice = g.getPlayer().getHand().get((int) choice);
                 return choiceTypes.get("card").get();
             } catch (IndexOutOfBoundsException e) {
                 events.notify("warning", "Invalid selection!");
@@ -69,17 +69,20 @@ public class Loop implements InputListener {
     /* ------------------------------ */
 
     public EventManager events;
-    public HashMap<String, Supplier<Boolean>> choiceTypes;
+    HashMap<String, Supplier<Boolean>> choiceTypes;
     private Displayer disp;
 
     private Game g;
     private Player player;
-    private Object choice;
-    private String choiceType;
+    Object choice;
+    String choiceType;
 
     private Controller[] users;
 
-    private boolean unoDeclared;
+    boolean unoDeclared;
+
+    Phase[] phases = new Phase[] {Phase.START_TURN, Phase.MAKE_CHOICE, Phase.PARSE_CHOICE, Phase.RESOLVE_CHOICE, Phase.END_TURN};
+    int currentPhase;
 
     public void setupView(Displayer displayer) {
         disp = displayer;
@@ -105,23 +108,18 @@ public class Loop implements InputListener {
     public void play() throws InterruptedException {
         setupFirstTurn();
 
-        boolean isTurnOver;
         while (!g.isOver()) {
-            turnStart(player);
+            boolean validChoice = phases[currentPhase].execution.apply(this, Game.getInstance());
 
-            isTurnOver = false;
-            while (!isTurnOver) {
-                makeChoice();
-                parseChoice();
-                isTurnOver = resolveChoice();
-
-                if (g.didPlayerWin(player)) {
-                    endGame();
-                    return;
-                }
+            if (g.didPlayerWin(g.getPlayer())) {
+                endGame();
+                return;
             }
 
-            turnEnd();
+            if (phases[currentPhase] == Phase.RESOLVE_CHOICE && !validChoice)
+                currentPhase = 1;
+            else
+                currentPhase = (++currentPhase) % phases.length;
         }
     }
 
@@ -141,59 +139,6 @@ public class Loop implements InputListener {
 
         events.notify("gameStart", g.players());
 
-    }
-
-    private void turnStart(Player p) {
-        events.notify("turnStart", p);
-        g.setTurn(p);
-        player = p;
-    }
-
-    private void makeChoice() throws InterruptedException {
-        if (player.isHuman())
-            synchronized (this) {
-                wait();
-            }
-        // enemy decision
-        else
-            player.getHand().stream().filter(g::isPlayable).findAny()
-                    .ifPresentOrElse(c -> choice = c, () -> choice = "draw");
-    }
-
-    private void parseChoice() {
-        if (choice instanceof Card)
-            choiceType = "card";
-        else if (choice instanceof String) {
-            switch ((String) choice) {
-                case "draw":
-                    choiceType = "draw";
-                    break;
-                case "unoDeclared":
-                    choiceType = "unoDeclared";
-                    break;
-                default:
-                    throw new Error(
-                            "The Loop said: someone notifyed me \"" + choice + "\" but I can't handle that event!");
-            }
-        } else if (choice instanceof Integer) {
-            choiceType = "cardPosition";
-        }
-    }
-
-    // Return true if after the method player's turn should end, false otherwise
-    private boolean resolveChoice() {
-        return choiceTypes.getOrDefault(choiceType, () -> {
-            events.notify("warning", "Invalid choice!");
-            return false;
-        }).get();
-    }
-
-    protected void turnEnd() {
-        events.notify("turnEnd", player);
-        player = g.getPlayer((g.getTurn() + 1) % g.countPlayers());
-        choice = null;
-        choiceType = null;
-        unoDeclared = false;
     }
 
     private void endGame() {

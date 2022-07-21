@@ -15,8 +15,13 @@ public class Card implements Comparable<Card> {
     public Card(Suit suit, int value) {
         this.suit = suit;
         this.value = value;
-
         effect = Optional.empty();
+    }
+
+    public Card(Suit suit, int value, Effect effect) {
+        this.suit = suit;
+        this.value = value;
+        addEffect(effect);
     }
 
     /* GETTERS AND SETTERS */

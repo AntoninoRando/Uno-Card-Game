@@ -1,5 +1,6 @@
 package model.effects;
 
+import model.Actions;
 import model.Game;
 import model.Player;
 
@@ -22,8 +23,18 @@ public class EffectBuilder {
     public EffectBuilder directTargetToFollowing(int ahead) {
         effect.steps.add(() -> {
             Game g = Game.getInstance();
-            effect.target = g.getPlayer((g.getTurn(effect.sourcePlayer) + ahead) % g.countPlayers());
+            effect.target = Game.getInstance().getPlayer((g.getTurn(effect.sourcePlayer) + ahead) % g.countPlayers());
         });
+        return this;
+    }
+
+    public EffectBuilder skipCurrentTurn() {
+        effect.steps.add(() -> Actions.skipTurn());
+        return this;
+    }
+
+    public EffectBuilder skipTargetTurn() {
+        effect.steps.add(() -> effect.target.addCondition(new EffectBuilder().skipCurrentTurn().build()));
         return this;
     }
 }

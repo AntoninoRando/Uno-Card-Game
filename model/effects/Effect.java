@@ -5,17 +5,27 @@ import java.util.LinkedList;
 
 import model.Player;
 
-public class Effect {
+public class Effect implements Comparable<Effect> {
     Player sourcePlayer;
     Card sourceCard;
     Player target;
     LinkedList<Runnable> steps = new LinkedList<>();
 
-    public void cast() {
+    public void cast(Player soucePlayer, Card sourceCard) {
+        this.sourcePlayer = soucePlayer;
+        this.sourceCard = sourceCard;
         steps.forEach(Runnable::run);
     };
 
     public void merge(Effect after) {
         steps.addAll(after.steps);
+    }
+
+
+    int priority;
+
+    @Override
+    public int compareTo(Effect eff) {
+        return Integer.compare(priority, eff.priority);
     }
 }

@@ -10,6 +10,8 @@ import model.Player;
 import model.cards.Card;
 import model.cards.Deck;
 import model.cards.Suit;
+import model.effects.Effect;
+import model.effects.EffectBuilder;
 
 public class JUno extends Thread {
     @Override
@@ -41,6 +43,10 @@ public class JUno extends Thread {
             }
             standardSet.add(new Card(color, 0));
             standardSet.add(new Card(color, 0));
+            // Effect blockTurn = new EffectBuilder().directTargetToFollowing(1).skipTargetTurn().build();
+            // standardSet.add(new Card(color, -1, blockTurn));
+            // standardSet.add(new Card(color, 0, blockTurn));
+
         }
 
         Deck standardDeck = new Deck(standardSet);

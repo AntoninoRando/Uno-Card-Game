@@ -1,4 +1,3 @@
-import java.io.File;
 import java.util.Collection;
 
 import javafx.application.Platform;
@@ -6,8 +5,6 @@ import javafx.scene.Scene;
 
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import model.Player;
 
@@ -19,6 +16,7 @@ import view.PlayzonePane;
 import view.TerrainPane;
 import view.animations.AnimationLayer;
 import view.animations.Animations;
+import view.sounds.Sounds;
 
 public class App extends Displayer {
     /* SINGLETON */
@@ -74,10 +72,6 @@ public class App extends Displayer {
 
         new JUno().start();
 
-        Media sound = new Media(new File("resources/soundtrack.mp3").toURI().toString());
-        MediaPlayer soundPlayer = new MediaPlayer(sound);
-        soundPlayer.play();
-
         stage.show();
     }
 
@@ -92,6 +86,8 @@ public class App extends Displayer {
                         EnemyPane.getInstance().addEnemy(player);
                     }
                 }
+
+                Sounds.IN_GAME_SOUNDTRACK.play();
             });
         else if (eventType.equals("unoDeclared"))
             Platform.runLater(() -> Animations.UNO_TEXT.play());
