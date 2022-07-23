@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import model.JUno;
+import model.Loop;
 import model.Player;
 
 import view.DeckContainer;
@@ -30,7 +32,7 @@ public class App extends Displayer {
     }
 
     public App() {
-        super("gameStart", "unoDeclared");
+        super("gameStart", "unoDeclared", "turnBlocked");
         if (instance == null)
             instance = this;
     }
@@ -54,6 +56,8 @@ public class App extends Displayer {
         root.getChildren().add(PlayzonePane.getInstance());
 
         Animations.UNO_TEXT.load();
+        Animations.BLOCK_TURN.load();
+        Animations.CARD_PLAYED.load();
 
         return scene;
     }
@@ -62,17 +66,17 @@ public class App extends Displayer {
     public void start(Stage stage) throws Exception {
         stage.setTitle("JUno");
 
-        stage.setFullScreen(true);
-        stage.setFullScreenExitHint("");
+        // stage.setFullScreen(true);
+        // stage.setFullScreenExitHint("");
 
         // TODO Non so se sia corretto...
         stage.setOnCloseRequest(e -> System.exit(0));
 
         stage.setScene(addContent());
 
-        new JUno().start();
-
         stage.show();
+        Loop.getInstance().setupView(this);
+        JUno.getInstance().start();
     }
 
     @Override
@@ -91,6 +95,8 @@ public class App extends Displayer {
             });
         else if (eventType.equals("unoDeclared"))
             Platform.runLater(() -> Animations.UNO_TEXT.play());
+        else if (eventType.equals("turnBlocked"))
+            Platform.runLater(() -> Animations.BLOCK_TURN.play());
     }
 
     public static void main(String[] args) {

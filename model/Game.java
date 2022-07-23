@@ -90,7 +90,6 @@ public class Game {
         this.deck = deck;
     }
 
-
     public int getTurn() {
         return turn;
     }

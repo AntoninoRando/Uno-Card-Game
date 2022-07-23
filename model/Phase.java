@@ -8,7 +8,7 @@ public enum Phase {
     START_TURN((l, g) -> {
         l.events.notify("turnStart", g.getPlayer());
         g.getPlayer().consumeConditions();
-        return false;
+        return true;
     }),
     MAKE_CHOICE((l, g) -> {
         if (g.getPlayer().isHuman())
@@ -23,7 +23,7 @@ public enum Phase {
         else
             g.getPlayer().getHand().stream().filter(g::isPlayable).findAny()
                     .ifPresentOrElse(c -> l.choice = c, () -> l.choice = "draw");
-        return false;
+        return true;
     }),
     PARSE_CHOICE((l, g) -> {
         if (l.choice instanceof Card)
@@ -43,7 +43,7 @@ public enum Phase {
         } else if (l.choice instanceof Integer) {
             l.choiceType = "cardPosition";
         }
-        return false;
+        return true;
     }),
     RESOLVE_CHOICE((l, g) -> {
         return l.choiceTypes.getOrDefault(l.choiceType, () -> {
@@ -57,7 +57,7 @@ public enum Phase {
         l.choice = null;
         l.choiceType = null;
         l.unoDeclared = false;
-        return false;
+        return true;
     });
 
     public BiFunction<Loop, Game, Boolean> execution;

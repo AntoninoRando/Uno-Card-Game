@@ -1,3 +1,4 @@
+package model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -5,8 +6,6 @@ import java.util.TreeMap;
 
 import controller.Controller;
 import controller.ControllerFX;
-import model.Loop;
-import model.Player;
 import model.cards.Card;
 import model.cards.Deck;
 import model.cards.Suit;
@@ -14,20 +13,33 @@ import model.effects.Effect;
 import model.effects.EffectBuilder;
 
 public class JUno extends Thread {
+    /* SINGLETON */
+    /* --------- */
+    private static JUno instance;
+
+    public static JUno getInstance() {
+        if (instance == null)
+            instance = new JUno();
+        return instance;
+    }
+
+    private JUno() {
+
+    }
+
+    /* ---------------------------------------- */
+
     @Override
     public void run() {
         setName("JUNO");
         test();
     }
 
-    public JUno() {
-    }
-
     public static void main(String[] args) {
         new JUno().start();
     }
 
-    public static void test() {
+    public void test() {
         /* STANDARD DECK */
         /* ------------- */
         List<Card> standardSet = new ArrayList<Card>(108);
@@ -37,15 +49,15 @@ public class JUno extends Thread {
                     standardSet.add(new Card(color, 0));
                 continue;
             }
+            Effect blockTurn = new EffectBuilder().directTargetToFollowing(1).skipTargetTurn().build();
             for (int i = 1; i < 10; i++) {
                 standardSet.add(new Card(color, i));
                 standardSet.add(new Card(color, i));
             }
             standardSet.add(new Card(color, 0));
             standardSet.add(new Card(color, 0));
-            // Effect blockTurn = new EffectBuilder().directTargetToFollowing(1).skipTargetTurn().build();
-            // standardSet.add(new Card(color, -1, blockTurn));
-            // standardSet.add(new Card(color, 0, blockTurn));
+            standardSet.add(new Card(color, -1, blockTurn));
+            standardSet.add(new Card(color, -1, blockTurn));
 
         }
 
@@ -68,7 +80,6 @@ public class JUno extends Thread {
         // String[] listening = new String[] { "playerDrew", "playerWon", "warning", "turnStart", "cardPlayed" };
         try {
             Loop match = Loop.getInstance();
-            match.setupView(App.getInstance());
             match.setupGame(players, standardDeck, c1);
             match.play();
         } catch (InterruptedException e) {

@@ -47,7 +47,8 @@ public abstract class Actions {
     }
 
     public static void skipTurn() {
-        Loop.getInstance().currentPhase = 4;
+        Loop.getInstance().currentPhase = Loop.getInstance().phases.length - 2;
+        Loop.getInstance().events.notify("turnBlocked", Game.getInstance().getPlayer());
     }
 
     public static void shuffle() {

@@ -35,7 +35,7 @@ public class TerrainPane extends StackPane implements EventListener {
 
     @Override
     public void update(String eventType, Object data) {
-        if (eventType.equals("cardPlayed"))
+        if (eventType.equals("cardPlayed")) 
             Platform.runLater(() -> updateTerrainCard((Card) data));
     }
 }

@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,7 +27,7 @@ public class Animation {
     private static Path folderPath;
     private static File folder;
     protected ImageView[] images;
-    
+
     protected Animation(String folderPathname) {
         folderPath = Paths.get(folderPathname);
         folder = new File(folderPathname);
@@ -49,6 +51,10 @@ public class Animation {
     }
 
     public void play() {
+        playAndThen(e -> {});
+    }
+
+    public void playAndThen(EventHandler<ActionEvent> action) {
         Group animation = new Group(images[0]);
 
         Timeline t = new Timeline();
@@ -56,12 +62,15 @@ public class Animation {
 
         for (int i = 1; i < images.length; i++) {
             ImageView img = images[i];
-            t.getKeyFrames()
-                    .add(new KeyFrame(Duration.millis(60.0 * i), e -> animation.getChildren().setAll(img)));
+            KeyFrame frame = new KeyFrame(Duration.millis(60.0 * i), e -> animation.getChildren().setAll(img));
+            t.getKeyFrames().add(frame);
         }
 
-        AnimationLayer.getInstance().getChildren().add(animation);
-        t.setOnFinished(e -> AnimationLayer.getInstance().getChildren().remove(animation));
+        t.setOnFinished(e -> {
+            action.handle(e);
+            AnimationLayer.getInstance().removeAnimationGroup(animation);
+        });
+        AnimationLayer.getInstance().addAnimationGroup(animation);
         t.play();
     }
 
