@@ -1,5 +1,6 @@
 package view;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,39 +23,51 @@ public class EnemyPane extends VBox implements EventListener {
     }
 
     private EnemyPane() {
-        labels = new HashMap<>(3);
+        labels = new HashMap<>();
 
-        getStyleClass().add("enemies");
+        getStyleClass().add("players");
         setSpacing(10.0);
 
-        Label title = new Label("Enemies");
+        Label title = new Label("Players");
         title.getStyleClass().add("title");
         getChildren().add(title);
 
-        Loop.getInstance().events.subscribe("playerDrew", this);
-        Loop.getInstance().events.subscribe("playerHandChanged", this);
+        Loop.getInstance().events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart");
     }
 
     /* ---------------------------------------- */
 
     private Map<Player, Label> labels;
 
-    public void addEnemy(Player enemy) {
-        Label playerNick = new Label(enemy.getNickname() + " " + enemy.getHand().size());
-        playerNick.getStyleClass().add("enemy");
-
-        if (labels.containsKey(enemy))
-            getChildren().remove(labels.get(enemy)); // removing the old label if present
-
+    private void addPlayerLabel(Player player) {
+        Label playerNick = new Label();
+        playerNick.getStyleClass().add("player-label");
         getChildren().add(playerNick);
-        labels.put(enemy, playerNick);
+        labels.put(player, playerNick);
+    }
+
+    public void updatePlayerInfo(Player player) {
+        Label playerNick = labels.get(player);
+        playerNick.setText(player.getNickname() + " " + player.getHand().size());
+    }
+
+    public void focuEnemy(Player player) {
+        // TODO
     }
 
     @Override
-    public void update(String eventType, Object data) {
-        Platform.runLater(() -> {
-            if (eventType.equals("playerDrew") || eventType.equals("playerHandChanged"))
-                addEnemy((Player) data);
-        });
+    public void update(String eventLabel, Object data) {
+        switch (eventLabel) {
+            case "gameStart":
+                Platform.runLater(() -> ((Collection<Player>) data).forEach(this::addPlayerLabel));
+                break;
+            case "playerDrew":
+            case "playerHandChanged":
+                Platform.runLater(() -> updatePlayerInfo((Player) data));
+                break;
+            case "turnStart":
+                Platform.runLater(() -> focuEnemy((Player) data));
+                break;
+        }
     }
 }

@@ -124,20 +124,22 @@ public class Loop implements InputListener {
     }
 
     private void setupFirstTurn() {
+        events.notify("gameStart", g.players());
+
         Actions.shuffle();
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
         events.notify("firstCard", firstCard);
 
-        for (Player p : g.players())
+        for (Player p : g.players()) {
             Actions.dealFromDeck(p, 7);
+            events.notify("playerDrew", p);
+        }
+
         player = g.getPlayer(0);
-        events.notify("playerDrew", player);
 
         for (Controller c : users)
             c.setupControls();
-
-        events.notify("gameStart", g.players());
 
     }
 

@@ -1,5 +1,3 @@
-import java.util.Collection;
-
 import javafx.application.Platform;
 import javafx.scene.Scene;
 
@@ -8,7 +6,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.JUno;
 import model.Loop;
-import model.Player;
 
 import view.DeckContainer;
 import view.Displayer;
@@ -82,17 +79,7 @@ public class App extends Displayer {
     @Override
     public void update(String eventType, Object data) {
         if (eventType.equals("gameStart"))
-            Platform.runLater(() -> {
-                @SuppressWarnings("unchecked") // TODO non penso si debba fare
-                Collection<Player> players = (Collection<Player>) data;
-                for (Player player : players) {
-                    if (!player.isHuman()) {
-                        EnemyPane.getInstance().addEnemy(player);
-                    }
-                }
-
-                Sounds.IN_GAME_SOUNDTRACK.play();
-            });
+            Platform.runLater(() -> Sounds.IN_GAME_SOUNDTRACK.play());
         else if (eventType.equals("unoDeclared"))
             Platform.runLater(() -> Animations.UNO_TEXT.get().play(AnimationLayer.getInstance()));
         else if (eventType.equals("turnBlocked"))

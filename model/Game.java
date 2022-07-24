@@ -3,6 +3,7 @@ package model;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import model.cards.Card;
@@ -35,6 +36,7 @@ public class Game {
         discardPile = new CardGroup();
         playCondition = defaultPlayCondition;
         winCondition = defaultWinCondition;
+        nextPlayer = defaultNextPlayer;
     }
 
     static void reset() {
@@ -62,6 +64,9 @@ public class Game {
         return player.hand.isEmpty();
     };
 
+    private Function<Player, Player> nextPlayer;
+    private final Function<Player, Player> defaultNextPlayer = player -> getPlayer(getTurn(player) + 1);
+
     private boolean isOver;
 
     /* GETTERS AND SETTERS */
@@ -72,6 +77,13 @@ public class Game {
 
     public Player getPlayer(int theirTurn) {
         return players.get(theirTurn % countPlayers());
+    }
+
+    public Player getNextPlayer() {
+        return nextPlayer.apply(getPlayer());
+    }
+    public Player getNextPlayer(Player start) {
+        return nextPlayer.apply(start);
     }
 
     public int countPlayers() {
@@ -129,8 +141,20 @@ public class Game {
         return winCondition.test(p);
     }
 
+    public void setWinCondition(Predicate<Player> newCondition) {
+        winCondition = newCondition;
+    }
+
     public void restoreWinCondition() {
         winCondition = defaultWinCondition;
+    }
+
+    public void setNextPlayerEvaluator(Function<Player, Player> newEvaluator) {
+        nextPlayer = newEvaluator;
+    }
+
+    public void restoreNextPlyerEvaluator() {
+        nextPlayer = defaultNextPlayer;
     }
 
     public void end() {

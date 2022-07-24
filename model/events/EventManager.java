@@ -22,6 +22,11 @@ public class EventManager {
         listeners.get(eventLabel).add(listener);
     }
 
+    public void subscribe(EventListener listener, String... eventLabels) {
+        for (String label : eventLabels)
+            subscribe(label, listener);
+    }
+
     public void unsubscribe(String eventLabel, EventListener listener) {
         listeners.get(eventLabel).remove(listener);
     }

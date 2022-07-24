@@ -46,7 +46,7 @@ public class TerrainPane extends StackPane implements EventListener {
                 cardPlayed.setOnFinishAction(e -> updateTerrainCard((Card) data));
                 cardPlayed.playOnQueue(AnimationLayer.getInstance());
             });
-        else if (eventType.equals("firstCard") || eventType.equals("humanTurn cardPlayed"))
+        else
             Platform.runLater(() -> updateTerrainCard((Card) data));
     }
 }

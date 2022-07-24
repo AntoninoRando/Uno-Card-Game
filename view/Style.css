@@ -14,12 +14,12 @@
     align-content: center;
 }
 
-.enemies {
+.players {
     -fx-padding: 10px;
     padding: 10px;
 }
 
-.enemy {
+.player-label {
     -fx-font-size: 16px;
     font-size: 16px;
 
@@ -27,7 +27,7 @@
     padding: 2px;
 }
 
-.enemies .title {
+.players .title {
     -fx-font-size: 25px;
     font-size: 25px;
 

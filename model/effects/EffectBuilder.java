@@ -23,7 +23,10 @@ public class EffectBuilder {
     public EffectBuilder directTargetToFollowing(int ahead) {
         effect.steps.add(() -> {
             Game g = Game.getInstance();
-            effect.target = Game.getInstance().getPlayer((g.getTurn(effect.sourcePlayer) + ahead) % g.countPlayers());
+            Player target = g.getPlayer();
+            for (int i = ahead; i > 0; i--)
+                target = g.getNextPlayer(target);
+            effect.target = target;
         });
         return this;
     }
