@@ -7,6 +7,10 @@ import model.cards.Card;
 public enum Phase {
     START_TURN((l, g) -> {
         l.events.notify("turnStart", g.getPlayer());
+        if (g.getPlayer().isHuman())
+            l.events.notify("humanTurn", g.getPlayer());
+        else 
+            l.events.notify("enemyTurn", g.getPlayer());
         g.getPlayer().consumeConditions();
         return true;
     }),

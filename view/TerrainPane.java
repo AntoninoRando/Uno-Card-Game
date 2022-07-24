@@ -21,7 +21,8 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     private TerrainPane() {
-        Loop.getInstance().events.subscribe("cardPlayed", this);
+        Loop.getInstance().events.subscribe("enemyTurn cardPlayed", this);
+        Loop.getInstance().events.subscribe("humanTurn cardPlayed", this);
         Loop.getInstance().events.subscribe("firstCard", this);
         getStyleClass().add("terrain");
         setMaxHeight(400);
@@ -39,13 +40,13 @@ public class TerrainPane extends StackPane implements EventListener {
 
     @Override
     public void update(String eventType, Object data) {
-        if (eventType.equals("cardPlayed"))
+        if (eventType.equals("enemyTurn cardPlayed"))
             Platform.runLater(() -> {
                 Animation cardPlayed = Animations.CARD_PLAYED.get();
                 cardPlayed.setOnFinishAction(e -> updateTerrainCard((Card) data));
                 cardPlayed.playOnQueue(AnimationLayer.getInstance());
             });
-        else if (eventType.equals("firstCard"))
+        else if (eventType.equals("firstCard") || eventType.equals("humanTurn cardPlayed"))
             Platform.runLater(() -> updateTerrainCard((Card) data));
     }
 }
