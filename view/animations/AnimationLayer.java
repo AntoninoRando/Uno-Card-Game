@@ -1,6 +1,5 @@
 package view.animations;
 
-import javafx.application.Platform;
 import javafx.scene.Group;
 
 public class AnimationLayer extends Group {
@@ -17,15 +16,5 @@ public class AnimationLayer extends Group {
     private AnimationLayer() {
     }
 
-    protected void addAnimationGroup(Group animation) {
-        Platform.runLater(() -> {
-            getChildren().add(animation);
-        });
-    }
-
-    protected void removeAnimationGroup(Group animation) {
-        Platform.runLater(() -> {
-            getChildren().remove(animation);
-        });
-    }
+    /* --------------------------------------- */
 }

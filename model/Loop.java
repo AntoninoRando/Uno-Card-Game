@@ -127,7 +127,7 @@ public class Loop implements InputListener {
         Actions.shuffle();
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
-        events.notify("cardPlayed", firstCard);
+        events.notify("firstCard", firstCard);
 
         for (Player p : g.players())
             Actions.dealFromDeck(p, 7);

@@ -55,9 +55,9 @@ public class App extends Displayer {
         root.getChildren().add(AnimationLayer.getInstance());
         root.getChildren().add(PlayzonePane.getInstance());
 
-        Animations.UNO_TEXT.load();
-        Animations.BLOCK_TURN.load();
-        Animations.CARD_PLAYED.load();
+        Animations.UNO_TEXT.get().load();
+        Animations.BLOCK_TURN.get().load();
+        Animations.CARD_PLAYED.get().load();
 
         return scene;
     }
@@ -94,9 +94,9 @@ public class App extends Displayer {
                 Sounds.IN_GAME_SOUNDTRACK.play();
             });
         else if (eventType.equals("unoDeclared"))
-            Platform.runLater(() -> Animations.UNO_TEXT.play());
+            Platform.runLater(() -> Animations.UNO_TEXT.get().play(AnimationLayer.getInstance()));
         else if (eventType.equals("turnBlocked"))
-            Platform.runLater(() -> Animations.BLOCK_TURN.play());
+            Platform.runLater(() -> Animations.BLOCK_TURN.get().playOnQueue(AnimationLayer.getInstance()));
     }
 
     public static void main(String[] args) {

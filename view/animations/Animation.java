@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -24,17 +25,31 @@ import javafx.util.Duration;
  * The method <code>play</code> starts the animation.
  */
 public class Animation {
-    private static Path folderPath;
-    private static File folder;
-    protected ImageView[] images;
+    private Path folderPath;
+    private File folder;
+    private ImageView[] images;
+    private double frameDuration = 60.0;
+    private EventHandler<ActionEvent> onFinishAction = e -> {
+    };
 
-    protected Animation(String folderPathname) {
+    public Animation(String folderPathname) {
         folderPath = Paths.get(folderPathname);
         folder = new File(folderPathname);
         images = loadImages();
     }
 
-    private final static ImageView[] loadImages() {
+    public void setFrameDuration(double duration) {
+        frameDuration = duration;
+    }
+
+    public void setOnFinishAction(EventHandler<ActionEvent> action) {
+        onFinishAction = action;
+    }
+
+    private final ImageView[] loadImages() {
+        if (Animations.imagesLoaded.containsKey(folderPath.toString()))
+            return Animations.imagesLoaded.get(folderPath.toString());
+            
         ImageView[] images = new ImageView[folder.listFiles().length];
 
         for (int i = 0; i < images.length; i++) {
@@ -50,11 +65,7 @@ public class Animation {
         return images;
     }
 
-    public void play() {
-        playAndThen(e -> {});
-    }
-
-    public void playAndThen(EventHandler<ActionEvent> action) {
+    public void play(Group animationLayer) {
         Group animation = new Group(images[0]);
 
         Timeline t = new Timeline();
@@ -62,20 +73,44 @@ public class Animation {
 
         for (int i = 1; i < images.length; i++) {
             ImageView img = images[i];
-            KeyFrame frame = new KeyFrame(Duration.millis(60.0 * i), e -> animation.getChildren().setAll(img));
+            KeyFrame frame = new KeyFrame(Duration.millis(frameDuration * i), e -> animation.getChildren().setAll(img));
             t.getKeyFrames().add(frame);
         }
 
         t.setOnFinished(e -> {
-            action.handle(e);
-            AnimationLayer.getInstance().removeAnimationGroup(animation);
+            onFinishAction.handle(e);
+            animationLayer.getChildren().remove(animation);
         });
-        AnimationLayer.getInstance().addAnimationGroup(animation);
+        animationLayer.getChildren().add(animation);
         t.play();
     }
 
+    private static LinkedList<Animation> queue = new LinkedList<>();
+    private static boolean isPlaying;
+
+    public void playOnQueue(Group animationLayer) {
+        queue.offer(this);
+        if (!isPlaying)
+            playQueue(animationLayer);
+    }
+
+    public void playQueue(Group animationLayer) {
+        if (queue.isEmpty())
+            return;
+        
+        isPlaying = true;
+        Animation currentAnimation = queue.removeFirst();
+        EventHandler<ActionEvent> action = currentAnimation.onFinishAction;
+
+        currentAnimation.setOnFinishAction(e -> {
+            action.handle(e);
+            isPlaying = false;
+            playQueue(animationLayer);
+        });
+        currentAnimation.play(animationLayer);
+    }
+
     public void load() {
-        // Once invoked, the class constructor, that loads the images, will certainly
-        // have been called (before or by this method call).
+        Animations.imagesLoaded.put(folderPath.toString(), images);
     };
 }
