@@ -76,14 +76,11 @@ public class JUno extends Thread {
         players.put(1, p2);
         players.put(2, p3);
 
-        // ConsoleOutput displayer = ConsoleOutput.getInstance();
-        // String[] listening = new String[] { "playerDrew", "playerWon", "warning", "turnStart", "cardPlayed" };
         try {
             Loop match = Loop.getInstance();
             match.setupGame(players, standardDeck, c1);
             match.play();
         } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 }

@@ -3,10 +3,12 @@ package view;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import model.Loop;
 import model.Player;
 import model.events.EventListener;
@@ -32,7 +34,7 @@ public class EnemyPane extends VBox implements EventListener {
         title.getStyleClass().add("title");
         getChildren().add(title);
 
-        Loop.getInstance().events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart");
+        Loop.getInstance().events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart", "turnEnd");
     }
 
     /* ---------------------------------------- */
@@ -50,9 +52,29 @@ public class EnemyPane extends VBox implements EventListener {
         Label playerNick = labels.get(player);
         playerNick.setText(player.getNickname() + " " + player.getHand().size());
     }
+    
+    public void focusPlayer(Player player) {
+        CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            labels.get(player).setTextFill(Color.color(1, 0, 0));
+            latch.countDown();
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+        }
+    }
 
-    public void focuEnemy(Player player) {
-        // TODO
+    public void unfocusPlayer(Player player) {
+        CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            labels.get(player).setTextFill(Color.color(0, 0, 0));
+            latch.countDown();
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+        }
     }
 
     @Override
@@ -66,7 +88,10 @@ public class EnemyPane extends VBox implements EventListener {
                 Platform.runLater(() -> updatePlayerInfo((Player) data));
                 break;
             case "turnStart":
-                Platform.runLater(() -> focuEnemy((Player) data));
+                focusPlayer((Player) data);
+                break;
+            case "turnEnd":
+                unfocusPlayer((Player) data);
                 break;
         }
     }

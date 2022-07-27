@@ -40,12 +40,17 @@ public class TerrainPane extends StackPane implements EventListener {
 
     @Override
     public void update(String eventType, Object data) {
-        if (eventType.equals("enemyTurn cardPlayed"))
+        if (eventType.equals("enemyTurn cardPlayed")) {
             Platform.runLater(() -> {
                 Animation cardPlayed = Animations.CARD_PLAYED.get();
                 cardPlayed.setOnFinishAction(e -> updateTerrainCard((Card) data));
-                cardPlayed.playOnQueue(AnimationLayer.getInstance());
+                cardPlayed.playAndWait(AnimationLayer.getInstance());
             });
+            try {
+                Animation.latch.await();
+            } catch (InterruptedException e) {
+            }
+        }
         else
             Platform.runLater(() -> updateTerrainCard((Card) data));
     }

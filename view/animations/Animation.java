@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
+import java.util.concurrent.CountDownLatch;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -49,7 +50,7 @@ public class Animation {
     private final ImageView[] loadImages() {
         if (Animations.imagesLoaded.containsKey(folderPath.toString()))
             return Animations.imagesLoaded.get(folderPath.toString());
-            
+
         ImageView[] images = new ImageView[folder.listFiles().length];
 
         for (int i = 0; i < images.length; i++) {
@@ -97,7 +98,7 @@ public class Animation {
     public void playQueue(Group animationLayer) {
         if (queue.isEmpty())
             return;
-        
+
         isPlaying = true;
         Animation currentAnimation = queue.removeFirst();
         EventHandler<ActionEvent> action = currentAnimation.onFinishAction;
@@ -113,4 +114,30 @@ public class Animation {
     public void load() {
         Animations.imagesLoaded.put(folderPath.toString(), images);
     };
+
+    /* ----------------------------------------------- */
+
+    public static CountDownLatch latch = new CountDownLatch(1);
+
+    public void playAndWait(Group animationLayer) {
+        Group animation = new Group(images[0]);
+
+        Timeline t = new Timeline();
+        t.setCycleCount(1);
+
+        for (int i = 1; i < images.length; i++) {
+            ImageView img = images[i];
+            KeyFrame frame = new KeyFrame(Duration.millis(frameDuration * i), e -> animation.getChildren().setAll(img));
+            t.getKeyFrames().add(frame);
+        }
+
+        t.setOnFinished(e -> {
+            onFinishAction.handle(e);
+            animationLayer.getChildren().remove(animation);
+            latch.countDown();
+            latch = new CountDownLatch(1);
+        });
+        animationLayer.getChildren().add(animation);
+        t.play();
+    }
 }
