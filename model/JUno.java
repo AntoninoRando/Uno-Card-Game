@@ -35,10 +35,6 @@ public class JUno extends Thread {
         test();
     }
 
-    public static void main(String[] args) {
-        new JUno().start();
-    }
-
     public void test() {
         /* STANDARD DECK */
         /* ------------- */
@@ -50,6 +46,7 @@ public class JUno extends Thread {
                 continue;
             }
             Effect blockTurn = new EffectBuilder().directTargetToFollowing(1).skipTargetTurn().build();
+            Effect reverseTurn = new EffectBuilder().reverseTurnOrder().build();
             for (int i = 1; i < 10; i++) {
                 standardSet.add(new Card(color, i));
                 standardSet.add(new Card(color, i));
@@ -58,6 +55,8 @@ public class JUno extends Thread {
             standardSet.add(new Card(color, 0));
             standardSet.add(new Card(color, -1, blockTurn));
             standardSet.add(new Card(color, -1, blockTurn));
+            standardSet.add(new Card(color, -3, reverseTurn));
+            standardSet.add(new Card(color, -3, reverseTurn));
 
         }
 

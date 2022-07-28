@@ -1,4 +1,5 @@
 package model.effects;
+
 import model.cards.Card;
 
 import java.util.LinkedList;
@@ -20,7 +21,6 @@ public class Effect implements Comparable<Effect> {
     public void merge(Effect after) {
         steps.addAll(after.steps);
     }
-
 
     int priority;
 

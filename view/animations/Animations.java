@@ -12,5 +12,7 @@ public abstract class Animations {
 
     public static final Supplier<Animation> CARD_PLAYED = () -> new Animation("resources\\PlayCard");
 
+    public static final Supplier<Animation> FOCU_PLAYER = () -> new Animation("resources\\Focus");
+
     protected static HashMap<String, ImageView[]> imagesLoaded = new HashMap<String, ImageView[]>();
 }

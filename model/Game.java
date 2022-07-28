@@ -82,6 +82,7 @@ public class Game {
     public Player getNextPlayer() {
         return nextPlayer.apply(getPlayer());
     }
+
     public Player getNextPlayer(Player start) {
         return nextPlayer.apply(start);
     }
@@ -147,6 +148,10 @@ public class Game {
 
     public void restoreWinCondition() {
         winCondition = defaultWinCondition;
+    }
+
+    public Function<Player, Player> getNextPlayerEvaluator() {
+        return nextPlayer;
     }
 
     public void setNextPlayerEvaluator(Function<Player, Player> newEvaluator) {

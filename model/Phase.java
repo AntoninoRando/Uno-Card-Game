@@ -60,7 +60,7 @@ public enum Phase {
     }),
     END_TURN((l, g) -> {
         l.events.notify("turnEnd", g.getPlayer());
-        g.setTurn(g.getTurn() + 1);
+        g.setTurn(g.getNextPlayer());
         l.choice = null;
         l.choiceType = null;
         l.unoDeclared = false;

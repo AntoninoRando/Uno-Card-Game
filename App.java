@@ -55,6 +55,7 @@ public class App extends Displayer {
         Animations.UNO_TEXT.get().load();
         Animations.BLOCK_TURN.get().load();
         Animations.CARD_PLAYED.get().load();
+        Animations.FOCU_PLAYER.get().load();
 
         return scene;
     }
@@ -63,8 +64,8 @@ public class App extends Displayer {
     public void start(Stage stage) throws Exception {
         stage.setTitle("JUno");
 
-        // stage.setFullScreen(true);
-        // stage.setFullScreenExitHint("");
+        stage.setFullScreen(true);
+        stage.setFullScreenExitHint("");
 
         // TODO Non so se sia corretto...
         stage.setOnCloseRequest(e -> System.exit(0));

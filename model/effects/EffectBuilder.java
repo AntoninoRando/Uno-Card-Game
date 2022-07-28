@@ -1,5 +1,7 @@
 package model.effects;
 
+import java.util.function.Function;
+
 import model.Actions;
 import model.Game;
 import model.Player;
@@ -37,6 +39,28 @@ public class EffectBuilder {
     }
 
     public EffectBuilder skipTargetTurn() {
+        effect.steps.add(() -> effect.target.addCondition(new EffectBuilder().skipCurrentTurn().build()));
+        return this;
+    }
+
+    public EffectBuilder reverseTurnOrder() {
+        effect.steps.add(() -> {
+            Game g = Game.getInstance();
+            Function<Player, Player> oldNext = g.getNextPlayerEvaluator();
+            g.setNextPlayerEvaluator(player -> {
+                Player next = null;
+                for (Player p : g.players())
+                    if (oldNext.apply(p) == player) {
+                        next = p;
+                        break;
+                    }
+                return next;
+            });
+        });
+        return this;
+    }
+
+    public EffectBuilder draw(int quantity) {
         effect.steps.add(() -> effect.target.addCondition(new EffectBuilder().skipCurrentTurn().build()));
         return this;
     }
