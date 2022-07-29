@@ -34,6 +34,7 @@ public abstract class Actions {
     public static void dealFromDeck(Player p) {
         Card c = takeFromDeck();
         p.addCard(c);
+        Loop.getInstance().events.notify("playerDrew", p);
     }
 
     public static void dealFromDeck(Player p, int times) {

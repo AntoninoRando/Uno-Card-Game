@@ -46,6 +46,11 @@ public class EffectBuilder {
         return this;
     }
 
+    public EffectBuilder targetDraws(int quantity) {
+        effect.steps.add(() -> Actions.dealFromDeck(effect.targetPlayer, quantity));
+        return this;
+    }
+
     public EffectBuilder reverseTurnOrder() {
         effect.steps.add(() -> {
             Game g = Game.getInstance();
