@@ -9,7 +9,8 @@ import model.Player;
 public class Effect implements Comparable<Effect> {
     Player sourcePlayer;
     Card sourceCard;
-    Player target;
+    Player targetPlayer;
+    Card targetCard;
     LinkedList<Runnable> steps = new LinkedList<>();
 
     public void cast(Player soucePlayer, Card sourceCard) {

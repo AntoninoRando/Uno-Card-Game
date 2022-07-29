@@ -47,8 +47,15 @@ public abstract class Actions {
     }
 
     public static void skipTurn() {
-        Loop.getInstance().currentPhase = Loop.getInstance().phases.length - 2;
+        Loop.getInstance().currentPhase = Loop.getInstance().phases.size() - 2;
         Loop.getInstance().events.notify("turnBlocked", Game.getInstance().getPlayer());
+    }
+
+    public static void transformCard(Card source, Card target) {
+        source.setSuit(target.getSuit());
+        source.setValue(target.getValue());
+        source.setEffect(target.getEffect());
+        source.getGuiContainer().update(source);
     }
 
     public static void shuffle() {

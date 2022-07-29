@@ -21,7 +21,7 @@ public class Card implements Comparable<Card> {
     public Card(Suit suit, int value, Effect effect) {
         this.suit = suit;
         this.value = value;
-        addEffect(effect);
+        setEffect(Optional.of(effect));
     }
 
     /* GETTERS AND SETTERS */
@@ -30,8 +30,16 @@ public class Card implements Comparable<Card> {
         return suit;
     }
 
+    public void setSuit(Suit suit) {
+        this.suit = suit;
+    }
+
     public int getValue() {
         return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
     }
 
     public int getID() {
@@ -42,8 +50,8 @@ public class Card implements Comparable<Card> {
         return effect;
     }
 
-    public void addEffect(Effect e) {
-        effect = Optional.of(e);
+    public void setEffect(Optional<Effect> e) {
+        effect = e;
     }
 
     public String toString() {

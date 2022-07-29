@@ -19,6 +19,14 @@
     padding: 10px;
 }
 
+.selection-pane {
+    -fx-padding: 10px;
+    padding: 10px;
+
+    /* -fx-background-color: rgba(128, 128, 128, 0.275);
+    background-color: rgba(128, 128, 128, 0.275); */
+}
+
 .player-label {
     -fx-font-size: 16px;
     font-size: 16px;

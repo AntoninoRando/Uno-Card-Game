@@ -5,6 +5,7 @@ import model.events.InputListener;
 import view.Displayer;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
@@ -35,7 +36,7 @@ public class Loop implements InputListener {
                 events.notify("cardPlayed", c);
 
                 if (g.getPlayer().getHand().size() == 1 && !unoDeclared) {
-                    Actions.dealFromDeck(g.getPlayer(), 1);
+                    Actions.dealFromDeck(g.getPlayer(), 2);
                     events.notify("playerDrew", g.getPlayer());
                 }
 
@@ -81,7 +82,7 @@ public class Loop implements InputListener {
 
     boolean unoDeclared;
 
-    Phase[] phases = new Phase[] {Phase.START_TURN, Phase.MAKE_CHOICE, Phase.PARSE_CHOICE, Phase.RESOLVE_CHOICE, Phase.END_TURN};
+    LinkedList<Phase> phases = new LinkedList<>();
     int currentPhase;
 
     public void setupView(Displayer displayer) {
@@ -101,6 +102,11 @@ public class Loop implements InputListener {
             c.setInputListener(this);
             c.start();
         }
+        phases.add(Phases.START_TURN);
+        phases.add(Phases.MAKE_CHOICE);
+        phases.add(Phases.PARSE_CHOICE);
+        phases.add(Phases.RESOLVE_CHOICE);
+        phases.add(Phases.END_TURN);
     }
 
     /* ------------------------------ */
@@ -109,17 +115,17 @@ public class Loop implements InputListener {
         setupFirstTurn();
 
         while (!g.isOver()) {
-            boolean validChoice = phases[currentPhase].execution.apply(this, Game.getInstance());
+            boolean validChoice = phases.get(currentPhase).apply(this, Game.getInstance());
 
             if (g.didPlayerWin(g.getPlayer())) {
                 endGame();
                 return;
             }
 
-            if (phases[currentPhase] == Phase.RESOLVE_CHOICE && !validChoice)
+            if (phases.get(currentPhase) == Phases.RESOLVE_CHOICE && !validChoice)
                 currentPhase = 1;
             else
-                currentPhase = (++currentPhase) % phases.length;
+                currentPhase = (++currentPhase) % phases.size();
         }
     }
 

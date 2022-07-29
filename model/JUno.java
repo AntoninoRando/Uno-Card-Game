@@ -39,14 +39,16 @@ public class JUno extends Thread {
         /* STANDARD DECK */
         /* ------------- */
         List<Card> standardSet = new ArrayList<Card>(108);
+        Effect blockTurn = new EffectBuilder().directTargetToFollowing(1).skipTargetTurn().build();
+        Effect reverseTurn = new EffectBuilder().reverseTurnOrder().build();
+        Effect pickColor = new EffectBuilder().selectOneCardOf(new Card(Suit.RED, -5), new Card(Suit.BLUE, -5),
+                new Card(Suit.YELLOW, -5), new Card(Suit.GREEN, -5)).transformIntoTarget().build();
         for (Suit color : Suit.values()) {
             if (color == Suit.WILD) {
                 for (int i = 1; i < 9; i++)
-                    standardSet.add(new Card(color, 0));
+                    standardSet.add(new Card(color, 0, pickColor));
                 continue;
             }
-            Effect blockTurn = new EffectBuilder().directTargetToFollowing(1).skipTargetTurn().build();
-            Effect reverseTurn = new EffectBuilder().reverseTurnOrder().build();
             for (int i = 1; i < 10; i++) {
                 standardSet.add(new Card(color, i));
                 standardSet.add(new Card(color, i));

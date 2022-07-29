@@ -14,27 +14,31 @@ import model.cards.Card;
 public class CardContainer extends ImageView {
     // TODO non so se vanno bene per qualsiasi sistema operativo quei separatori
     private static Path imgFolder = Paths.get("C:\\Users\\anton\\OneDrive\\Desktop\\AllUnoCards");
-    private Path imgPath;
 
     public CardContainer(Card card) {
         getStyleClass().add("card");
-        imgPath = imgFolder.resolve(card.toString().concat(".png"));
-        if (Files.notExists(imgPath))
-            imgPath = imgFolder.resolve("MISSING.png");
-        try {
-            loadImage();
-        } catch (MalformedURLException e) {
-            throw new Error("Error while loading the image of: " + card.toString());
-        }
-    }
-
-    private void loadImage() throws MalformedURLException {
-        Image img = new Image(imgPath.toUri().toURL().toExternalForm());
-        setImage(img);
+        loadImage(card);
         setPreserveRatio(true);
         setFitWidth(150);
-        //makeDraggable();
         makeZommable(0.5);
+    }
+
+    private void loadImage(Card card) {
+        Path imgPath = imgFolder.resolve(card.toString().concat(".png"));
+        if (Files.notExists(imgPath))
+            imgPath = imgFolder.resolve("MISSING.png");
+
+        Image img = null;
+        try {
+            img = new Image(imgPath.toUri().toURL().toExternalForm());
+        } catch (MalformedURLException e) {
+        }
+
+        setImage(img);
+    }
+
+    public void update(Card card) {
+        loadImage(card);
     }
 
     /* -------------------------------- */
@@ -45,7 +49,7 @@ public class CardContainer extends ImageView {
     private void makeZommable(Double scalingFactor) {
         setOnMouseEntered(e -> {
             if (getScaleX() <= 1.0 || getScaleY() <= 1.0) {
-                // 1 + scalingFactor  = getScaleX() + x
+                // 1 + scalingFactor = getScaleX() + x
                 zoomIn.setByX(1 + scalingFactor - getScaleX());
                 zoomIn.setByY(1 + scalingFactor - getScaleY());
                 zoomIn.play();
@@ -54,7 +58,7 @@ public class CardContainer extends ImageView {
 
         setOnMouseExited(e -> {
             if (getScaleX() != 1.0 || getScaleY() != 1.0) {
-                // 1 = getScaleX() - x 
+                // 1 = getScaleX() - x
                 zoomOut.setByX(1 - getScaleX());
                 zoomOut.setByY(1 - getScaleY());
                 zoomOut.play();

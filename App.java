@@ -12,6 +12,7 @@ import view.Displayer;
 import view.EnemyPane;
 import view.HandPane;
 import view.PlayzonePane;
+import view.SelectionPane;
 import view.TerrainPane;
 import view.animations.AnimationLayer;
 import view.animations.Animations;
@@ -51,11 +52,12 @@ public class App extends Displayer {
         root.getChildren().add(gameElements);
         root.getChildren().add(AnimationLayer.getInstance());
         root.getChildren().add(PlayzonePane.getInstance());
+        root.getChildren().add(SelectionPane.getInstance());
 
         Animations.UNO_TEXT.get().load();
         Animations.BLOCK_TURN.get().load();
         Animations.CARD_PLAYED.get().load();
-        Animations.FOCU_PLAYER.get().load();
+        Animations.FOCUS_PLAYER.get().load();
 
         return scene;
     }

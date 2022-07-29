@@ -4,7 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 public class HomeMenu extends VBox {
-        /* SINGLETON */
+    /* SINGLETON */
     /* --------- */
     private static HomeMenu instance;
 
