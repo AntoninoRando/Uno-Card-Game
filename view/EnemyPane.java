@@ -34,7 +34,8 @@ public class EnemyPane extends VBox implements EventListener {
         title.getStyleClass().add("title");
         getChildren().add(title);
 
-        Loop.getInstance().events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart", "turnEnd");
+        Loop.getInstance().events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart",
+                "turnEnd", "reset");
     }
 
     /* ---------------------------------------- */
@@ -48,12 +49,12 @@ public class EnemyPane extends VBox implements EventListener {
         labels.put(player, playerNick);
     }
 
-    public void updatePlayerInfo(Player player) {
+    private void updatePlayerInfo(Player player) {
         Label playerNick = labels.get(player);
         playerNick.setText(player.getNickname() + " " + player.getHand().size());
     }
-    
-    public void focusPlayer(Player player) {
+
+    private void focusPlayer(Player player) {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
             labels.get(player).setTextFill(Color.color(1, 0, 0));
@@ -65,7 +66,7 @@ public class EnemyPane extends VBox implements EventListener {
         }
     }
 
-    public void unfocusPlayer(Player player) {
+    private void unfocusPlayer(Player player) {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
             labels.get(player).setTextFill(Color.color(0, 0, 0));
@@ -75,6 +76,10 @@ public class EnemyPane extends VBox implements EventListener {
             latch.await();
         } catch (InterruptedException e) {
         }
+    }
+
+    private void reset() {
+        instance = null;
     }
 
     @Override
@@ -92,6 +97,9 @@ public class EnemyPane extends VBox implements EventListener {
                 break;
             case "turnEnd":
                 unfocusPlayer((Player) data);
+                break;
+            case "reset":
+                reset();
                 break;
         }
     }

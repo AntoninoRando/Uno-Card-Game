@@ -58,7 +58,7 @@ public class EffectBuilder {
             Function<Player, Player> oldNext = g.getNextPlayerEvaluator();
             g.setNextPlayerEvaluator(player -> {
                 Player next = null;
-                for (Player p : g.players())
+                for (Player p : g.getPlayers())
                     if (oldNext.apply(p) == player) {
                         next = p;
                         break;

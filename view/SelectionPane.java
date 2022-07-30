@@ -6,6 +6,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import model.Loop;
 import model.cards.Card;
@@ -26,6 +27,7 @@ public class SelectionPane extends HBox implements EventListener {
         getStyleClass().add("selection-pane");
         setSpacing(20.0);
         setVisible(false);
+        setAlignment(Pos.CENTER);
 
         Loop.getInstance().events.subscribe(this, "humanTurn cardSelection");
     }

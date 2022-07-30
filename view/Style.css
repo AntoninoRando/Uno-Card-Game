@@ -23,8 +23,51 @@
     -fx-padding: 10px;
     padding: 10px;
 
-    /* -fx-background-color: rgba(128, 128, 128, 0.275);
-    background-color: rgba(128, 128, 128, 0.275); */
+    -fx-background-color: rgba(128, 128, 128, 0.275);
+    background-color: rgba(128, 128, 128, 0.275);
+}
+
+.settings-menu {
+    -fx-background-color: radial-gradient(center 0% 0% , radius 200% , #9b2226, black);
+    background-color: radial-gradient(center 0% 0% , radius 200% , #9b2226, black);
+
+    -fx-background-radius: 13px;
+
+    -fx-effect: dropshadow(gaussian , rgba(0, 0, 0, 0.5) , 50 , 0.3 , 0, 0);
+    box-shadow: dropshadow(gaussian , rgba(0, 0, 0, 0.5) , 50 , 0.3 , 0, 0);
+}
+
+.settings-menu .label {
+    -fx-font-size: 25px;
+    font-size: 25px;
+
+    -fx-text-fill: white;
+    color: white;
+
+    -fx-padding: 10px;
+    padding: 10px;
+
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+
+.settings-menu .button {
+    -fx-background-color: none;
+    background-color: none;
+
+    -fx-text-fill: white;
+    color: white;
+
+    -fx-font-size: 16px;
+    font-size: 16px;
+}
+
+.settings-menu .VBox {
+    -fx-border-width: 0px 4px 0px 0px;
+    border-width: 0px 4px 0px 0px;
+
+    -fx-border-color: white;
+    border-color: white;
 }
 
 .player-label {

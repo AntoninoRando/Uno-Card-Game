@@ -130,14 +130,14 @@ public class Loop implements InputListener {
     }
 
     private void setupFirstTurn() {
-        events.notify("gameStart", g.players());
+        events.notify("gameStart", g.getPlayers());
 
         Actions.shuffle();
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
         events.notify("firstCard", firstCard);
 
-        for (Player p : g.players()) {
+        for (Player p : g.getPlayers()) {
             Actions.dealFromDeck(p, 7);
             events.notify("playerDrew", p);
         }
@@ -151,6 +151,12 @@ public class Loop implements InputListener {
 
     private void endGame() {
         events.notify("playerWon", player);
+    }
+
+    public static void reset() {
+        instance.events.notify("reset", null);
+        Game.reset();
+        instance = null;
     }
 
     /* INPUTLISTENER */

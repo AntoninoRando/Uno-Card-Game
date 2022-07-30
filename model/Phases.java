@@ -2,7 +2,7 @@ package model;
 
 import model.cards.Card;
 
-public class Phases {
+public abstract class Phases {
     public static final Phase START_TURN = (l, g) -> {
         Player p = g.getPlayer();
 

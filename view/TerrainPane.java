@@ -21,9 +21,7 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     private TerrainPane() {
-        Loop.getInstance().events.subscribe("enemyTurn cardPlayed", this);
-        Loop.getInstance().events.subscribe("humanTurn cardPlayed", this);
-        Loop.getInstance().events.subscribe("firstCard", this);
+        Loop.getInstance().events.subscribe(this, "enemyTurn cardPlayed", "humanTurn cardPlayed", "firstCard", "reset");
         getStyleClass().add("terrain");
         setMaxHeight(400);
         setMaxWidth(400);
@@ -38,20 +36,31 @@ public class TerrainPane extends StackPane implements EventListener {
         getChildren().add(terrainCard);
     }
 
+    private void reset() {
+        instance = null;
+    }
+
     @Override
     public void update(String eventType, Object data) {
-        if (eventType.equals("enemyTurn cardPlayed")) {
-            Platform.runLater(() -> {
-                Animation cardPlayed = Animations.CARD_PLAYED.get();
-                cardPlayed.setOnFinishAction(e -> updateTerrainCard((Card) data));
-                cardPlayed.playAndWait(AnimationLayer.getInstance());
-            });
-            try {
-                Animation.latch.await();
-            } catch (InterruptedException e) {
-            }
+        switch (eventType) {
+            case "enemyTurn cardPlayed":
+                Platform.runLater(() -> {
+                    Animation cardPlayed = Animations.CARD_PLAYED.get();
+                    cardPlayed.setOnFinishAction(e -> updateTerrainCard((Card) data));
+                    cardPlayed.playAndWait(AnimationLayer.getInstance());
+                });
+                try {
+                    Animation.latch.await();
+                } catch (InterruptedException e) {
+                }
+                break;
+            case "firstCard":
+            case "humanTurn cardPlayed":
+                Platform.runLater(() -> updateTerrainCard((Card) data));
+                break;
+            case "reset":
+                reset();
+                break;
         }
-        else
-            Platform.runLater(() -> updateTerrainCard((Card) data));
     }
 }

@@ -91,7 +91,7 @@ public class Game {
         return players.size();
     }
 
-    public Collection<Player> players() {
+    public Collection<Player> getPlayers() {
         return players.values();
     }
 
