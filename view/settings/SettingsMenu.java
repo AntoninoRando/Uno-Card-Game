@@ -24,6 +24,9 @@ public class SettingsMenu extends BorderPane implements EventListener {
         Loop.getInstance().events.subscribe(this, "gameStart");
     }
 
+    protected Node restartButton;
+    protected Node quitButton;
+
     private Node createTitle() {
         Label text = new Label("Settings");
         text.getStyleClass().add("label");
@@ -51,14 +54,13 @@ public class SettingsMenu extends BorderPane implements EventListener {
     }
 
     private Node createRestartButton() {
-        Button restart = new Button("Restart");
-        return restart;
+        restartButton = new Button("Restart");
+        return restartButton;
     }
 
     private Node createQuitButton() {
-        Button quit = new Button("Quit");
-        quit.setOnMouseClicked(e -> Loop.reset());
-        return quit;
+        quitButton = new Button("Quit");
+        return quitButton;
     }
 
     private void arrangeElements() {

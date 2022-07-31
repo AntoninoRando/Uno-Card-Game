@@ -35,7 +35,7 @@ public class EnemyPane extends VBox implements EventListener {
         getChildren().add(title);
 
         Loop.getInstance().events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart",
-                "turnEnd", "reset");
+                "turnEnd");
     }
 
     /* ---------------------------------------- */
@@ -78,10 +78,6 @@ public class EnemyPane extends VBox implements EventListener {
         }
     }
 
-    private void reset() {
-        instance = null;
-    }
-
     @Override
     public void update(String eventLabel, Object data) {
         switch (eventLabel) {
@@ -97,9 +93,6 @@ public class EnemyPane extends VBox implements EventListener {
                 break;
             case "turnEnd":
                 unfocusPlayer((Player) data);
-                break;
-            case "reset":
-                reset();
                 break;
         }
     }

@@ -38,12 +38,6 @@ public class ConsoleOutput implements EventListener {
                 { Suit.WILD, "\u001B[36m wild\u001B[0m" }
         }).collect(Collectors.toMap(p -> (Suit) p[0], p -> (String) p[1]));
 
-        // listening.put("PlayerDrew", (data) -> playerDrew((Player) data));
-        // listening.put("PlayerWon", (data) -> playerWon((Player) data));
-        // listening.put("Warn", (data) -> warning((String) data));
-        // listening.put("HandChanged", (data) -> handChanged((Player) data));
-        // listening.put("CardChanged", (data) -> cardChanged((Card) data));
-
         listening.put("playerDrew", (data) -> { 
             playerDrew((Player) data);
             handChanged((Player) data);

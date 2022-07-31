@@ -17,12 +17,15 @@ import view.SelectionPane;
 import view.TerrainPane;
 import view.animations.AnimationLayer;
 import view.animations.Animations;
+import view.home.HomeMenu;
+import view.home.Homes;
 import view.settings.Settings;
 import view.sounds.Sounds;
 
 public class App extends Displayer {
-    private StackPane root;
     private Scene scene;
+    private StackPane root;
+    private StackPane gameElements;
 
     public App() {
         super("gameStart", "unoDeclared", "turnBlocked", "reset");
@@ -31,26 +34,45 @@ public class App extends Displayer {
         root.setId("background");
 
         scene = new Scene(root, 1000, 600);
-        scene.getStylesheets().add(getClass().getResource("view\\Style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("resources\\Style.css").toExternalForm());
     }
 
+    private void arrangeLayers() {
+        addGameContents();
+        addHomePageContents();
+        addSettingsContents();
+    }
 
     private void addGameContents() {
-        BorderPane gameElements = new BorderPane();
-        gameElements.setLeft(EnemyPane.getInstance());
-        gameElements.setRight(DeckContainer.getInstance());
-        gameElements.setCenter(TerrainPane.getInstance());
-        gameElements.setBottom(HandPane.getInstance());
-
+        gameElements = new StackPane();
+        gameElements.setVisible(false);
+        
+        BorderPane borderPane = new BorderPane();
+        borderPane.setLeft(EnemyPane.getInstance());
+        borderPane.setRight(DeckContainer.getInstance());
+        borderPane.setCenter(TerrainPane.getInstance());
+        borderPane.setBottom(HandPane.getInstance());
+        
+        gameElements.getChildren().addAll(borderPane, AnimationLayer.getInstance(), PlayzonePane.getInstance(),
+        SelectionPane.getInstance());
+        
         root.getChildren().add(gameElements);
-        root.getChildren().add(AnimationLayer.getInstance());
-        root.getChildren().add(PlayzonePane.getInstance());
-        root.getChildren().add(SelectionPane.getInstance());
-        root.getChildren().add(Settings.MENU);
-        root.getChildren().add(Settings.BUTTON);
-        StackPane.setAlignment(Settings.BUTTON, Pos.TOP_RIGHT);
     }
 
+    private void addHomePageContents() {
+        HomeMenu home = HomeMenu.getInstance();
+
+        root.getChildren().add(home);
+        StackPane.setAlignment(home, Pos.TOP_LEFT);
+
+        Homes.setPlayButtonAction(e -> newGame());
+    }
+
+    private void addSettingsContents() {
+        root.getChildren().addAll(Settings.MENU, Settings.BUTTON);
+        StackPane.setAlignment(Settings.BUTTON, Pos.TOP_RIGHT);
+    }
+    
     private void loadAnimations() {
         Animations.UNO_TEXT.get().load();
         Animations.BLOCK_TURN.get().load();
@@ -61,6 +83,7 @@ public class App extends Displayer {
     private void newGame() {
         Loop.getInstance().setupView(this);
         JUno.getInstance().start();
+        gameElements.setVisible(true);
     }
 
     /* ---------------------------------------------------- */
@@ -72,15 +95,13 @@ public class App extends Displayer {
         stage.setFullScreen(true);
         stage.setFullScreenExitHint("");
 
-        // TODO Non so se sia corretto...
         stage.setOnCloseRequest(e -> System.exit(0));
 
-        addGameContents();
-        stage.setScene(scene);
+        arrangeLayers();
         loadAnimations();
 
+        stage.setScene(scene);
         stage.show();
-        newGame();
     }
 
     @Override

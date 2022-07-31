@@ -9,6 +9,42 @@
     background-position: center center;
 }
 
+.home-menu {
+    -fx-background-image: url("resources/homeBackground.png");
+    background-image: url("resources/homeBackground.png");
+
+    -fx-background-repeat: no-repeat;
+    background-repeat: no-repeat;
+
+
+    -fx-padding: 20px 10px 20px 60px;
+    padding: 20px 10px 20px 60px;
+}
+
+.home-menu .title {
+    -fx-font-size: 65px;
+    font-size: 65px;
+
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+
+.home-menu .button {
+    -fx-background-color: none;
+    background-color: none;
+    
+    -fx-text-fill: white;
+    color: white;
+
+    -fx-font-size: 35px;
+    font-size: 35px;
+
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+
+/* ---------------------------------------------------- */
+
 .hand {
     -fx-alignment: center;
     align-content: center;
