@@ -1,6 +1,7 @@
 package model.events;
 
-@FunctionalInterface
 public interface EventListener {
-    public void update(String eventType, Object data);
+    public void update(String eventLabel, Object data);
+
+    public void update(String eventLabel, Object... data);
 }

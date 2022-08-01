@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 
 import controller.Controller;
 import model.cards.Card;
-import model.cards.Deck;
 
 public class Loop implements InputListener {
     /* SINGLETON */
@@ -26,7 +25,6 @@ public class Loop implements InputListener {
 
     private Loop() {
         choiceTypes = new HashMap<>();
-        events = new EventManager();
 
         choiceTypes.put("card", () -> {
             Card c = (Card) choice;
@@ -35,10 +33,8 @@ public class Loop implements InputListener {
                 c.getEffect().ifPresent(effect -> effect.cast(g.getPlayer(), c));
                 events.notify("cardPlayed", c);
 
-                if (g.getPlayer().getHand().size() == 1 && !unoDeclared) {
+                if (g.getPlayer().getHand().size() == 1 && !unoDeclared) 
                     Actions.dealFromDeck(g.getPlayer(), 2);
-                    events.notify("playerDrew", g.getPlayer());
-                }
 
                 events.notify("playerHandChanged", g.getPlayer());
                 return true;
@@ -49,7 +45,6 @@ public class Loop implements InputListener {
         });
         choiceTypes.put("draw", () -> {
             Actions.dealFromDeck(g.getPlayer());
-            events.notify("playerDrew", g.getPlayer());
             return true;
         });
         choiceTypes.put("unoDeclared", () -> {
@@ -69,21 +64,42 @@ public class Loop implements InputListener {
 
     /* ------------------------------ */
 
-    public EventManager events;
-    HashMap<String, Supplier<Boolean>> choiceTypes;
+    public static EventManager events = new EventManager();
+
+    static HashMap<String, Supplier<Boolean>> choiceTypes;
     private Displayer disp;
 
-    private Game g;
-    private Player player;
-    Object choice;
-    String choiceType;
+    private static Game g;
+    private static Player player;
+    static Object choice;
+    static String choiceType;
 
-    private Controller[] users;
+    private static Controller[] users;
 
-    boolean unoDeclared;
+    static boolean unoDeclared;
 
     LinkedList<Phase> phases = new LinkedList<>();
-    int currentPhase;
+    static int currentPhase;
+
+    public static void reset() {
+        Game.reset();
+        
+        instance = null; // TODO o metto questo o tutte le cose sotto... questo serve nel caso quei fields non siano statici
+
+        EventManager oldEvents = events;
+        
+        events = new EventManager();
+        g = null;
+        player = null;
+        choice = null;
+        choiceType = null;
+        users = null;
+        unoDeclared = false;
+        currentPhase = 0;
+
+        oldEvents.notify("reset", null);
+    }
+
 
     public void setupView(Displayer displayer) {
         disp = displayer;
@@ -91,13 +107,12 @@ public class Loop implements InputListener {
             events.subscribe(event, disp);
     }
 
-    public void setupGame(TreeMap<Integer, Player> players, Deck deck, Controller... users) {
+    public void setupGame(TreeMap<Integer, Player> players, Controller... users) {
         Game.reset();
         g = Game.getInstance();
         g.setPlayers(players);
-        g.setDeck(deck);
 
-        this.users = users;
+        Loop.users = users;
         for (Controller c : users) {
             c.setInputListener(this);
             c.start();
@@ -111,21 +126,26 @@ public class Loop implements InputListener {
 
     /* ------------------------------ */
 
-    public void play() throws InterruptedException {
+    public void play() {
         setupFirstTurn();
 
-        while (!g.isOver()) {
-            boolean validChoice = phases.get(currentPhase).apply(this, Game.getInstance());
+        try {
+            while (!g.isOver()) {
+                boolean validChoice = phases.get(currentPhase).apply(this, Game.getInstance());
 
-            if (g.didPlayerWin(g.getPlayer())) {
-                endGame();
-                return;
+                if (g.didPlayerWin(g.getPlayer())) {
+                    endGame();
+                    return;
+                }
+
+                if (phases.get(currentPhase) == Phases.RESOLVE_CHOICE && !validChoice)
+                    currentPhase = 1;
+                else
+                    currentPhase = (++currentPhase) % phases.size();
             }
-
-            if (phases.get(currentPhase) == Phases.RESOLVE_CHOICE && !validChoice)
-                currentPhase = 1;
-            else
-                currentPhase = (++currentPhase) % phases.size();
+        } catch (NullPointerException e) {
+            // May be here because of the "reset()" method
+            events.notify("gameIsOver", null);
         }
     }
 
@@ -137,10 +157,8 @@ public class Loop implements InputListener {
         Actions.changeCurrentCard(firstCard);
         events.notify("firstCard", firstCard);
 
-        for (Player p : g.getPlayers()) {
+        for (Player p : g.getPlayers())
             Actions.dealFromDeck(p, 7);
-            events.notify("playerDrew", p);
-        }
 
         player = g.getPlayer(0);
 
@@ -153,12 +171,6 @@ public class Loop implements InputListener {
         events.notify("playerWon", player);
     }
 
-    public static void reset() {
-        instance.events.notify("reset", null);
-        Game.reset();
-        instance = null;
-    }
-
     /* INPUTLISTENER */
     /* ------------- */
     @Override
@@ -169,7 +181,7 @@ public class Loop implements InputListener {
                 events.notify("warning", "This is not your turn!");
                 return;
             }
-            this.choice = choice;
+            Loop.choice = choice;
             notify();
         }
     }

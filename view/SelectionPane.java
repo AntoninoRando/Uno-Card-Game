@@ -29,7 +29,7 @@ public class SelectionPane extends HBox implements EventListener {
         setVisible(false);
         setAlignment(Pos.CENTER);
 
-        Loop.getInstance().events.subscribe(this, "humanTurn cardSelection");
+        Loop.events.subscribe(this, "humanTurn cardSelection", "reset");
     }
 
     /* ---------------------------------------- */
@@ -53,17 +53,24 @@ public class SelectionPane extends HBox implements EventListener {
         latch.countDown();
         latch = new CountDownLatch(1);
     }
+    
+    private void reset() {
+        Loop.events.subscribe(this, "humanTurn cardSelection", "reset");
+    }
 
     @Override
-    public void update(String eventType, Object data) {
-        switch (eventType) {
+    public void update(String eventLabel, Object data) {
+    }
+
+    @Override
+    public void update(String eventLabel, Object... data) {
+        switch (eventLabel) {
             case "humanTurn cardSelection":
-                Object[] info = (Object[]) data;
-                Consumer<Card> onSelect = (Consumer<Card>) info[0];
-                CardContainer[] nodes = new CardContainer[info.length - 1];
+                Consumer<Card> onSelect = (Consumer<Card>) data[0];
+                CardContainer[] nodes = new CardContainer[data.length - 1];
                 options = new HashMap<>();
-                for (int i = 1; i < info.length; i++) {
-                    Card c = ((Card) info[i]);
+                for (int i = 1; i < data.length; i++) {
+                    Card c = ((Card) data[i]);
                     CardContainer cc = c.getGuiContainer();
                     options.put(cc, c);
                     nodes[i-1] = cc;
@@ -75,6 +82,9 @@ public class SelectionPane extends HBox implements EventListener {
                 }
                 break;
             // TODO case "enemyTurn cardSelection"
+            case "reset":
+                reset();
+                break;
         }
     }
 }

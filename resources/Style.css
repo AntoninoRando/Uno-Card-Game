@@ -25,6 +25,9 @@
     -fx-font-size: 65px;
     font-size: 65px;
 
+    -fx-text-fill: black;
+    color: black;
+
     -fx-font-weight: bold;
     font-weight: bold;
 }
@@ -64,8 +67,8 @@
 }
 
 .settings-menu {
-    -fx-background-color: radial-gradient(center 0% 0% , radius 200% , #9b2226, black);
-    background-color: radial-gradient(center 0% 0% , radius 200% , #9b2226, black);
+    -fx-background-color: radial-gradient(center 0% 0% , radius 200% , #FF000A, black);
+    background-color: radial-gradient(center 0% 0% , radius 200% , #FF000A, black);
 
     -fx-background-radius: 13px;
 

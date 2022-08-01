@@ -21,7 +21,7 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     private TerrainPane() {
-        Loop.getInstance().events.subscribe(this, "enemyTurn cardPlayed", "humanTurn cardPlayed", "firstCard", "reset");
+        Loop.events.subscribe(this, "enemyTurn cardPlayed", "humanTurn cardPlayed", "firstCard", "reset");
         getStyleClass().add("terrain");
         setMaxHeight(400);
         setMaxWidth(400);
@@ -37,12 +37,14 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     private void reset() {
-        instance = null;
+        terrainCard = null;
+        getChildren().clear();
+        Loop.events.subscribe(this, "enemyTurn cardPlayed", "humanTurn cardPlayed", "firstCard", "reset");
     }
 
     @Override
-    public void update(String eventType, Object data) {
-        switch (eventType) {
+    public void update(String eventLabel, Object data) {
+        switch (eventLabel) {
             case "enemyTurn cardPlayed":
                 Platform.runLater(() -> {
                     Animation cardPlayed = Animations.CARD_PLAYED.get();
@@ -58,6 +60,12 @@ public class TerrainPane extends StackPane implements EventListener {
             case "humanTurn cardPlayed":
                 Platform.runLater(() -> updateTerrainCard((Card) data));
                 break;
+        }
+    }
+
+    @Override
+    public void update(String eventLabel, Object... data) {
+        switch (eventLabel) {
             case "reset":
                 reset();
                 break;

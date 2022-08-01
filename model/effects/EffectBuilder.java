@@ -86,7 +86,7 @@ public class EffectBuilder {
     public EffectBuilder selectOneCardOf(Card... cards) {
         effect.steps.add(() -> {
             if (!effect.sourcePlayer.isHuman()) {
-                Loop.getInstance().events.notify("cardSelection", effect.sourcePlayer);
+                Loop.events.notify("cardSelection", effect.sourcePlayer);
                 effect.targetCard = cards[(int) Math.random() * 4];
                 return;
             } 
@@ -95,7 +95,7 @@ public class EffectBuilder {
             data[0] = (Consumer<Card>) card -> effect.targetCard = card;
             for (int i = 0; i < cards.length; i++)
                 data[i+1] = cards[i];
-            Loop.getInstance().events.notify("cardSelection", data);
+            Loop.events.notify("cardSelection", data);
         });
         return this;
     }

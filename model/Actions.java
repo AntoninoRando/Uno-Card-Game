@@ -34,7 +34,7 @@ public abstract class Actions {
     public static void dealFromDeck(Player p) {
         Card c = takeFromDeck();
         p.addCard(c);
-        Loop.getInstance().events.notify("playerDrew", p);
+        Loop.events.notify("playerDrew", p, c);
     }
 
     public static void dealFromDeck(Player p, int times) {
@@ -48,8 +48,8 @@ public abstract class Actions {
     }
 
     public static void skipTurn() {
-        Loop.getInstance().currentPhase = Loop.getInstance().phases.size() - 2;
-        Loop.getInstance().events.notify("turnBlocked", Game.getInstance().getPlayer());
+        Loop.currentPhase = Loop.getInstance().phases.size() - 2;
+        Loop.events.notify("turnBlocked", Game.getInstance().getPlayer());
     }
 
     public static void transformCard(Card source, Card target) {

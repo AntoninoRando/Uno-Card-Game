@@ -34,8 +34,8 @@ public class EnemyPane extends VBox implements EventListener {
         title.getStyleClass().add("title");
         getChildren().add(title);
 
-        Loop.getInstance().events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart",
-                "turnEnd");
+        Loop.events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart",
+                "turnEnd", "reset");
     }
 
     /* ---------------------------------------- */
@@ -78,13 +78,22 @@ public class EnemyPane extends VBox implements EventListener {
         }
     }
 
+    private void reset() {
+        labels.clear();
+        getChildren().clear();
+        Label title = new Label("Players");
+        title.getStyleClass().add("title");
+        getChildren().add(title);
+        Loop.events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart",
+                "turnEnd", "reset");
+    }
+
     @Override
     public void update(String eventLabel, Object data) {
         switch (eventLabel) {
             case "gameStart":
                 Platform.runLater(() -> ((Collection<Player>) data).forEach(this::addPlayerLabel));
                 break;
-            case "playerDrew":
             case "playerHandChanged":
                 Platform.runLater(() -> updatePlayerInfo((Player) data));
                 break;
@@ -93,6 +102,18 @@ public class EnemyPane extends VBox implements EventListener {
                 break;
             case "turnEnd":
                 unfocusPlayer((Player) data);
+                break;
+        }
+    }
+
+    @Override
+    public void update(String eventLabel, Object... data) {
+        switch (eventLabel) {
+            case "playerDrew":
+                Platform.runLater(() -> updatePlayerInfo((Player) data[0]));
+                break;
+            case "reset":
+                reset();
                 break;
         }
     }

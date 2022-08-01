@@ -42,6 +42,17 @@ public class EventManager {
         }
     }
 
+    public void notify(String eventLabel, Object... data) {
+        changeState(eventLabel);
+
+        if (listeners.containsKey(eventLabel))
+        listeners.get(eventLabel).forEach(e -> e.update(eventLabel, data));
+    
+    for (String complexEvent : getComplexEventsVerified()) {
+        listeners.get(complexEvent).forEach(e -> e.update(complexEvent, data));
+    }
+    }
+
     /* ------------------------------ */
 
     private Map<String, String> state = new HashMap<>();

@@ -17,4 +17,8 @@ public class Sound {
     public void play() {
         mp3.play();
     }
+
+    public void stop() {
+        mp3.stop();
+    }
 }

@@ -35,4 +35,10 @@ public class ControllerConsole extends Controller {
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public void update(String eventType, Object... data) {
+        // TODO Auto-generated method stub
+        
+    }
 }

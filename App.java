@@ -1,3 +1,7 @@
+import java.util.TreeMap;
+
+import controller.Controller;
+import controller.ControllerFX;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -5,9 +9,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import model.JUno;
 import model.Loop;
-
+import model.Player;
 import view.DeckContainer;
 import view.Displayer;
 import view.EnemyPane;
@@ -25,10 +28,12 @@ import view.sounds.Sounds;
 public class App extends Displayer {
     private Scene scene;
     private StackPane root;
+    private HomeMenu home;
     private StackPane gameElements;
+    private Thread gameThread;
 
     public App() {
-        super("gameStart", "unoDeclared", "turnBlocked", "reset");
+        super("gameStart", "unoDeclared", "turnBlocked");
 
         root = new StackPane();
         root.setId("background");
@@ -46,21 +51,21 @@ public class App extends Displayer {
     private void addGameContents() {
         gameElements = new StackPane();
         gameElements.setVisible(false);
-        
+
         BorderPane borderPane = new BorderPane();
         borderPane.setLeft(EnemyPane.getInstance());
         borderPane.setRight(DeckContainer.getInstance());
         borderPane.setCenter(TerrainPane.getInstance());
         borderPane.setBottom(HandPane.getInstance());
-        
+
         gameElements.getChildren().addAll(borderPane, AnimationLayer.getInstance(), PlayzonePane.getInstance(),
-        SelectionPane.getInstance());
-        
+                SelectionPane.getInstance());
+
         root.getChildren().add(gameElements);
     }
 
     private void addHomePageContents() {
-        HomeMenu home = HomeMenu.getInstance();
+        home = HomeMenu.getInstance();
 
         root.getChildren().add(home);
         StackPane.setAlignment(home, Pos.TOP_LEFT);
@@ -71,8 +76,18 @@ public class App extends Displayer {
     private void addSettingsContents() {
         root.getChildren().addAll(Settings.MENU, Settings.BUTTON);
         StackPane.setAlignment(Settings.BUTTON, Pos.TOP_RIGHT);
+
+        Settings.setRestartButtonAction(e -> {
+            endGame();
+            newGame();
+        });
+        Settings.setQuitButtonAction(e -> {
+            endGame();
+            gameElements.setVisible(false);
+            home.setVisible(true);
+        });
     }
-    
+
     private void loadAnimations() {
         Animations.UNO_TEXT.get().load();
         Animations.BLOCK_TURN.get().load();
@@ -81,9 +96,32 @@ public class App extends Displayer {
     }
 
     private void newGame() {
+        Player p1 = new Player("Antonino", true);
+        Player p2 = new Player("Top Princessess", false);
+        Player p3 = new Player("Bot Luca", false);
+
+        Controller c1 = new ControllerFX();
+        c1.setSource(p1);
+
+        TreeMap<Integer, Player> players = new TreeMap<>();
+        players.put(0, p1);
+        players.put(1, p2);
+        players.put(2, p3);
+
+        Loop.getInstance().setupGame(players, c1);
         Loop.getInstance().setupView(this);
-        JUno.getInstance().start();
+
         gameElements.setVisible(true);
+        home.setVisible(false);
+
+        gameThread = new Thread(() -> Loop.getInstance().play());
+        gameThread.start();
+    }
+
+    private void endGame() {
+        Sounds.IN_GAME_SOUNDTRACK.stop();
+        Loop.reset();
+        gameThread.interrupt();
     }
 
     /* ---------------------------------------------------- */
@@ -116,13 +154,16 @@ public class App extends Displayer {
             case "turnBlocked":
                 Platform.runLater(() -> Animations.BLOCK_TURN.get().playOnQueue(AnimationLayer.getInstance()));
                 break;
-            case "reset":
-                // TODO
-                break;
         }
     }
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    @Override
+    public void update(String eventType, Object... data) {
+        // TODO Auto-generated method stub
+        
     }
 }

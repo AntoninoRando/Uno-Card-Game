@@ -21,11 +21,8 @@ public class SettingsMenu extends BorderPane implements EventListener {
         arrangeElements();
         getStyleClass().add("settings-menu");
 
-        Loop.getInstance().events.subscribe(this, "gameStart");
+        Loop.events.subscribe(this, "gameStart");
     }
-
-    protected Node restartButton;
-    protected Node quitButton;
 
     private Node createTitle() {
         Label text = new Label("Settings");
@@ -53,13 +50,16 @@ public class SettingsMenu extends BorderPane implements EventListener {
         return contextOptions;
     }
 
+    protected Node restartButton = createRestartButton();
+    protected Node quitButton = createQuitButton();
+
     private Node createRestartButton() {
-        restartButton = new Button("Restart");
+        Button restartButton = new Button("Restart");
         return restartButton;
     }
 
     private Node createQuitButton() {
-        quitButton = new Button("Quit");
+        Button quitButton = new Button("Quit");
         return quitButton;
     }
 
@@ -74,8 +74,14 @@ public class SettingsMenu extends BorderPane implements EventListener {
         switch (eventType) {
             case "gameStart":
                 Platform.runLater(
-                        () -> ((HBox) getBottom()).getChildren().addAll(createRestartButton(), createQuitButton()));
+                        () -> ((HBox) getBottom()).getChildren().addAll(restartButton, quitButton));
                 break;
         }
+    }
+
+    @Override
+    public void update(String eventType, Object... data) {
+        // TODO Auto-generated method stub
+        
     }
 }

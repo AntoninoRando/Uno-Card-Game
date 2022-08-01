@@ -24,4 +24,10 @@ public class ControllerFX extends Controller {
         if (eventType.equals("add"))
             dragControlOnCard((Card) data); // TODO dara errore se viene chiamato addAll che passa come data una collection
     }
+
+    @Override
+    public void update(String eventType, Object... data) {
+        // TODO Auto-generated method stub
+        
+    }
 }

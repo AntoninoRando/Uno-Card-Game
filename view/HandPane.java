@@ -26,7 +26,7 @@ public class HandPane extends HBox implements EventListener {
     private HandPane() {
         cardsStored = new HashSet<>();
         getStyleClass().add("hand");
-        Loop.getInstance().events.subscribe(this, "playerDrew");
+        Loop.events.subscribe(this, "playerDrew", "reset");
         setSpacing(-30.0);
         setTranslateY(40.0);
         assignCenter(1500.0);
@@ -45,6 +45,12 @@ public class HandPane extends HBox implements EventListener {
         getChildren().remove(cardGuContainer);
         cardsStored.remove(cardGuContainer);
         adjustCards();
+    }
+
+    private void reset() {
+        cardsStored.clear();
+        getChildren().clear();
+        Loop.events.subscribe(this, "playerDrew", "reset");
     }
 
     /* ----------------------------------------- */
@@ -112,18 +118,20 @@ public class HandPane extends HBox implements EventListener {
     }
 
     @Override
-    public void update(String eventType, Object data) {
-        switch (eventType) {
+    public void update(String eventLabel, Object data) {
+    }
+
+    @Override
+    public void update(String eventLabel, Object... data) {
+        switch (eventLabel) {
             case "playerDrew":
                 Platform.runLater(() -> {
-                    Player p = (Player) data;
-                    if (!p.isHuman())
-                        return;
-                    p.getHand().forEach(card -> {
-                        if (!cardsStored.contains(card.getGuiContainer()))
-                            addCard(card);
-                    });
+                    if (((Player) data[0]).isHuman())
+                        addCard((Card) data[1]);
                 });
+                break;
+            case "reset":
+                reset();
                 break;
         }
     }
