@@ -3,7 +3,7 @@ package model.cards;
 import java.util.Optional;
 
 import model.effects.Effect;
-import view.CardContainer;
+import view.gameElements.CardContainer;
 
 public class Card implements Comparable<Card> {
     private Suit suit;

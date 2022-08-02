@@ -12,6 +12,9 @@ import model.Loop;
 import model.events.EventListener;
 
 public class SettingsMenu extends BorderPane implements EventListener {
+    protected Node restartButton = createRestartButton();
+    protected Node quitButton = createQuitButton();
+
     public SettingsMenu() {
         setMaxHeight(500.0);
         setMaxWidth(700.0);
@@ -50,9 +53,6 @@ public class SettingsMenu extends BorderPane implements EventListener {
         return contextOptions;
     }
 
-    protected Node restartButton = createRestartButton();
-    protected Node quitButton = createQuitButton();
-
     private Node createRestartButton() {
         Button restartButton = new Button("Restart");
         return restartButton;
@@ -69,6 +69,8 @@ public class SettingsMenu extends BorderPane implements EventListener {
         setBottom(createContextMenu());
     }
 
+    /* EVENT LISTENER */
+
     @Override
     public void update(String eventType, Object data) {
         switch (eventType) {
@@ -82,6 +84,6 @@ public class SettingsMenu extends BorderPane implements EventListener {
     @Override
     public void update(String eventType, Object... data) {
         // TODO Auto-generated method stub
-        
+
     }
 }

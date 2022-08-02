@@ -1,4 +1,4 @@
-package view;
+package view.gameElements;
 
 import java.net.MalformedURLException;
 import java.nio.file.Files;

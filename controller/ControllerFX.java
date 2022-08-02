@@ -1,8 +1,8 @@
 package controller;
 
 import model.cards.Card;
-import view.DeckContainer;
-import view.PlayzonePane;
+import view.gameElements.DeckContainer;
+import view.gameElements.PlayzonePane;
 
 public class ControllerFX extends Controller {
     public void dragControlOnCard(Card card) {

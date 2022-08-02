@@ -10,10 +10,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import model.Game;
 import model.cards.Card;
-import view.CardContainer;
-import view.HandPane;
-import view.PlayzonePane;
-import view.TerrainPane;
+import view.gameElements.CardContainer;
+import view.gameElements.HandPane;
+import view.gameElements.PlayzonePane;
+import view.gameElements.TerrainPane;
 
 public class ControlDrag extends Control {
     public ControlDrag(Card card, Controller handler) {

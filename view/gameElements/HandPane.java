@@ -1,4 +1,4 @@
-package view;
+package view.gameElements;
 
 import java.util.HashSet;
 import java.util.Set;

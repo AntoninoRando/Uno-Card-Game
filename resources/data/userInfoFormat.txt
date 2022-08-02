@@ -1,0 +1,5 @@
+nickname
+level
+xp
+games played
+winrate

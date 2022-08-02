@@ -97,7 +97,7 @@ public class Loop implements InputListener {
         unoDeclared = false;
         currentPhase = 0;
 
-        oldEvents.notify("reset", null);
+        oldEvents.notify("reset", (Object[]) null);
     }
 
 
@@ -145,7 +145,7 @@ public class Loop implements InputListener {
             }
         } catch (NullPointerException e) {
             // May be here because of the "reset()" method
-            events.notify("gameIsOver", null);
+            events.notify("gameIsOver", (Object[]) null);
         }
     }
 

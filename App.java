@@ -11,15 +11,16 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.Loop;
 import model.Player;
-import view.DeckContainer;
+import model.profile.UserInfo;
 import view.Displayer;
-import view.EnemyPane;
-import view.HandPane;
-import view.PlayzonePane;
-import view.SelectionPane;
-import view.TerrainPane;
 import view.animations.AnimationLayer;
 import view.animations.Animations;
+import view.gameElements.DeckContainer;
+import view.gameElements.EnemyPane;
+import view.gameElements.HandPane;
+import view.gameElements.PlayzonePane;
+import view.gameElements.SelectionPane;
+import view.gameElements.TerrainPane;
 import view.home.HomeMenu;
 import view.home.Homes;
 import view.settings.Settings;
@@ -40,6 +41,9 @@ public class App extends Displayer {
 
         scene = new Scene(root, 1000, 600);
         scene.getStylesheets().add(getClass().getResource("resources\\Style.css").toExternalForm());
+
+        UserInfo.loadData("resources\\data\\userInfo.txt");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> UserInfo.writeData("resources\\data\\userInfo.txt")));
     }
 
     private void arrangeLayers() {
@@ -74,8 +78,8 @@ public class App extends Displayer {
     }
 
     private void addSettingsContents() {
-        root.getChildren().addAll(Settings.MENU, Settings.BUTTON);
-        StackPane.setAlignment(Settings.BUTTON, Pos.TOP_RIGHT);
+        root.getChildren().addAll(Settings.MENU, Settings.SETTINGS_BUTTON);
+        StackPane.setAlignment(Settings.SETTINGS_BUTTON, Pos.TOP_RIGHT);
 
         Settings.setRestartButtonAction(e -> {
             endGame();
@@ -86,6 +90,7 @@ public class App extends Displayer {
             gameElements.setVisible(false);
             home.setVisible(true);
         });
+        Settings.setNickFieldAction(__ -> UserInfo.setNick(__));
     }
 
     private void loadAnimations() {
@@ -99,6 +104,7 @@ public class App extends Displayer {
         Player p1 = new Player("Antonino", true);
         Player p2 = new Player("Top Princessess", false);
         Player p3 = new Player("Bot Luca", false);
+        Player p4 = new Player("Bot Giovanni", false);
 
         Controller c1 = new ControllerFX();
         c1.setSource(p1);
@@ -107,6 +113,7 @@ public class App extends Displayer {
         players.put(0, p1);
         players.put(1, p2);
         players.put(2, p3);
+        players.put(3, p4);
 
         Loop.getInstance().setupGame(players, c1);
         Loop.getInstance().setupView(this);
