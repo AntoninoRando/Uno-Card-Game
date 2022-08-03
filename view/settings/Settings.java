@@ -55,6 +55,13 @@ public abstract class Settings {
         });
     }
 
+    public static void setDeleteAccountAction(EventHandler<MouseEvent> action) {
+        MENU.profile.deleteButton.setOnMouseClicked(e -> {
+            action.handle(e);
+            MENU.profile.updateInfo();
+        });
+    }
+
     public static void openProfile() {
         MENU.profile.updateInfo();
         MENU.openProfile();

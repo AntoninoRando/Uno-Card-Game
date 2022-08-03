@@ -91,6 +91,7 @@ public class App extends Displayer {
             home.setVisible(true);
         });
         Settings.setNickFieldAction(__ -> UserInfo.setNick(__));
+        Settings.setDeleteAccountAction(e -> UserInfo.reset());
     }
 
     private void loadAnimations() {
@@ -101,7 +102,7 @@ public class App extends Displayer {
     }
 
     private void newGame() {
-        Player p1 = new Player("Antonino", true);
+        Player p1 = new Player(UserInfo.getNick(), true);
         Player p2 = new Player("Top Princessess", false);
         Player p3 = new Player("Bot Luca", false);
         Player p4 = new Player("Bot Giovanni", false);

@@ -2,6 +2,7 @@ package model;
 
 import model.events.EventManager;
 import model.events.InputListener;
+import model.profile.UserInfo;
 import view.Displayer;
 
 import java.util.HashMap;
@@ -81,6 +82,8 @@ public class Loop implements InputListener {
     LinkedList<Phase> phases = new LinkedList<>();
     static int currentPhase;
 
+    private static long timeElapsed;
+
     public static void reset() {
         Game.reset();
         
@@ -98,6 +101,10 @@ public class Loop implements InputListener {
         currentPhase = 0;
 
         oldEvents.notify("reset", (Object[]) null);
+
+        timeElapsed = System.currentTimeMillis() - timeElapsed;
+        UserInfo.addXp((int) (timeElapsed / 60000F));
+        timeElapsed = 0;
     }
 
 
@@ -128,7 +135,7 @@ public class Loop implements InputListener {
 
     public void play() {
         setupFirstTurn();
-
+        timeElapsed = System.currentTimeMillis();
         try {
             while (!g.isOver()) {
                 boolean validChoice = phases.get(currentPhase).apply(this, Game.getInstance());
@@ -169,6 +176,13 @@ public class Loop implements InputListener {
 
     private void endGame() {
         events.notify("playerWon", player);
+
+        timeElapsed = System.currentTimeMillis() - timeElapsed;
+        UserInfo.addXp((int) (timeElapsed / 60000F));
+        if (player.isHuman())
+            UserInfo.addXp(5);
+        UserInfo.addGamePlayed(player.isHuman());
+        timeElapsed = 0;
     }
 
     /* INPUTLISTENER */

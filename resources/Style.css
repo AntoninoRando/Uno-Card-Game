@@ -125,6 +125,39 @@
     font-weight: bold;
 }
 
+#xp-gap-label {
+    -fx-text-fill: white;
+    color: white;
+
+    -fx-font-size: 16px;
+    font-size: 16px;
+
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+
+#games-played-label {
+    -fx-text-fill: white;
+    color: white;
+
+    -fx-font-size: 16px;
+    font-size: 16px;
+
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+
+#win-rate-label {
+    -fx-text-fill: white;
+    color: white;
+
+    -fx-font-size: 16px;
+    font-size: 16px;
+
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+
 .player-label {
     -fx-font-size: 16px;
     font-size: 16px;

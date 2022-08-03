@@ -1,6 +1,8 @@
 package view.settings;
 
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -9,7 +11,12 @@ import model.profile.UserInfo;
 public class ProfileMenu extends VBox {
     protected TextField nickField = createNickField();
     protected Label levelLabel = createLevelLabel();
-    
+    protected ProgressBar xpBar = createXpBar();
+    protected Label xpGapLabel = createXpGapLabel();
+    protected Label gamesPlayedLabel = createGamesPlayedLabel();
+    protected Label winRateLabel = createWinRateLabel();
+    protected Button deleteButton = createDeleteButton();
+
     protected ProfileMenu() {
         setMaxHeight(500.0);
         setMaxWidth(700.0);
@@ -32,16 +39,61 @@ public class ProfileMenu extends VBox {
         return levelLabel;
     }
 
+    private ProgressBar createXpBar() {
+        ProgressBar xpBar = new ProgressBar(UserInfo.getXp() / UserInfo.getXpGap());
+        xpBar.setId("xp-bar");
+        return xpBar;
+    }
+
+    private Label createXpGapLabel() {
+        Label xpGapLabel = new Label(
+                Integer.toString(UserInfo.getXp()) + " / " + Integer.toString(UserInfo.getXpGap()) + " xp");
+        xpGapLabel.setId("xp-gap-label");
+        return xpGapLabel;
+    }
+
+    private Label createGamesPlayedLabel() {
+        Label gamesPlayedLabel = new Label(Integer.toString(UserInfo.getGames()));
+        gamesPlayedLabel.setId("games-played-label");
+        return gamesPlayedLabel;
+    }
+
+    private Label createWinRateLabel() {
+        Label winRateLabel = new Label(Double.toString(UserInfo.getWinRate()));
+        winRateLabel.setId("win-rate-label");
+        return winRateLabel;
+    }
+
+    private Button createDeleteButton() {
+        Button deleteButton = new Button("Delete Account");
+        deleteButton.setId("delete-button");
+        return deleteButton;
+    }
+
     private void arrangeElements() {
         HBox first = new HBox();
-        first.getChildren().addAll(nickField, levelLabel);
+        first.getChildren().addAll(nickField, levelLabel, xpBar, xpGapLabel);
         first.setSpacing(20.0);
-        
-        getChildren().addAll(first);
+
+        HBox second = new HBox();
+        second.getChildren().addAll(gamesPlayedLabel, winRateLabel);
+        second.setSpacing(20.0);
+
+        HBox empty1 = new HBox();
+        HBox empty2 = new HBox();
+        HBox third = new HBox();
+        third.getChildren().addAll(deleteButton);
+
+        getChildren().addAll(first, second, empty1, empty2, third);
+        setSpacing(40.0);
     }
 
     protected void updateInfo() {
         nickField.setPromptText(UserInfo.getNick());
         levelLabel.setText("Level " + Integer.toString(UserInfo.getLevel()));
+        xpBar.setProgress((double) UserInfo.getXp() / UserInfo.getXpGap());
+        xpGapLabel.setText(Integer.toString(UserInfo.getXp()) + " / " + Integer.toString(UserInfo.getXpGap()) + " xp");
+        gamesPlayedLabel.setText(Integer.toString(UserInfo.getGames()));
+        winRateLabel.setText(Double.toString(UserInfo.getWinRate()));
     }
 }
