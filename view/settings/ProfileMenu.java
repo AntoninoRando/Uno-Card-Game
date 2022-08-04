@@ -4,11 +4,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import model.profile.UserInfo;
 
 public class ProfileMenu extends VBox {
+    protected Circle avatar = createAvatar();
     protected TextField nickField = createNickField();
     protected Label levelLabel = createLevelLabel();
     protected ProgressBar xpBar = createXpBar();
@@ -25,6 +29,13 @@ public class ProfileMenu extends VBox {
 
         arrangeElements();
         getStyleClass().add("profile-menu");
+    }
+
+    private Circle createAvatar() {
+        Circle avatar = new Circle(20, 20, 20);
+        avatar.setId("avatar");
+        avatar.setFill(new ImagePattern(new Image(UserInfo.getIconPath())));
+        return avatar;
     }
 
     private TextField createNickField() {
@@ -72,7 +83,7 @@ public class ProfileMenu extends VBox {
 
     private void arrangeElements() {
         HBox first = new HBox();
-        first.getChildren().addAll(nickField, levelLabel, xpBar, xpGapLabel);
+        first.getChildren().addAll(avatar, nickField, levelLabel, xpBar, xpGapLabel);
         first.setSpacing(20.0);
 
         HBox second = new HBox();
@@ -89,6 +100,7 @@ public class ProfileMenu extends VBox {
     }
 
     protected void updateInfo() {
+        avatar.setFill(new ImagePattern(new Image(UserInfo.getIconPath())));
         nickField.setPromptText(UserInfo.getNick());
         levelLabel.setText("Level " + Integer.toString(UserInfo.getLevel()));
         xpBar.setProgress((double) UserInfo.getXp() / UserInfo.getXpGap());

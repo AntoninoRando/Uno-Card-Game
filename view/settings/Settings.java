@@ -62,9 +62,17 @@ public abstract class Settings {
         });
     }
 
+    public static void setAvatarClickAction(EventHandler<MouseEvent> action) {
+        MENU.profile.avatar.setOnMouseClicked(action);
+    }
+
     public static void openProfile() {
         MENU.profile.updateInfo();
         MENU.openProfile();
         MENU.setVisible(!MENU.isVisible());
+    }
+
+    public static void openAvatarPicker() {
+        MENU.avatarPicker.setVisible(!MENU.avatarPicker.isVisible());
     }
 }

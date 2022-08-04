@@ -14,6 +14,7 @@ public abstract class UserInfo {
     private static int games;
     private static double winRate;
     private static HashMap<Integer, Integer> xpGaps = fillXpGaps();
+    private static String iconPath;
 
     private static HashMap<Integer, Consumer<String>> ReadMap = fillReadMap();
 
@@ -49,6 +50,14 @@ public abstract class UserInfo {
         return getXpGap(level);
     }
 
+    public static String getIconPath() {
+        return iconPath;
+    }
+
+    public static void setIconPath(String iconPath) {
+        UserInfo.iconPath = iconPath;
+    }
+
     public static void addXp(int quantity) {
         if (UserInfo.xp + quantity > getXpGap()) {
             quantity -= getXpGap() - UserInfo.xp;
@@ -66,11 +75,12 @@ public abstract class UserInfo {
     }
 
     public static void reset() {
-        UserInfo.nick = "";
+        UserInfo.nick = "User";
         UserInfo.level = 1;
         UserInfo.xp = 0;
         UserInfo.games = 0;
         UserInfo.winRate = 0;
+        UserInfo.iconPath = "resources\\icons\\night.png";
     }
 
     private static HashMap<Integer, Consumer<String>> fillReadMap() {
@@ -81,6 +91,7 @@ public abstract class UserInfo {
         map.put(2, line -> xp = Integer.parseInt(line));
         map.put(3, line -> games = Integer.parseInt(line));
         map.put(4, line -> winRate = Double.parseDouble(line));
+        map.put(5, line -> iconPath = line);
         
         return map;
     }
@@ -92,12 +103,12 @@ public abstract class UserInfo {
         map.put(1, 8);
         map.put(2, 15);
         map.put(3, 21);
-        map.put(4, 30);
-        map.put(5, 46);
-        map.put(6, 66);
-        map.put(7, 97);
-        map.put(8, 150);
-        map.put(9, 300);
+        map.put(4, 24);
+        map.put(5, 28);
+        map.put(6, 31);
+        map.put(7, 35);
+        map.put(8, 39);
+        map.put(9, 50);
         
         return map;
     }
@@ -127,6 +138,8 @@ public abstract class UserInfo {
             fos.write(Integer.toString(games).getBytes());
             fos.write("\n".getBytes());
             fos.write(Double.toString(winRate).getBytes());
+            fos.write("\n".getBytes());
+            fos.write(iconPath.getBytes());
         } catch (IOException e) {
         }
     }

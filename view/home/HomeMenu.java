@@ -55,7 +55,16 @@ public class HomeMenu extends VBox {
         return profile;
     }
 
+    private Node createExitButton() {
+        Button exit = new Button("Exit");
+        exit.getStyleClass().add("button");
+
+        exit.setOnMouseClicked(e -> System.exit(0));
+
+        return exit;
+    }
+
     private void arrangeElements() {
-        getChildren().addAll(createTitle(), createPlayButton(), createAdventureButton(), createProfileButton());
+        getChildren().addAll(createTitle(), createPlayButton(), createAdventureButton(), createProfileButton(), createExitButton());
     }
 }

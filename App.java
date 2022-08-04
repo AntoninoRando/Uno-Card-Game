@@ -92,6 +92,7 @@ public class App extends Displayer {
         });
         Settings.setNickFieldAction(__ -> UserInfo.setNick(__));
         Settings.setDeleteAccountAction(e -> UserInfo.reset());
+        Settings.setAvatarClickAction(e -> Settings.openAvatarPicker());
     }
 
     private void loadAnimations() {

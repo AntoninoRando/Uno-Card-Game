@@ -3,3 +3,4 @@ level
 xp
 games played
 winrate
+icon

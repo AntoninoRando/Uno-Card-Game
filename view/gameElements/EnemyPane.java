@@ -8,10 +8,10 @@ import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import model.Loop;
 import model.Player;
 import model.events.EventListener;
+import model.profile.UserInfo;
 
 public class EnemyPane extends VBox implements EventListener {
     /* SINGLETON */
@@ -40,24 +40,24 @@ public class EnemyPane extends VBox implements EventListener {
 
     /* ---------------------------------------- */
 
-    private Map<Player, Label> labels;
+    private Map<Player, PlayerLabel> labels;
 
     private void addPlayerLabel(Player player) {
-        Label playerNick = new Label();
-        playerNick.getStyleClass().add("player-label");
-        getChildren().add(playerNick);
-        labels.put(player, playerNick);
+        String iconPath = player.isHuman() ? UserInfo.getIconPath()
+                : PlayerLabel.botIcons.getOrDefault(player.getNickname(), "resources\\icons\\night.png");
+        PlayerLabel label = new PlayerLabel(iconPath, player.getNickname(), player.getHand().size());
+        getChildren().add(label);
+        labels.put(player, label);
     }
 
     private void updatePlayerInfo(Player player) {
-        Label playerNick = labels.get(player);
-        playerNick.setText(player.getNickname() + " " + player.getHand().size());
+        labels.get(player).changeCards(player.getHand().size());
     }
 
     private void focusPlayer(Player player) {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
-            labels.get(player).setTextFill(Color.color(1, 0, 0));
+            labels.get(player).focusPlayer();
             latch.countDown();
         });
         try {
@@ -69,7 +69,7 @@ public class EnemyPane extends VBox implements EventListener {
     private void unfocusPlayer(Player player) {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
-            labels.get(player).setTextFill(Color.color(0, 0, 0));
+            labels.get(player).unfocusPlayer();
             latch.countDown();
         });
         try {
