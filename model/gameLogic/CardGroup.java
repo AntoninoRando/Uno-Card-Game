@@ -1,4 +1,4 @@
-package model.cards;
+package model.gameLogic;
 
 import java.util.Collection;
 import java.util.Collections;

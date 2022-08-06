@@ -1,6 +1,6 @@
 package controller;
 
-import model.cards.Card;
+import model.gameLogic.Card;
 import view.gameElements.DeckContainer;
 import view.gameElements.PlayzonePane;
 

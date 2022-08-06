@@ -1,8 +1,7 @@
-package model.cards;
+package model.gameLogic;
 
 import java.util.Optional;
 
-import model.effects.Effect;
 import view.gameElements.CardContainer;
 
 public class Card implements Comparable<Card> {

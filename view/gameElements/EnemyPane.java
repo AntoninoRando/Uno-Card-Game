@@ -1,6 +1,5 @@
 package view.gameElements;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -8,10 +7,10 @@ import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import model.Loop;
-import model.Player;
+import model.gameLogic.Loop;
+import model.data.UserInfo;
 import model.events.EventListener;
-import model.profile.UserInfo;
+import model.gameLogic.Player;
 
 public class EnemyPane extends VBox implements EventListener {
     /* SINGLETON */
@@ -91,9 +90,6 @@ public class EnemyPane extends VBox implements EventListener {
     @Override
     public void update(String eventLabel, Object data) {
         switch (eventLabel) {
-            case "gameStart":
-                Platform.runLater(() -> ((Collection<Player>) data).forEach(this::addPlayerLabel));
-                break;
             case "playerHandChanged":
                 Platform.runLater(() -> updatePlayerInfo((Player) data));
                 break;
@@ -109,6 +105,12 @@ public class EnemyPane extends VBox implements EventListener {
     @Override
     public void update(String eventLabel, Object... data) {
         switch (eventLabel) {
+            case "gameStart":
+                Platform.runLater(() -> {
+                    for (Object player : data)
+                        addPlayerLabel((Player) player);
+                });
+                break;
             case "playerDrew":
                 Platform.runLater(() -> updatePlayerInfo((Player) data[0]));
                 break;

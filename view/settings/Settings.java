@@ -23,7 +23,10 @@ public abstract class Settings {
 
         try {
             Image image = new Image(Paths.get("resources\\settingsIcon.png").toUri().toURL().toExternalForm());
-            button.setGraphic(new ImageView(image));
+            ImageView icon = new ImageView(image);
+            icon.setFitWidth(50.0);
+            icon.setFitHeight(50.0);
+            button.setGraphic(icon);
         } catch (MalformedURLException e1) {
         }
 

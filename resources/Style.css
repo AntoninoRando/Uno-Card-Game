@@ -173,3 +173,14 @@
     -fx-font-weight: bold;
     font-weight: bold;
 }
+
+#avatar-picker .button {
+    -fx-background-color: none;
+    background-color: none;
+
+    -fx-text-fill: red;
+    color: red;
+
+    -fx-font-size: 25px;
+    font-size: 25px;
+}

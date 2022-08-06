@@ -1,10 +1,6 @@
-package model.effects;
-
-import model.cards.Card;
+package model.gameLogic;
 
 import java.util.LinkedList;
-
-import model.Player;
 
 public class Effect implements Comparable<Effect> {
     Player sourcePlayer;
@@ -12,18 +8,13 @@ public class Effect implements Comparable<Effect> {
     Player targetPlayer;
     Card targetCard;
     LinkedList<Runnable> steps = new LinkedList<>();
+    int priority;
 
     public void cast(Player soucePlayer, Card sourceCard) {
         this.sourcePlayer = soucePlayer;
         this.sourceCard = sourceCard;
         steps.forEach(Runnable::run);
     };
-
-    public void merge(Effect after) {
-        steps.addAll(after.steps);
-    }
-
-    int priority;
 
     @Override
     public int compareTo(Effect eff) {

@@ -3,4 +3,4 @@ User
 0
 0
 0.0
-resources\icons\tree.png
+resources\icons\night.png

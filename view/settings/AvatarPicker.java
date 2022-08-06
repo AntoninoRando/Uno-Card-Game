@@ -11,7 +11,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import model.profile.UserInfo;
+import model.data.UserInfo;
 
 public class AvatarPicker extends StackPane {
     private ScrollPane container = new ScrollPane();
@@ -33,6 +33,7 @@ public class AvatarPicker extends StackPane {
 
     private Button createCloseButton() {
         Button close = new Button("X");
+        close.getStyleClass().add("button");
         close.setOnMouseClicked(e -> this.setVisible(false));
         return close;
     }
@@ -44,6 +45,8 @@ public class AvatarPicker extends StackPane {
         map.put(createIcon("resources\\icons\\night.png"), "resources\\icons\\night.png");
         map.put(createIcon("resources\\icons\\queen.png"), "resources\\icons\\queen.png");
         map.put(createIcon("resources\\icons\\tree.png"), "resources\\icons\\tree.png");
+        map.put(createIcon("resources\\icons\\pirate.png"), "resources\\icons\\pirate.png");
+        map.put(createIcon("resources\\icons\\alien.png"), "resources\\icons\\alien.png");
         return map;
     }
 

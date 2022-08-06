@@ -1,6 +1,6 @@
 package model.events;
 
-import model.Player;
+import model.gameLogic.Player;
 
 @FunctionalInterface
 public interface InputListener {

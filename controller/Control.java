@@ -5,5 +5,5 @@ public abstract class Control {
         handler.addControl(this);
     }
 
-    protected Runnable execute; // TODO non dovrebbe essere un runnable
+    protected Runnable execute;
 }

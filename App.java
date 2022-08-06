@@ -9,9 +9,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import model.Loop;
-import model.Player;
-import model.profile.UserInfo;
+import model.gameLogic.Loop;
+import model.data.UserInfo;
+import model.gameLogic.Player;
 import view.Displayer;
 import view.animations.AnimationLayer;
 import view.animations.Animations;
@@ -154,9 +154,6 @@ public class App extends Displayer {
     @Override
     public void update(String eventType, Object data) {
         switch (eventType) {
-            case "gameStart":
-                Platform.runLater(() -> Sounds.IN_GAME_SOUNDTRACK.play());
-                break;
             case "unoDeclared":
                 Platform.runLater(() -> Animations.UNO_TEXT.get().play(AnimationLayer.getInstance()));
                 break;
@@ -172,7 +169,10 @@ public class App extends Displayer {
 
     @Override
     public void update(String eventType, Object... data) {
-        // TODO Auto-generated method stub
-        
+        switch (eventType) {
+            case "gameStart":
+                Platform.runLater(() -> Sounds.IN_GAME_SOUNDTRACK.play());
+                break;
+        }
     }
 }

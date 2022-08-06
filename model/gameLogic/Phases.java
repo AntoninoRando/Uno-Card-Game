@@ -1,6 +1,4 @@
-package model;
-
-import model.cards.Card;
+package model.gameLogic;
 
 public abstract class Phases {
     public static final Phase START_TURN = (l, g) -> {

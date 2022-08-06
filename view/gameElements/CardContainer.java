@@ -9,7 +9,7 @@ import javafx.animation.ScaleTransition;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-import model.cards.Card;
+import model.gameLogic.Card;
 
 public class CardContainer extends ImageView {
     // TODO non so se vanno bene per qualsiasi sistema operativo quei separatori

@@ -7,10 +7,10 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import model.Loop;
-import model.Player;
-import model.cards.Card;
+import model.gameLogic.Loop;
 import model.events.EventListener;
+import model.gameLogic.Card;
+import model.gameLogic.Player;
 
 public class HandPane extends HBox implements EventListener {
     /* SINGLETON */

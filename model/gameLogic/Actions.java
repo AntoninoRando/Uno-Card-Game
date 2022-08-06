@@ -1,6 +1,4 @@
-package model;
-
-import model.cards.Card;
+package model.gameLogic;
 
 /**
  * This class contains several static methods to modify the game state. If an
@@ -12,23 +10,22 @@ public abstract class Actions {
     /* ------- */
     public static void changeCurrentCard(Card c) {
         Game game = Game.getInstance();
-        game.discardPile.add(game.terrainCard);
-        game.terrainCard = c;
-    }
-
-    public static boolean tryChangeCard(Card c) {
-        Game game = Game.getInstance();
-        if (!game.isPlayable(c))
-            return false;
-        changeCurrentCard(c);
-        return true;
+        game.getDiscardPile().add(game.getTerrainCard());
+        game.setTerrainCard(c);
     }
 
     public static Card takeFromDeck() {
         Game game = Game.getInstance();
-        if (game.deck.isEmpty())
-            shuffle();
-        return game.deck.remove(0);
+        if (game.getDeck().isEmpty())
+            shuffleDeck();
+        return game.getDeck().remove(0);
+    }
+
+    public static void shuffleDeck() {
+        Game game = Game.getInstance();
+        game.getDeck().addAll(game.getDiscardPile());
+        game.getDeck().shuffle();
+        game.getDiscardPile().clear();
     }
 
     public static void dealFromDeck(Player p) {
@@ -44,7 +41,7 @@ public abstract class Actions {
 
     public static void discardCard(Card c) {
         Game game = Game.getInstance();
-        game.discardPile.add(0, c);
+        game.getDiscardPile().add(0, c);
     }
 
     public static void skipTurn() {
@@ -57,12 +54,5 @@ public abstract class Actions {
         source.setValue(target.getValue());
         source.setEffect(target.getEffect());
         source.getGuiContainer().update(source);
-    }
-
-    public static void shuffle() {
-        Game game = Game.getInstance();
-        game.deck.addAll(game.discardPile);
-        game.deck.shuffle();
-        game.discardPile.clear();
     }
 }

@@ -1,4 +1,4 @@
-package model;
+package model.gameLogic;
 
 import java.util.function.BiFunction;
 

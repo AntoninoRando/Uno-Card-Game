@@ -1,8 +1,7 @@
-package model;
+package model.gameLogic;
 
 import model.events.EventManager;
 import model.events.InputListener;
-import model.profile.UserInfo;
 import view.Displayer;
 
 import java.util.HashMap;
@@ -11,7 +10,7 @@ import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import controller.Controller;
-import model.cards.Card;
+import model.data.UserInfo;
 
 public class Loop implements InputListener {
     /* SINGLETON */
@@ -29,7 +28,8 @@ public class Loop implements InputListener {
 
         choiceTypes.put("card", () -> {
             Card c = (Card) choice;
-            if (Actions.tryChangeCard(c)) {
+            if (g.isPlayable(c)) {
+                Actions.changeCurrentCard(c);
                 g.getPlayer().hand.remove(c);
                 c.getEffect().ifPresent(effect -> effect.cast(g.getPlayer(), c));
                 events.notify("cardPlayed", c);
@@ -124,6 +124,8 @@ public class Loop implements InputListener {
             c.setInputListener(this);
             c.start();
         }
+
+        g.restoreTurnOrder();
         phases.add(Phases.START_TURN);
         phases.add(Phases.MAKE_CHOICE);
         phases.add(Phases.PARSE_CHOICE);
@@ -157,9 +159,9 @@ public class Loop implements InputListener {
     }
 
     private void setupFirstTurn() {
-        events.notify("gameStart", g.getPlayers());
+        events.notify("gameStart", g.getPlayers().toArray());
 
-        Actions.shuffle();
+        Actions.shuffleDeck();
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
         events.notify("firstCard", firstCard);

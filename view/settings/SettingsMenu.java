@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.Loop;
+import model.gameLogic.Loop;
 import model.events.EventListener;
 
 public class SettingsMenu extends BorderPane implements EventListener {
@@ -73,17 +73,15 @@ public class SettingsMenu extends BorderPane implements EventListener {
 
     @Override
     public void update(String eventType, Object data) {
+    }
+
+    @Override
+    public void update(String eventType, Object... data) {
         switch (eventType) {
             case "gameStart":
                 Platform.runLater(
                         () -> ((HBox) getBottom()).getChildren().addAll(restartButton, quitButton));
                 break;
         }
-    }
-
-    @Override
-    public void update(String eventType, Object... data) {
-        // TODO Auto-generated method stub
-
     }
 }

@@ -1,13 +1,6 @@
-package model.effects;
+package model.gameLogic;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
-
-import model.Actions;
-import model.Game;
-import model.Loop;
-import model.Player;
-import model.cards.Card;
 
 public class EffectBuilder {
     private Effect effect;
@@ -20,6 +13,38 @@ public class EffectBuilder {
         return effect;
     }
 
+    public Effect build(String... s) {
+        int i = 0;
+        int j = s.length;
+        while (i < j) {
+            switch (s[i]) {
+                case "target":
+                    i++;
+                    directTargetToFollowing(Integer.parseInt(s[i]));
+                    break;
+                case "they pass":
+                    skipTargetTurn();
+                    break;
+                case "they draw":
+                    i++;
+                    targetDraws(Integer.parseInt(s[i]));
+                    break;
+                case "reverse turn":
+                    reverseTurnOrder();
+                    break;
+                case "became target":
+                    transformIntoTarget();
+                    break;
+                case "select one of":
+                    i++;
+                    selectOneCardOf();
+                    break;
+            }
+            i++;
+        }
+        return effect;
+    }
+
     public EffectBuilder directTarget(Player target) {
         effect.steps.add(() -> effect.targetPlayer = target);
         return this;
@@ -28,10 +53,7 @@ public class EffectBuilder {
     public EffectBuilder directTargetToFollowing(int ahead) {
         effect.steps.add(() -> {
             Game g = Game.getInstance();
-            Player target = g.getPlayer();
-            for (int i = ahead; i > 0; i--)
-                target = g.getNextPlayer(target);
-            effect.targetPlayer = target;
+            effect.targetPlayer = Game.getInstance().getPlayer(g.getTurn(effect.sourcePlayer) + ahead);
         });
         return this;
     }
@@ -54,17 +76,15 @@ public class EffectBuilder {
     public EffectBuilder reverseTurnOrder() {
         effect.steps.add(() -> {
             Game g = Game.getInstance();
-
-            Function<Player, Player> oldNext = g.getNextPlayerEvaluator();
-            g.setNextPlayerEvaluator(player -> {
-                Player next = null;
-                for (Player p : g.getPlayers())
-                    if (oldNext.apply(p) == player) {
-                        next = p;
-                        break;
-                    }
-                return next;
-            });
+            Player[] oldA = g.getTurnOrder();
+            Player[] newA = new Player[oldA.length];
+            int n = g.countPlayers();
+            int currentTurn = g.getTurn();
+            for (int i = 0; i < n; i++) {
+                int next = ((currentTurn - i) + n) % n;
+                newA[(i + currentTurn) % n] = oldA[next];
+            }
+            g.setTurnOrder(newA);
         });
         return this;
     }
@@ -77,9 +97,7 @@ public class EffectBuilder {
     }
 
     public EffectBuilder transformIntoTarget() {
-        effect.steps.add(() -> {
-            Actions.transformCard(effect.sourceCard, effect.targetCard);
-        });
+        effect.steps.add(() -> Actions.transformCard(effect.sourceCard, effect.targetCard));
         return this;
     }
 
@@ -87,14 +105,14 @@ public class EffectBuilder {
         effect.steps.add(() -> {
             if (!effect.sourcePlayer.isHuman()) {
                 Loop.events.notify("cardSelection", effect.sourcePlayer);
-                effect.targetCard = cards[(int) Math.random() * 4];
+                effect.targetCard = cards[(int) (Math.random() * cards.length)];
                 return;
-            } 
+            }
 
             Object[] data = new Object[cards.length + 1];
             data[0] = (Consumer<Card>) card -> effect.targetCard = card;
             for (int i = 0; i < cards.length; i++)
-                data[i+1] = cards[i];
+                data[i + 1] = cards[i];
             Loop.events.notify("cardSelection", data);
         });
         return this;

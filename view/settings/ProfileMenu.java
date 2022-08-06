@@ -9,7 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import model.profile.UserInfo;
+import model.data.UserInfo;
 
 public class ProfileMenu extends VBox {
     protected Circle avatar = createAvatar();

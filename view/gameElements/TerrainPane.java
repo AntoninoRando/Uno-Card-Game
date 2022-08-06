@@ -2,9 +2,9 @@ package view.gameElements;
 
 import javafx.application.Platform;
 import javafx.scene.layout.StackPane;
-import model.Loop;
-import model.cards.Card;
+import model.gameLogic.Loop;
 import model.events.EventListener;
+import model.gameLogic.Card;
 import view.animations.Animation;
 import view.animations.AnimationLayer;
 import view.animations.Animations;

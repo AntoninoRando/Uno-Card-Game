@@ -1,10 +1,6 @@
-package model;
+package model.gameLogic;
 
 import java.util.TreeSet;
-
-import model.cards.Card;
-import model.cards.Hand;
-import model.effects.Effect;
 
 /**
  * This class contains all the info about the player state.
@@ -12,14 +8,14 @@ import model.effects.Effect;
 public class Player {
     private String nickname;
     boolean isHuman;
-    Hand hand;
+    CardGroup hand;
     private int ID;
     private TreeSet<Effect> conditions;
 
     public Player(String nickname, boolean isHuman, Card... cards) {
         this.nickname = nickname;
         this.isHuman = isHuman;
-        hand = new Hand(cards);
+        hand = new CardGroup(cards);
 
         conditions = new TreeSet<>();
     }
@@ -34,7 +30,7 @@ public class Player {
         return isHuman;
     }
 
-    public Hand getHand() {
+    public CardGroup getHand() {
         return hand;
     }
 

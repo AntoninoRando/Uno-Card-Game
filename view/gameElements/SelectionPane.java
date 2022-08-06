@@ -8,9 +8,9 @@ import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
-import model.Loop;
-import model.cards.Card;
+import model.gameLogic.Loop;
 import model.events.EventListener;
+import model.gameLogic.Card;
 
 public class SelectionPane extends HBox implements EventListener {
     /* SINGLETON */
@@ -63,10 +63,10 @@ public class SelectionPane extends HBox implements EventListener {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void update(String eventLabel, Object... data) {
         switch (eventLabel) {
             case "humanTurn cardSelection":
-                Consumer<Card> onSelect = (Consumer<Card>) data[0];
                 CardContainer[] nodes = new CardContainer[data.length - 1];
                 options = new HashMap<>();
                 for (int i = 1; i < data.length; i++) {
@@ -75,13 +75,13 @@ public class SelectionPane extends HBox implements EventListener {
                     options.put(cc, c);
                     nodes[i-1] = cc;
                 }
-                Platform.runLater(() -> newSelection(onSelect, nodes));
+                Platform.runLater(() -> newSelection((Consumer<Card>) data[0], nodes));
                 try {
                     latch.await();
                 } catch (InterruptedException e) {
                 }
                 break;
-            // TODO case "enemyTurn cardSelection"
+            // TODO case "enemyTurn cardSelection":
             case "reset":
                 reset();
                 break;

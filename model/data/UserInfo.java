@@ -1,4 +1,4 @@
-package model.profile;
+package model.data;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,6 +16,8 @@ public abstract class UserInfo {
     private static HashMap<Integer, Integer> xpGaps = fillXpGaps();
     private static String iconPath;
 
+    private static int nickMaxLenght = 22;
+
     private static HashMap<Integer, Consumer<String>> ReadMap = fillReadMap();
 
     public static String getNick() {
@@ -23,7 +25,9 @@ public abstract class UserInfo {
     }
 
     public static void setNick(String nick) {
-        UserInfo.nick = nick;
+        nick = nick.trim();
+        if (!nick.equals("") && nick.length() <= nickMaxLenght)
+            UserInfo.nick = nick;
     }
 
     public static int getLevel() {

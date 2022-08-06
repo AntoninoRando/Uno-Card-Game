@@ -1,1 +1,0 @@
-This game was a project from university which I decided to improve.

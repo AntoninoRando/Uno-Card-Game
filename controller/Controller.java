@@ -3,9 +3,9 @@ package controller;
 import java.util.LinkedList;
 import java.util.List;
 
-import model.Player;
 import model.events.EventListener;
 import model.events.InputListener;
+import model.gameLogic.Player;
 
 /**
  * This class enables a player to take choices (input) that modify the game
