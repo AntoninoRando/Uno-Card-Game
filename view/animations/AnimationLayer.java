@@ -14,6 +14,7 @@ public class AnimationLayer extends Group {
     }
 
     private AnimationLayer() {
+        setVisible(false);
     }
 
     /* --------------------------------------- */

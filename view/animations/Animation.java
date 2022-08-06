@@ -31,6 +31,7 @@ public class Animation {
     private ImageView[] images;
     private double frameDuration = 60.0;
     private EventHandler<ActionEvent> onFinishAction = e -> {
+        AnimationLayer.getInstance().setVisible(false);
     };
 
     public Animation(String folderPathname) {
@@ -44,7 +45,10 @@ public class Animation {
     }
 
     public void setOnFinishAction(EventHandler<ActionEvent> action) {
-        onFinishAction = action;
+        onFinishAction = e -> {
+            action.handle(e);
+            AnimationLayer.getInstance().setVisible(false);
+        };
     }
 
     private final ImageView[] loadImages() {
@@ -67,6 +71,7 @@ public class Animation {
     }
 
     public void play(Group animationLayer) {
+        AnimationLayer.getInstance().setVisible(true);
         Group animation = new Group(images[0]);
 
         Timeline t = new Timeline();
@@ -98,6 +103,8 @@ public class Animation {
     public void playQueue(Group animationLayer) {
         if (queue.isEmpty())
             return;
+        
+        AnimationLayer.getInstance().setVisible(true);
 
         isPlaying = true;
         Animation currentAnimation = queue.removeFirst();
@@ -120,6 +127,7 @@ public class Animation {
     public static CountDownLatch latch = new CountDownLatch(1);
 
     public void playAndWait(Group animationLayer) {
+        AnimationLayer.getInstance().setVisible(true);
         Group animation = new Group(images[0]);
 
         Timeline t = new Timeline();

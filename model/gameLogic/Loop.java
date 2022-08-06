@@ -40,7 +40,7 @@ public class Loop implements InputListener {
                 events.notify("playerHandChanged", g.getPlayer());
                 return true;
             } else {
-                events.notify("warning", "Can't play it now!");
+                events.notify("warning", "Can't play it now!", c);
                 return false;
             }
         });

@@ -28,10 +28,10 @@ public abstract class Actions {
         game.getDiscardPile().clear();
     }
 
-    public static void dealFromDeck(Player p) {
-        Card c = takeFromDeck();
-        p.addCard(c);
-        Loop.events.notify("playerDrew", p, c);
+    public static void dealFromDeck(Player player) {
+        Card card = takeFromDeck();
+        player.getHand().add(card);
+        Loop.events.notify("playerDrew", player, card);
     }
 
     public static void dealFromDeck(Player p, int times) {

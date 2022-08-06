@@ -1,13 +1,18 @@
 package view.gameElements;
 
 import javafx.application.Platform;
+
 import javafx.scene.layout.StackPane;
+
 import model.gameLogic.Loop;
-import model.events.EventListener;
 import model.gameLogic.Card;
+
+import model.events.EventListener;
+
 import view.animations.Animation;
 import view.animations.AnimationLayer;
 import view.animations.Animations;
+import view.animations.ResetTranslate;
 
 public class TerrainPane extends StackPane implements EventListener {
     /* SINGLETON */
@@ -21,25 +26,26 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     private TerrainPane() {
-        Loop.events.subscribe(this, "enemyTurn cardPlayed", "humanTurn cardPlayed", "firstCard", "reset");
+        Loop.events.subscribe(this, "enemyTurn cardPlayed", "humanTurn cardPlayed", "firstCard", "reset", "warning");
         getStyleClass().add("terrain");
         setMaxHeight(400);
         setMaxWidth(400);
-    }
 
-    /* ---------------------------------------- */
-    CardContainer terrainCard;
-
-    private void updateTerrainCard(Card c) {
-        terrainCard = new CardContainer(c);
-        getChildren().clear();
         getChildren().add(terrainCard);
     }
 
+    /* ---------------------------------------- */
+    private CardContainer terrainCard = new CardContainer();
+
+    private void updateTerrainCard(Card c) {
+        terrainCard.update(c.getGuiContainer());
+    }
+
     private void reset() {
-        terrainCard = null;
+        terrainCard = new CardContainer();
         getChildren().clear();
-        Loop.events.subscribe(this, "enemyTurn cardPlayed", "humanTurn cardPlayed", "firstCard", "reset");
+        getChildren().add(terrainCard);
+        Loop.events.subscribe(this, "enemyTurn cardPlayed", "humanTurn cardPlayed", "firstCard", "reset", "warning");
     }
 
     @Override
@@ -68,6 +74,9 @@ public class TerrainPane extends StackPane implements EventListener {
         switch (eventLabel) {
             case "reset":
                 reset();
+                break;
+            case "warning":
+                ResetTranslate.resetTranslate(((Card) data[1]).getGuiContainer());
                 break;
         }
     }

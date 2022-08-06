@@ -15,6 +15,13 @@ public class CardContainer extends ImageView {
     // TODO non so se vanno bene per qualsiasi sistema operativo quei separatori
     private static Path imgFolder = Paths.get("C:\\Users\\anton\\OneDrive\\Desktop\\AllUnoCards");
 
+    public CardContainer() {
+        getStyleClass().add("card");
+        setPreserveRatio(true);
+        setFitWidth(150);
+        makeZommable(0.5);
+    }
+    
     public CardContainer(Card card) {
         getStyleClass().add("card");
         loadImage(card);
@@ -28,17 +35,20 @@ public class CardContainer extends ImageView {
         if (Files.notExists(imgPath))
             imgPath = imgFolder.resolve("MISSING.png");
 
-        Image img = null;
         try {
-            img = new Image(imgPath.toUri().toURL().toExternalForm());
+            Image img = new Image(imgPath.toUri().toURL().toExternalForm());
+            setImage(img);
         } catch (MalformedURLException e) {
         }
-
-        setImage(img);
     }
 
     public void update(Card card) {
         loadImage(card);
+    }
+
+    public void update(CardContainer card) {
+        // TODO finire di copiare anche gli altri campi
+        setImage(card.getImage());
     }
 
     /* -------------------------------- */

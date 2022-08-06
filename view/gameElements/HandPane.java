@@ -4,13 +4,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javafx.application.Platform;
+
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
+
 import javafx.stage.Stage;
+
 import model.gameLogic.Loop;
-import model.events.EventListener;
 import model.gameLogic.Card;
 import model.gameLogic.Player;
+
+import model.events.EventListener;
 
 public class HandPane extends HBox implements EventListener {
     /* SINGLETON */
@@ -26,13 +30,14 @@ public class HandPane extends HBox implements EventListener {
     private HandPane() {
         cardsStored = new HashSet<>();
         getStyleClass().add("hand");
-        Loop.events.subscribe(this, "playerDrew", "reset");
+        Loop.events.subscribe(this, "playerDrew", "reset", "humanTurn cardPlayed");
         setSpacing(-30.0);
         setTranslateY(40.0);
         assignCenter(1500.0);
     }
 
     /* ---------------------------------------- */
+
     private Set<CardContainer> cardsStored;
 
     public void addCard(Card card) {
@@ -50,7 +55,7 @@ public class HandPane extends HBox implements EventListener {
     private void reset() {
         cardsStored.clear();
         getChildren().clear();
-        Loop.events.subscribe(this, "playerDrew", "reset");
+        Loop.events.subscribe(this, "playerDrew", "reset", "humanTurn cardPlayed");
     }
 
     /* ----------------------------------------- */
@@ -72,6 +77,7 @@ public class HandPane extends HBox implements EventListener {
     private double centerX, centerY, radius;
 
     private void assignCenter(double y) {
+        // Change the center to modify the hand curvature
         centerX = handX;
         centerY = y;
         radius = y;
@@ -79,10 +85,10 @@ public class HandPane extends HBox implements EventListener {
 
     private double getNodeX(Node node) {
         int position = getChildren().indexOf(node) + 1;
-        int n = cardsStored.size();
+        int totalCards = cardsStored.size();
         // TODO la calcola male la posizione, infatti il problema della curvatura si
         // trova qua
-        position = position - (n % 2 == 0 ? n / 2 : (n + 1) / 2);
+        position = position - (totalCards % 2 == 0 ? totalCards / 2 : (totalCards + 1) / 2);
         return (cardsGap + cardWidth / 2) * position;
     }
 
@@ -99,7 +105,7 @@ public class HandPane extends HBox implements EventListener {
 
     // TODO Fare caching dei valori così da non doverli ripetere e metterli in una
     // variabile final.
-    private void adjustNodeY(Node node) {
+    private void adjustY(Node node) {
         node.setTranslateY(findOnCircleY(node) - getNodeY(node));
     }
 
@@ -112,13 +118,20 @@ public class HandPane extends HBox implements EventListener {
     private void adjustCards() {
         adjustCardsGap();
         for (Node node : getChildren()) {
-            adjustNodeY(node);
+            adjustY(node);
             pointCenter(node);
         }
     }
 
+    /* ----------------------------------------- */
+
     @Override
     public void update(String eventLabel, Object data) {
+        switch (eventLabel) {
+            case "humanTurn cardPlayed":
+                Platform.runLater(() -> removeCard(((Card) data).getGuiContainer()));
+                break;
+        }
     }
 
     @Override

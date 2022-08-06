@@ -2,10 +2,11 @@ import java.util.TreeMap;
 
 import controller.Controller;
 import controller.ControllerFX;
+import controller.Controls;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -15,7 +16,6 @@ import model.gameLogic.Player;
 import view.Displayer;
 import view.animations.AnimationLayer;
 import view.animations.Animations;
-import view.gameElements.DeckContainer;
 import view.gameElements.EnemyPane;
 import view.gameElements.HandPane;
 import view.gameElements.PlayzonePane;
@@ -58,12 +58,18 @@ public class App extends Displayer {
 
         BorderPane borderPane = new BorderPane();
         borderPane.setLeft(EnemyPane.getInstance());
-        borderPane.setRight(DeckContainer.getInstance());
         borderPane.setCenter(TerrainPane.getInstance());
         borderPane.setBottom(HandPane.getInstance());
 
         gameElements.getChildren().addAll(borderPane, AnimationLayer.getInstance(), PlayzonePane.getInstance(),
                 SelectionPane.getInstance());
+
+        PlayzonePane.getInstance().setOnMouseClicked(e -> {
+            if (e.getButton().equals(MouseButton.SECONDARY))
+                Controls.DECLARE_UNO.getAction().handle(e);
+            else
+                Controls.DRAW.getAction().handle(e);
+        });
 
         root.getChildren().add(gameElements);
     }
@@ -99,7 +105,6 @@ public class App extends Displayer {
         Animations.UNO_TEXT.get().load();
         Animations.BLOCK_TURN.get().load();
         Animations.CARD_PLAYED.get().load();
-        Animations.FOCUS_PLAYER.get().load();
     }
 
     private void newGame() {

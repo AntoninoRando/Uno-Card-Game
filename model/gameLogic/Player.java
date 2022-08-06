@@ -40,11 +40,6 @@ public class Player {
 
     /* OTHERS */
     /* ------ */
-    protected void addCard(Card card) {
-        hand.add(card);
-        hand.arrange(); // TODO Potrebbe essere inefficiente e spiacevole sortare ad ogni pescata
-    }
-
     public void addCondition(Effect condition) {
         conditions.add(condition);
     }

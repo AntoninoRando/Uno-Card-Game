@@ -2,35 +2,26 @@ package controller;
 
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+
 import javafx.util.Duration;
-import model.gameLogic.Game;
+
 import model.gameLogic.Card;
+
 import view.gameElements.CardContainer;
-import view.gameElements.HandPane;
-import view.gameElements.PlayzonePane;
 import view.gameElements.TerrainPane;
 
 public class ControlDrag extends Control {
-    public ControlDrag(Card card, Controller handler) {
-        super(handler);
-
-        execute = () -> {
-            if (!Game.getInstance().isPlayable(card)) {
-                card.getGuiContainer().setTranslateX(0);
-                card.getGuiContainer().setTranslateY(0);
-                return;
-            }
-            animatePlaying(card.getGuiContainer(), (e) -> {
-                handler.sendInput(card);
-                HandPane.getInstance().removeCard(card.getGuiContainer());
-            });
-        };
-
+    public ControlDrag(Card card, Node target) {
+        super(null);
+        this.target = target;
+        action = handler -> animatePlaying(card.getGuiContainer(), e -> handler.sendInput(card));
         applyDraggability(card.getGuiContainer());
     }
 
@@ -40,7 +31,7 @@ public class ControlDrag extends Control {
     // iniziale, quella vola via
     private double mouseAnchorX;
     private double mouseAnchorY;
-    private static Node target = PlayzonePane.getInstance();
+    private Node target;
 
     private void dragStart(MouseEvent e, CardContainer source) {
         // When we drag we want the Node to be in its original size
@@ -59,12 +50,12 @@ public class ControlDrag extends Control {
     }
 
     private void dragEnd(MouseEvent e, CardContainer source) {
-        if (e.getButton().equals(MouseButton.SECONDARY)) 
+        if (e.getButton().equals(MouseButton.SECONDARY))
             return;
-        
+
         // TODO == perche they have to be the same
-        if (e.getPickResult().getIntersectedNode() == target) 
-            execute.run();
+        if (e.getPickResult().getIntersectedNode() == target)
+            action.accept(handler);
         else {
             TranslateTransition reset = new TranslateTransition(Duration.millis(300.0), source);
             reset.setByX(mouseAnchorX - e.getSceneX()); // correspond to setTranslateX(0);
@@ -82,8 +73,8 @@ public class ControlDrag extends Control {
         double xTc = terrainCard.localToScene(terrainCard.getBoundsInLocal()).getCenterX();
         double yTc = terrainCard.localToScene(terrainCard.getBoundsInLocal()).getCenterY();
 
-        moveToCenter.setByX(xTc-xSource); // xSource + translate = xPz -> translate = xPz-xSource
-        moveToCenter.setByY(yTc-ySource);
+        moveToCenter.setByX(xTc - xSource); // xSource + translate = xPz -> translate = xPz-xSource
+        moveToCenter.setByY(yTc - ySource);
         moveToCenter.play();
 
         ScaleTransition zoom = new ScaleTransition(Duration.millis(150.0), source);
