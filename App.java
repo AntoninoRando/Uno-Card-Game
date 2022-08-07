@@ -8,14 +8,17 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.gameLogic.Loop;
 import model.data.UserInfo;
 import model.gameLogic.Player;
+import model.gameLogic.Card;
 import view.Displayer;
-import view.animations.AnimationLayer;
+import view.animations.Animation;
 import view.animations.Animations;
+import view.animations.ResetTranslate;
 import view.gameElements.EnemyPane;
 import view.gameElements.HandPane;
 import view.gameElements.PlayzonePane;
@@ -34,7 +37,7 @@ public class App extends Displayer {
     private Thread gameThread;
 
     public App() {
-        super("gameStart", "unoDeclared", "turnBlocked");
+        super("gameStart", "unoDeclared", "turnBlocked", "enemyTurn cardPlayed", "warning");
 
         root = new StackPane();
         root.setId("background");
@@ -61,7 +64,13 @@ public class App extends Displayer {
         borderPane.setCenter(TerrainPane.getInstance());
         borderPane.setBottom(HandPane.getInstance());
 
-        gameElements.getChildren().addAll(borderPane, AnimationLayer.getInstance(), PlayzonePane.getInstance(),
+        // Add padding to the borderPane right to absolute center the node in the
+        // borderPane center region
+        Region padderRegionRight = new Region();
+        padderRegionRight.prefWidthProperty().bind(EnemyPane.getInstance().widthProperty());
+        borderPane.setRight(padderRegionRight);
+
+        gameElements.getChildren().addAll(borderPane, PlayzonePane.getInstance(),
                 SelectionPane.getInstance());
 
         PlayzonePane.getInstance().setOnMouseClicked(e -> {
@@ -160,16 +169,24 @@ public class App extends Displayer {
     public void update(String eventType, Object data) {
         switch (eventType) {
             case "unoDeclared":
-                Platform.runLater(() -> Animations.UNO_TEXT.get().play(AnimationLayer.getInstance()));
+                Platform.runLater(() -> Animations.UNO_TEXT.get().play(root));
                 break;
             case "turnBlocked":
-                Platform.runLater(() -> Animations.BLOCK_TURN.get().playOnQueue(AnimationLayer.getInstance()));
+                Platform.runLater(() -> Animations.BLOCK_TURN.get().playAndWait(root));
+                try {
+                    Animation.latch.await();
+                } catch (InterruptedException e) {
+                }
+                break;
+            case "enemyTurn cardPlayed":
+                // TODO Aggiungere priorità all'animazione altrimenti parte dopo che è avvenuta la modifica
+                Platform.runLater(() -> Animations.CARD_PLAYED.get().playAndWait(root));
+                try {
+                    Animation.latch.await();
+                } catch (InterruptedException e) {
+                }
                 break;
         }
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
     @Override
@@ -178,6 +195,14 @@ public class App extends Displayer {
             case "gameStart":
                 Platform.runLater(() -> Sounds.IN_GAME_SOUNDTRACK.play());
                 break;
+            case "warning":
+                Platform.runLater(() -> ResetTranslate.resetTranslate(((Card) data[1]).getGuiContainer()));
+                break;
         }
     }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
 }

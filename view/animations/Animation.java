@@ -1,19 +1,27 @@
 package view.animations;
 
 import java.io.File;
+
 import java.net.MalformedURLException;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
+
 import java.util.concurrent.CountDownLatch;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+
+import javafx.geometry.Bounds;
+
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+
 import javafx.util.Duration;
 
 /**
@@ -30,9 +38,7 @@ public class Animation {
     private File folder;
     private ImageView[] images;
     private double frameDuration = 60.0;
-    private EventHandler<ActionEvent> onFinishAction = e -> {
-        AnimationLayer.getInstance().setVisible(false);
-    };
+    private EventHandler<ActionEvent> onFinishAction = e -> {};
 
     public Animation(String folderPathname) {
         folderPath = Paths.get(folderPathname);
@@ -45,10 +51,7 @@ public class Animation {
     }
 
     public void setOnFinishAction(EventHandler<ActionEvent> action) {
-        onFinishAction = e -> {
-            action.handle(e);
-            AnimationLayer.getInstance().setVisible(false);
-        };
+        onFinishAction = action;
     }
 
     private final ImageView[] loadImages() {
@@ -70,8 +73,12 @@ public class Animation {
         return images;
     }
 
-    public void play(Group animationLayer) {
-        AnimationLayer.getInstance().setVisible(true);
+    public void load() {
+        Animations.imagesLoaded.put(folderPath.toString(), images);
+    };
+
+    public void play(Pane animationLayer) {
+        animationLayer.setVisible(true);
         Group animation = new Group(images[0]);
 
         Timeline t = new Timeline();
@@ -91,43 +98,40 @@ public class Animation {
         t.play();
     }
 
-    private static LinkedList<Animation> queue = new LinkedList<>();
-    private static boolean isPlaying;
+    public void play(Pane animationLayer, double x, double y) {
+        animationLayer.setVisible(true);
+        Group animation = new Group(images[0]);
 
-    public void playOnQueue(Group animationLayer) {
-        queue.offer(this);
-        if (!isPlaying)
-            playQueue(animationLayer);
-    }
+        Timeline t = new Timeline();
+        t.setCycleCount(1);
 
-    public void playQueue(Group animationLayer) {
-        if (queue.isEmpty())
-            return;
-        
-        AnimationLayer.getInstance().setVisible(true);
+        for (int i = 1; i < images.length; i++) {
+            ImageView img = images[i];
+            KeyFrame frame = new KeyFrame(Duration.millis(frameDuration * i), e -> animation.getChildren().setAll(img));
+            t.getKeyFrames().add(frame);
+        }
 
-        isPlaying = true;
-        Animation currentAnimation = queue.removeFirst();
-        EventHandler<ActionEvent> action = currentAnimation.onFinishAction;
-
-        currentAnimation.setOnFinishAction(e -> {
-            action.handle(e);
-            isPlaying = false;
-            playQueue(animationLayer);
+        t.setOnFinished(e -> {
+            onFinishAction.handle(e);
+            animationLayer.getChildren().remove(animation);
         });
-        currentAnimation.play(animationLayer);
-    }
 
-    public void load() {
-        Animations.imagesLoaded.put(folderPath.toString(), images);
-    };
+        animationLayer.getChildren().add(animation);
+
+        Bounds animationRealPosition = animation.localToScene(animation.getBoundsInLocal());
+        // x = animationRealX + translateQuantity
+        animation.setTranslateX(x - animationRealPosition.getMaxX());
+        animation.setTranslateY(y - animationRealPosition.getMaxY());
+
+        t.play();
+    }
 
     /* ----------------------------------------------- */
 
     public static CountDownLatch latch = new CountDownLatch(1);
 
-    public void playAndWait(Group animationLayer) {
-        AnimationLayer.getInstance().setVisible(true);
+    public void playAndWait(Pane animationLayer) {
+        animationLayer.setVisible(true);
         Group animation = new Group(images[0]);
 
         Timeline t = new Timeline();
@@ -146,6 +150,36 @@ public class Animation {
             latch = new CountDownLatch(1);
         });
         animationLayer.getChildren().add(animation);
+        t.play();
+    }
+
+    public void playAndWait(Pane animationLayer, double x, double y) {
+        animationLayer.setVisible(true);
+        Group animation = new Group(images[0]);
+
+        Timeline t = new Timeline();
+        t.setCycleCount(1);
+
+        for (int i = 1; i < images.length; i++) {
+            ImageView img = images[i];
+            KeyFrame frame = new KeyFrame(Duration.millis(frameDuration * i), e -> animation.getChildren().setAll(img));
+            t.getKeyFrames().add(frame);
+        }
+
+        t.setOnFinished(e -> {
+            onFinishAction.handle(e);
+            animationLayer.getChildren().remove(animation);
+            latch.countDown();
+            latch = new CountDownLatch(1);
+        });
+
+        animationLayer.getChildren().add(animation);
+
+        Bounds animationRealPosition = animation.localToScene(animation.getBoundsInLocal());
+        // x = animationRealX + translateQuantity
+        animation.setTranslateX(x - animationRealPosition.getMaxX());
+        animation.setTranslateY(y - animationRealPosition.getMaxY());
+
         t.play();
     }
 }
