@@ -13,6 +13,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import model.data.UserInfo;
 
+// TODO change to GridPane
 public class AvatarPicker extends StackPane {
     private ScrollPane container = new ScrollPane();
     private HashMap<Circle, String> icons = fillIcons();

@@ -166,6 +166,14 @@
     padding: 2px;
 }
 
+.player-label .cards-in-hand {
+    -fx-font-size: 18px;
+    font-size: 18px;
+    
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+
 .players .title {
     -fx-font-size: 25px;
     font-size: 25px;

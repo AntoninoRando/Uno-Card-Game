@@ -2,7 +2,6 @@ package view.gameElements;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import javafx.application.Platform;
 import javafx.scene.control.Label;
@@ -12,18 +11,18 @@ import model.data.UserInfo;
 import model.events.EventListener;
 import model.gameLogic.Player;
 
-public class EnemyPane extends VBox implements EventListener {
+public class PlayerPane extends VBox implements EventListener {
     /* SINGLETON */
     /* --------- */
-    private static EnemyPane instance;
+    private static PlayerPane instance;
 
-    public static EnemyPane getInstance() {
+    public static PlayerPane getInstance() {
         if (instance == null)
-            instance = new EnemyPane();
+            instance = new PlayerPane();
         return instance;
     }
 
-    private EnemyPane() {
+    private PlayerPane() {
         labels = new HashMap<>();
 
         getStyleClass().add("players");
@@ -53,29 +52,6 @@ public class EnemyPane extends VBox implements EventListener {
         labels.get(player).changeCards(player.getHand().size());
     }
 
-    private void focusPlayer(Player player) {
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.runLater(() -> {
-            labels.get(player).focusPlayer();
-            latch.countDown();
-        });
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-        }
-    }
-
-    private void unfocusPlayer(Player player) {
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.runLater(() -> {
-            labels.get(player).unfocusPlayer();
-            latch.countDown();
-        });
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-        }
-    }
 
     private void reset() {
         labels.clear();
@@ -87,20 +63,13 @@ public class EnemyPane extends VBox implements EventListener {
                 "turnEnd", "reset");
     }
 
-    @Override
-    public void update(String eventLabel, Object data) {
-        switch (eventLabel) {
-            case "playerHandChanged":
-                Platform.runLater(() -> updatePlayerInfo((Player) data));
-                break;
-            case "turnStart":
-                focusPlayer((Player) data);
-                break;
-            case "turnEnd":
-                unfocusPlayer((Player) data);
-                break;
-        }
+    /* ------------------------------- */
+
+    public PlayerLabel getPlayerLabel(Player player) {
+        return labels.get(player);
     }
+
+    /* ------------------------------- */
 
     @Override
     public void update(String eventLabel, Object... data) {
@@ -111,6 +80,7 @@ public class EnemyPane extends VBox implements EventListener {
                         addPlayerLabel((Player) player);
                 });
                 break;
+            case "playerHandChanged":
             case "playerDrew":
                 Platform.runLater(() -> updatePlayerInfo((Player) data[0]));
                 break;

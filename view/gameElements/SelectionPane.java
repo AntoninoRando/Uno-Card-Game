@@ -59,10 +59,6 @@ public class SelectionPane extends HBox implements EventListener {
     }
 
     @Override
-    public void update(String eventLabel, Object data) {
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public void update(String eventLabel, Object... data) {
         switch (eventLabel) {

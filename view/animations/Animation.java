@@ -6,180 +6,163 @@ import java.net.MalformedURLException;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-
 import javafx.geometry.Bounds;
-
-import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-
+import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
-/**
- * The class represents an animation. It automatically loads and stores the
- * single images which are the frames of the animation: just give the path to
- * the folder gathering them all (each images must be named "0.png", "1.png",
- * "2.png, ... whether they are the first, second, third, ... frame in the
- * animation).
- * <hr>
- * The method <code>play</code> starts the animation.
- */
 public class Animation {
     private Path folderPath;
     private File folder;
-    private ImageView[] images;
     private double frameDuration = 60.0;
-    private EventHandler<ActionEvent> onFinishAction = e -> {};
+    private EventHandler<ActionEvent> onFinishAction = e -> {
+    };
+    private Optional<Double> resizeW = Optional.empty();
+    private Optional<Double> resizeH = Optional.empty();
+    private Optional<Double> sceneX = Optional.empty();
+    private Optional<Double> sceneY = Optional.empty();
+    public CountDownLatch latch = new CountDownLatch(1);
+    private boolean willCountdown, willStay;
+
+    private static HashMap<String, ImageView[]> imagesLoaded = new HashMap<String, ImageView[]>();
 
     public Animation(String folderPathname) {
         folderPath = Paths.get(folderPathname);
         folder = new File(folderPathname);
-        images = loadImages();
+        load();
     }
 
-    public void setFrameDuration(double duration) {
-        frameDuration = duration;
+    /* GETTERS AND SETTERS */
+
+    public void setFrameDuration(double frameDuration) {
+        this.frameDuration = frameDuration;
     }
 
-    public void setOnFinishAction(EventHandler<ActionEvent> action) {
-        onFinishAction = action;
+    public void setOnFinishAction(EventHandler<ActionEvent> onFinishAction) {
+        this.onFinishAction = onFinishAction;
     }
 
-    private final ImageView[] loadImages() {
-        if (Animations.imagesLoaded.containsKey(folderPath.toString()))
-            return Animations.imagesLoaded.get(folderPath.toString());
-
-        ImageView[] images = new ImageView[folder.listFiles().length];
-
-        for (int i = 0; i < images.length; i++) {
-            try {
-                Image img = new Image(folderPath.resolve(i + ".png").toUri().toURL().toExternalForm());
-                images[i] = new ImageView(img);
-                images[i].setPreserveRatio(true);
-                images[i].setFitWidth(400.0);
-            } catch (MalformedURLException e) {
-            }
-        }
-
-        return images;
+    public void setDimensions(Double width, Double height) {
+        if (width != null)
+            resizeW = Optional.of(width);
+        if (height != null)
+            resizeH = Optional.of(height);
     }
+
+    public void setSceneCoordinates(Double x, Double y) {
+        if (x != null)
+            sceneX = Optional.of(x);
+        if (y != null)
+            sceneY = Optional.of(y);
+    }
+
+    public void setWillCountdown(boolean value) {
+        willCountdown = value;
+    }
+
+    public void setWillStay(boolean value) {
+        willStay = value;
+    }
+
+    /* LOADING METHODS */
 
     public void load() {
-        Animations.imagesLoaded.put(folderPath.toString(), images);
+        ImageView[] images = imagesLoaded.get(folderPath.toString());
+
+        if (images != null)
+            return;
+
+        images = new ImageView[folder.listFiles().length];
+
+        try {
+            for (int i = 0; i < images.length; i++)
+                images[i] = new ImageView(new Image(folderPath.resolve(i + ".png").toUri().toURL().toExternalForm()));
+        } catch (MalformedURLException e) {
+        }
+
+        imagesLoaded.put(folderPath.toString(), images);
     };
 
-    public void play(Pane animationLayer) {
-        animationLayer.setVisible(true);
-        Group animation = new Group(images[0]);
+    public Pair<Timeline, StackPane> createAnimation(Consumer<StackPane> action) {
+        ImageView[] images = imagesLoaded.get(folderPath.toString());
 
         Timeline t = new Timeline();
         t.setCycleCount(1);
 
-        for (int i = 1; i < images.length; i++) {
+        StackPane animation = new StackPane();
+
+        // TODO questo si può forse evitare per ogni nuova animazione
+        for (int i = 0; i < images.length; i++) {
             ImageView img = images[i];
-            KeyFrame frame = new KeyFrame(Duration.millis(frameDuration * i), e -> animation.getChildren().setAll(img));
+
+            if (resizeW.isEmpty() || resizeH.isEmpty())
+                img.setPreserveRatio(true);
+            resizeW.ifPresent(w -> img.setFitWidth(w));
+            resizeH.ifPresent(h -> img.setFitHeight(h));
+
+            img.setVisible(false);
+            int j = i - 1;
+            animation.getChildren().add(img);
+            KeyFrame frame = new KeyFrame(Duration.millis(frameDuration * i), e -> {
+                if (j >= 0)
+                    images[j].setVisible(false);
+                img.setVisible(true);
+            });
             t.getKeyFrames().add(frame);
         }
 
+        Node firstFrame = animation.getChildren().get(0);
+        Bounds b = firstFrame.localToScene(firstFrame.getBoundsInLocal());
+        sceneX.ifPresent(x -> animation.setTranslateX(x - b.getMinX())); // x = animationRealX + translateQuantity
+        sceneY.ifPresent(y -> animation.setTranslateY(y - b.getMinY()));
+
         t.setOnFinished(e -> {
             onFinishAction.handle(e);
-            animationLayer.getChildren().remove(animation);
+            action.accept(animation);
         });
-        animationLayer.getChildren().add(animation);
-        t.play();
+
+        return new Pair<Timeline, StackPane>(t, animation);
     }
 
-    public void play(Pane animationLayer, double x, double y) {
-        animationLayer.setVisible(true);
-        Group animation = new Group(images[0]);
-
-        Timeline t = new Timeline();
-        t.setCycleCount(1);
-
-        for (int i = 1; i < images.length; i++) {
-            ImageView img = images[i];
-            KeyFrame frame = new KeyFrame(Duration.millis(frameDuration * i), e -> animation.getChildren().setAll(img));
-            t.getKeyFrames().add(frame);
-        }
-
-        t.setOnFinished(e -> {
-            onFinishAction.handle(e);
-            animationLayer.getChildren().remove(animation);
-        });
-
-        animationLayer.getChildren().add(animation);
-
-        Bounds animationRealPosition = animation.localToScene(animation.getBoundsInLocal());
-        // x = animationRealX + translateQuantity
-        animation.setTranslateX(x - animationRealPosition.getMaxX());
-        animation.setTranslateY(y - animationRealPosition.getMaxY());
-
-        t.play();
+    private Pair<Timeline, StackPane> play(Pane animationLayer, Consumer<StackPane> action, int index) {
+        Pair<Timeline, StackPane> animation = createAnimation(action);
+        animationLayer.getChildren().add(index, animation.getValue());
+        animation.getKey().play();
+        return animation;
     }
 
-    /* ----------------------------------------------- */
-
-    public static CountDownLatch latch = new CountDownLatch(1);
-
-    public void playAndWait(Pane animationLayer) {
-        animationLayer.setVisible(true);
-        Group animation = new Group(images[0]);
-
-        Timeline t = new Timeline();
-        t.setCycleCount(1);
-
-        for (int i = 1; i < images.length; i++) {
-            ImageView img = images[i];
-            KeyFrame frame = new KeyFrame(Duration.millis(frameDuration * i), e -> animation.getChildren().setAll(img));
-            t.getKeyFrames().add(frame);
-        }
-
-        t.setOnFinished(e -> {
-            onFinishAction.handle(e);
-            animationLayer.getChildren().remove(animation);
-            latch.countDown();
-            latch = new CountDownLatch(1);
-        });
-        animationLayer.getChildren().add(animation);
-        t.play();
+    public Pair<Timeline, StackPane> play(Pane animationLayer) {
+        return play(animationLayer, g -> {
+            if (!willStay)
+                animationLayer.getChildren().remove(g);
+            if (willCountdown)
+                latch.countDown();
+        }, animationLayer.getChildren().size());
     }
 
-    public void playAndWait(Pane animationLayer, double x, double y) {
-        animationLayer.setVisible(true);
-        Group animation = new Group(images[0]);
+    public Pair<Timeline, StackPane> play(Pane animationLayer, int index) {
+        return play(animationLayer, g -> {
+            if (!willStay)
+                animationLayer.getChildren().remove(g);
+            if (willCountdown)
+                latch.countDown();
+        }, index);
+    }
 
-        Timeline t = new Timeline();
-        t.setCycleCount(1);
-
-        for (int i = 1; i < images.length; i++) {
-            ImageView img = images[i];
-            KeyFrame frame = new KeyFrame(Duration.millis(frameDuration * i), e -> animation.getChildren().setAll(img));
-            t.getKeyFrames().add(frame);
-        }
-
-        t.setOnFinished(e -> {
-            onFinishAction.handle(e);
-            animationLayer.getChildren().remove(animation);
-            latch.countDown();
-            latch = new CountDownLatch(1);
-        });
-
-        animationLayer.getChildren().add(animation);
-
-        Bounds animationRealPosition = animation.localToScene(animation.getBoundsInLocal());
-        // x = animationRealX + translateQuantity
-        animation.setTranslateX(x - animationRealPosition.getMaxX());
-        animation.setTranslateY(y - animationRealPosition.getMaxY());
-
-        t.play();
+    public void resetLatch() {
+        latch = new CountDownLatch(1);
     }
 }

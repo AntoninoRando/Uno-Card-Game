@@ -16,17 +16,13 @@ public class ControllerFX extends Controller {
     }
 
     @Override
-    public void update(String eventType, Object data) {
-        if (eventType.equals("add")) {
-            // TODO dara errore se viene chiamato addAll che passa come data una collection
-            Control control = new ControlDrag((Card) data, PlayzonePane.getInstance());
-            control.setHandler(this);
-        }
-    }
-
-    @Override
     public void update(String eventType, Object... data) {
-        // TODO Auto-generated method stub
-
+        switch (eventType) {
+            // TODO dara errore se viene chiamato addAll che passa come data una collection
+            case "add":
+                Control control = new ControlDrag((Card) data[0], PlayzonePane.getInstance());
+                control.setHandler(this);
+                break;
+        }
     }
 }

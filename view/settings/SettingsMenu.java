@@ -70,11 +70,6 @@ public class SettingsMenu extends BorderPane implements EventListener {
     }
 
     /* EVENT LISTENER */
-
-    @Override
-    public void update(String eventType, Object data) {
-    }
-
     @Override
     public void update(String eventType, Object... data) {
         switch (eventType) {

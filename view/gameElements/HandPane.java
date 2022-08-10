@@ -126,15 +126,6 @@ public class HandPane extends HBox implements EventListener {
     /* ----------------------------------------- */
 
     @Override
-    public void update(String eventLabel, Object data) {
-        switch (eventLabel) {
-            case "humanTurn cardPlayed":
-                Platform.runLater(() -> removeCard(((Card) data).getGuiContainer()));
-                break;
-        }
-    }
-
-    @Override
     public void update(String eventLabel, Object... data) {
         switch (eventLabel) {
             case "playerDrew":
@@ -142,6 +133,9 @@ public class HandPane extends HBox implements EventListener {
                     if (((Player) data[0]).isHuman())
                         addCard((Card) data[1]);
                 });
+                break;
+            case "humanTurn cardPlayed":
+                Platform.runLater(() -> removeCard(((Card) data[0]).getGuiContainer()));
                 break;
             case "reset":
                 reset();

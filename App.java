@@ -1,9 +1,7 @@
 import java.util.TreeMap;
 
-import controller.Controller;
-import controller.ControllerFX;
-import controller.Controls;
 import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
@@ -12,15 +10,17 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.gameLogic.Loop;
-import model.data.UserInfo;
 import model.gameLogic.Player;
 import model.gameLogic.Card;
+import model.data.UserInfo;
+
 import view.Displayer;
 import view.animations.Animation;
 import view.animations.Animations;
 import view.animations.ResetTranslate;
-import view.gameElements.EnemyPane;
+import view.gameElements.PlayerPane;
 import view.gameElements.HandPane;
+import view.gameElements.PlayerLabel;
 import view.gameElements.PlayzonePane;
 import view.gameElements.SelectionPane;
 import view.gameElements.TerrainPane;
@@ -28,6 +28,10 @@ import view.home.HomeMenu;
 import view.home.Homes;
 import view.settings.Settings;
 import view.sounds.Sounds;
+
+import controller.Controller;
+import controller.ControllerFX;
+import controller.Controls;
 
 public class App extends Displayer {
     private Scene scene;
@@ -37,7 +41,7 @@ public class App extends Displayer {
     private Thread gameThread;
 
     public App() {
-        super("gameStart", "unoDeclared", "turnBlocked", "enemyTurn cardPlayed", "warning");
+        super("gameStart", "unoDeclared", "turnBlocked", "enemyTurn cardPlayed", "warning", "turnStart", "turnEnd");
 
         root = new StackPane();
         root.setId("background");
@@ -60,14 +64,14 @@ public class App extends Displayer {
         gameElements.setVisible(false);
 
         BorderPane borderPane = new BorderPane();
-        borderPane.setLeft(EnemyPane.getInstance());
+        borderPane.setLeft(PlayerPane.getInstance());
         borderPane.setCenter(TerrainPane.getInstance());
         borderPane.setBottom(HandPane.getInstance());
 
         // Add padding to the borderPane right to absolute center the node in the
         // borderPane center region
         Region padderRegionRight = new Region();
-        padderRegionRight.prefWidthProperty().bind(EnemyPane.getInstance().widthProperty());
+        padderRegionRight.prefWidthProperty().bind(PlayerPane.getInstance().widthProperty());
         borderPane.setRight(padderRegionRight);
 
         gameElements.getChildren().addAll(borderPane, PlayzonePane.getInstance(),
@@ -110,10 +114,28 @@ public class App extends Displayer {
         Settings.setAvatarClickAction(e -> Settings.openAvatarPicker());
     }
 
+    private Animation unoAnimation;
+    private Animation blockTurnAnimation;
+    private Animation playingCardAnimation;
+    private Animation focusPlayerOnTurnAnimation;
+
     private void loadAnimations() {
-        Animations.UNO_TEXT.get().load();
-        Animations.BLOCK_TURN.get().load();
-        Animations.CARD_PLAYED.get().load();
+        Animations.FOCUS_PLAYER.get().load();
+
+        unoAnimation = Animations.UNO_TEXT.get();
+        unoAnimation.setDimensions(400.0, null);
+
+        blockTurnAnimation = Animations.BLOCK_TURN.get();
+        blockTurnAnimation.setDimensions(200.0, null);
+        blockTurnAnimation.setWillCountdown(true);
+
+        playingCardAnimation = Animations.CARD_PLAYED.get();
+        playingCardAnimation.setDimensions(400.0, null);
+        playingCardAnimation.setWillCountdown(true);
+
+        focusPlayerOnTurnAnimation = Animations.FOCUS_PLAYER.get();
+        focusPlayerOnTurnAnimation.setWillCountdown(true);
+        focusPlayerOnTurnAnimation.setWillStay(true);
     }
 
     private void newGame() {
@@ -165,38 +187,55 @@ public class App extends Displayer {
         stage.show();
     }
 
-    @Override
-    public void update(String eventType, Object data) {
-        switch (eventType) {
-            case "unoDeclared":
-                Platform.runLater(() -> Animations.UNO_TEXT.get().play(root));
-                break;
-            case "turnBlocked":
-                Platform.runLater(() -> Animations.BLOCK_TURN.get().playAndWait(root));
-                try {
-                    Animation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                break;
-            case "enemyTurn cardPlayed":
-                // TODO Aggiungere priorità all'animazione altrimenti parte dopo che è avvenuta la modifica
-                Platform.runLater(() -> Animations.CARD_PLAYED.get().playAndWait(root));
-                try {
-                    Animation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                break;
-        }
-    }
+    /* --------------------------------- */
 
     @Override
     public void update(String eventType, Object... data) {
+        // TODO le animazioni le gioca toppo on the top: stanno sopra al menù di pausa
         switch (eventType) {
             case "gameStart":
                 Platform.runLater(() -> Sounds.IN_GAME_SOUNDTRACK.play());
                 break;
             case "warning":
                 Platform.runLater(() -> ResetTranslate.resetTranslate(((Card) data[1]).getGuiContainer()));
+                break;
+            case "unoDeclared":
+                Platform.runLater(() -> unoAnimation.play(root));
+                break;
+            case "turnBlocked":
+                Platform.runLater(() -> blockTurnAnimation.play(root));
+                try {
+                    blockTurnAnimation.latch.await();
+                } catch (InterruptedException e) {
+                }
+                blockTurnAnimation.resetLatch();
+                break;
+            case "enemyTurn cardPlayed":
+                // TODO Aggiungere priorità all'animazione altrimenti parte dopo che è avvenuta
+                // la modifica
+                Platform.runLater(() -> playingCardAnimation.play(root));
+                try {
+                    playingCardAnimation.latch.await();
+                } catch (InterruptedException e) {
+                }
+                playingCardAnimation.resetLatch();
+                break;
+            case "turnStart":
+                PlayerLabel pl = PlayerPane.getInstance().getPlayerLabel((Player) data[0]);
+                Bounds b = pl.localToScene(pl.getBoundsInLocal());
+
+                focusPlayerOnTurnAnimation.setDimensions(PlayerPane.getInstance().getWidth(), b.getHeight() + 10);
+                focusPlayerOnTurnAnimation.setSceneCoordinates(0.0, b.getMinY() - 5);
+
+                Platform.runLater(() -> focusPlayerOnTurnAnimation.play(root, 0).getValue());
+                try {
+                    focusPlayerOnTurnAnimation.latch.await();
+                } catch (InterruptedException e) {
+                }
+                focusPlayerOnTurnAnimation.resetLatch();
+                break;
+            case "turnEnd":
+                Platform.runLater(() -> root.getChildren().remove(0));
                 break;
         }
     }

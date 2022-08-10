@@ -1,9 +1,6 @@
 package view.animations;
 
-import java.util.HashMap;
 import java.util.function.Supplier;
-
-import javafx.scene.image.ImageView;
 
 public abstract class Animations {
     public static final Supplier<Animation> UNO_TEXT = () -> new Animation("resources\\AnimazioneUno");
@@ -12,5 +9,5 @@ public abstract class Animations {
 
     public static final Supplier<Animation> CARD_PLAYED = () -> new Animation("resources\\PlayCard");
 
-    protected static HashMap<String, ImageView[]> imagesLoaded = new HashMap<String, ImageView[]>();
+    public static final Supplier<Animation> FOCUS_PLAYER = () -> new Animation("resources\\FocusTurn");
 }
