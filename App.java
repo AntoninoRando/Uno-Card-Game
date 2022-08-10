@@ -187,7 +187,7 @@ public class App extends Displayer {
         stage.show();
     }
 
-    /* --------------------------------- */
+    /* EVENT LISTENER METHODS */
 
     @Override
     public void update(String eventType, Object... data) {
@@ -239,6 +239,18 @@ public class App extends Displayer {
                 break;
         }
     }
+
+    @Override
+    public int getEventPriority(String eventLabel) {
+        switch (eventLabel) {
+            case "enemyTurn cardPlayed":
+                return 2;
+            default:
+                return super.getEventPriority(eventLabel);
+        }
+    }
+
+    /* MAIN */
 
     public static void main(String[] args) {
         launch(args);

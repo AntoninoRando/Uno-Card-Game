@@ -38,7 +38,7 @@ public abstract class Controller extends Thread implements EventListener {
 
     public void setSource(Player source) {
         this.source = source;
-        source.getHand().observers.subscribe("add", this);
+        source.getHand().observers.subscribe(this, "add");
     }
 
     public void setInputListener(InputListener inputListener) {

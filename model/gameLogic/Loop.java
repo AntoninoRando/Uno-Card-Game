@@ -82,7 +82,7 @@ public class Loop implements InputListener {
     LinkedList<Phase> phases = new LinkedList<>();
     static int currentPhase;
 
-    private static long timeElapsed;
+    private static long timeStart;
 
     public static void reset() {
         Game.reset();
@@ -102,16 +102,15 @@ public class Loop implements InputListener {
 
         oldEvents.notify("reset", (Object[]) null);
 
-        timeElapsed = System.currentTimeMillis() - timeElapsed;
-        UserInfo.addXp((int) (timeElapsed / 60000F));
-        timeElapsed = 0;
+        int minutesElapsed = (int) ((System.currentTimeMillis() - timeStart) / 60000F);
+        UserInfo.addXp(minutesElapsed);
+        timeStart = 0;
     }
 
 
     public void setupView(Displayer displayer) {
         disp = displayer;
-        for (String event : disp.getEventsListening())
-            events.subscribe(event, disp);
+        events.subscribe(disp, disp.getEventsListening().stream().toArray(String[]::new));
     }
 
     public void setupGame(TreeMap<Integer, Player> players, Controller... users) {
@@ -137,7 +136,7 @@ public class Loop implements InputListener {
 
     public void play() {
         setupFirstTurn();
-        timeElapsed = System.currentTimeMillis();
+        timeStart = System.currentTimeMillis();
         try {
             while (!g.isOver()) {
                 boolean validChoice = phases.get(currentPhase).apply(this, Game.getInstance());
@@ -179,12 +178,11 @@ public class Loop implements InputListener {
     private void endGame() {
         events.notify("playerWon", player);
 
-        timeElapsed = System.currentTimeMillis() - timeElapsed;
-        UserInfo.addXp((int) (timeElapsed / 60000F));
+        int minutesElapsed = (int) ((System.currentTimeMillis() - timeStart) / 60000F);
+        UserInfo.addXp(minutesElapsed);
         if (player.isHuman())
             UserInfo.addXp(5);
         UserInfo.addGamePlayed(player.isHuman());
-        timeElapsed = 0;
     }
 
     /* INPUTLISTENER */
