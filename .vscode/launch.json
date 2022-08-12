@@ -6,56 +6,9 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch Appl",
-            "request": "launch",
-            "mainClass": "Appl",
-            "projectName": "JUno_d1fe1dd9",
-            "vmArgs": "--module-path \"C:/Users/anton/Downloads/Apps/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
-        },
-        {
-            "type": "java",
             "name": "Launch App",
             "request": "launch",
             "mainClass": "App",
-            "projectName": "JUno_d1fe1dd9",
-            "vmArgs": "--module-path \"C:/Users/anton/Downloads/Apps/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
-        },
-        {
-            "type": "java",
-            "name": "Launch JUno",
-            "request": "launch",
-            "mainClass": "model.JUno",
-            "projectName": "JUno_d1fe1dd9",
-            "vmArgs": "--module-path \"C:/Users/anton/Downloads/Apps/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
-        },
-        {
-            "type": "java",
-            "name": "Launch GameFX",
-            "request": "launch",
-            "mainClass": "GameFX",
-            "projectName": "JUno_d1fe1dd9",
-            "vmArgs": "--module-path \"C:/Users/anton/Downloads/Apps/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
-        },
-        {
-            "type": "java",
-            "name": "Launch GameFX",
-            "request": "launch",
-            "mainClass": "view.GameFX",
-            "projectName": "JUno_d1fe1dd9",
-            "vmArgs": "--module-path \"C:/Users/anton/Downloads/Apps/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
-        },
-        {
-            "type": "java",
-            "name": "Launch Current File",
-            "request": "launch",
-            "mainClass": "${file}",
-            "vmArgs": "--module-path \"C:/Users/anton/Downloads/Apps/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
-        },
-        {
-            "type": "java",
-            "name": "Launch JUno",
-            "request": "launch",
-            "mainClass": "JUno",
             "projectName": "JUno_d1fe1dd9",
             "vmArgs": "--module-path \"C:/Users/anton/Downloads/Apps/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
         }

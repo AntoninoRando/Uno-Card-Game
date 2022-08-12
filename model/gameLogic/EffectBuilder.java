@@ -2,6 +2,8 @@ package model.gameLogic;
 
 import java.util.function.Consumer;
 
+import model.data.CardsInfo;
+
 public class EffectBuilder {
     private Effect effect;
 
@@ -37,7 +39,8 @@ public class EffectBuilder {
                     break;
                 case "select one of":
                     i++;
-                    selectOneCardOf();
+                    String[] cardsNames = s[i].split("  ");
+                    selectOneCardOf(cardsNames);
                     break;
             }
             i++;
@@ -103,6 +106,29 @@ public class EffectBuilder {
 
     public EffectBuilder selectOneCardOf(Card... cards) {
         effect.steps.add(() -> {
+            if (!effect.sourcePlayer.isHuman()) {
+                Loop.events.notify("cardSelection", effect.sourcePlayer);
+                effect.targetCard = cards[(int) (Math.random() * cards.length)];
+                return;
+            }
+
+            Object[] data = new Object[cards.length + 1];
+            data[0] = (Consumer<Card>) card -> effect.targetCard = card;
+            for (int i = 0; i < cards.length; i++)
+                data[i + 1] = cards[i];
+            Loop.events.notify("cardSelection", data);
+        });
+        return this;
+    }
+
+    public EffectBuilder selectOneCardOf(String... cardsNames) {
+        effect.steps.add(() -> {
+            Card[] cards = new Card[cardsNames.length];
+            for (int i = 0; i < cards.length; i++) {
+                String fullName = cardsNames[i];
+                cards[i] = CardsInfo.allCards.get(fullName).getCopy();
+            }
+
             if (!effect.sourcePlayer.isHuman()) {
                 Loop.events.notify("cardSelection", effect.sourcePlayer);
                 effect.targetCard = cards[(int) (Math.random() * cards.length)];

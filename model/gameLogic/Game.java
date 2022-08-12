@@ -1,12 +1,12 @@
 package model.gameLogic;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
+
+import model.data.CardsInfo;
 
 /**
  * This class represents a game frame. Think of this class as a node
@@ -196,43 +196,6 @@ public class Game {
     }
 
     private CardGroup standardDeck() {
-        List<Card> standardSet = new ArrayList<Card>(108);
-        Effect blockTurn = new EffectBuilder().build("target", "1", "they pass");
-        // Effect blockTurn = new
-        // EffectBuilder().directTargetToFollowing(1).skipTargetTurn().build();
-        Effect draw2 = new EffectBuilder().build("target", "1", "they draw", "2", "they pass");
-        // Effect draw2 = new
-        // EffectBuilder().directTargetToFollowing(1).targetDraws(2).skipTargetTurn().build();
-        Effect reverseTurn = new EffectBuilder().build("reverse turn");
-        // Effect reverseTurn = new EffectBuilder().reverseTurnOrder().build();
-        Effect pickColor = new EffectBuilder().selectOneCardOf(new Card(Suit.RED, -5), new Card(Suit.BLUE, -5),
-                new Card(Suit.YELLOW, -5), new Card(Suit.GREEN, -5)).transformIntoTarget().build();
-        Effect draw4 = new EffectBuilder().directTargetToFollowing(1).targetDraws(4).skipTargetTurn()
-                .selectOneCardOf(new Card(Suit.RED, -4), new Card(Suit.BLUE, -4),
-                        new Card(Suit.YELLOW, -4), new Card(Suit.GREEN, -4))
-                .transformIntoTarget().build();
-
-        for (Suit color : Suit.values()) {
-            if (color == Suit.WILD)
-                continue;
-
-            for (int i = 1; i < 10; i++) {
-                standardSet.add(new Card(color, i));
-                standardSet.add(new Card(color, i));
-            }
-
-            standardSet.add(new Card(color, 0));
-            standardSet.add(new Card(color, 0));
-            standardSet.add(new Card(color, -1, blockTurn));
-            standardSet.add(new Card(color, -1, blockTurn));
-            standardSet.add(new Card(color, -2, draw2));
-            standardSet.add(new Card(color, -2, draw2));
-            standardSet.add(new Card(color, -3, reverseTurn));
-            standardSet.add(new Card(color, -3, reverseTurn));
-            standardSet.add(new Card(Suit.WILD, -5, pickColor));
-            standardSet.add(new Card(Suit.WILD, -4, draw4));
-        }
-
-        return new CardGroup(standardSet);
+        return CardsInfo.load("Standard");
     }
 }
