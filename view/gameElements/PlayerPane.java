@@ -59,8 +59,6 @@ public class PlayerPane extends VBox implements EventListener {
         Label title = new Label("Players");
         title.getStyleClass().add("title");
         getChildren().add(title);
-        Loop.events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart",
-                "turnEnd", "reset");
     }
 
     /* ------------------------------- */
@@ -85,7 +83,7 @@ public class PlayerPane extends VBox implements EventListener {
                 Platform.runLater(() -> updatePlayerInfo((Player) data[0]));
                 break;
             case "reset":
-                reset();
+                Platform.runLater(() -> reset());
                 break;
         }
     }

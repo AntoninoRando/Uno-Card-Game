@@ -1,9 +1,14 @@
+import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.util.TreeMap;
 
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
@@ -18,6 +23,7 @@ import view.Displayer;
 import view.animations.Animation;
 import view.animations.Animations;
 import view.animations.ResetTranslate;
+import view.endGame.EndGameSettings;
 import view.gameElements.PlayerPane;
 import view.gameElements.HandPane;
 import view.gameElements.PlayerLabel;
@@ -41,7 +47,8 @@ public class App extends Displayer {
     private Thread gameThread;
 
     public App() {
-        super("gameStart", "unoDeclared", "turnBlocked", "enemyTurn cardPlayed", "warning", "turnStart", "turnEnd");
+        super("gameStart", "unoDeclared", "turnBlocked", "enemyTurn cardPlayed", "warning", "turnStart", "turnEnd",
+                "playerWon");
 
         root = new StackPane();
         root.setId("background");
@@ -57,6 +64,7 @@ public class App extends Displayer {
         addGameContents();
         addHomePageContents();
         addSettingsContents();
+        newGameResultsScene();
     }
 
     private void addGameContents() {
@@ -114,6 +122,42 @@ public class App extends Displayer {
         Settings.setAvatarClickAction(e -> Settings.openAvatarPicker());
     }
 
+    private void newGameResultsScene() {
+        Button backHome = new Button();
+        backHome.setStyle("-fx-background-color: none");
+        backHome.setOnMouseClicked(e -> {
+            scene.setRoot(root);
+            gameElements.setVisible(false);
+            home.setVisible(true);
+        });
+
+        Button newGame = new Button();
+        newGame.setStyle("-fx-background-color: none");
+        newGame.setOnMouseClicked(e -> {
+            scene.setRoot(root);
+            gameElements.setVisible(true);
+            home.setVisible(false);
+            newGame();
+        });
+
+        try {
+            Image image = new Image(Paths.get("resources\\BlueButton.png").toUri().toURL().toExternalForm());
+            ImageView icon = new ImageView(image);
+            icon.setPreserveRatio(true);
+            icon.setFitWidth(150.0);
+            newGame.setGraphic(icon);
+
+            Image image2 = new Image(Paths.get("resources\\HomeButton.png").toUri().toURL().toExternalForm());
+            ImageView icon2 = new ImageView(image2);
+            icon2.setPreserveRatio(true);
+            icon2.setFitWidth(150.0);
+            backHome.setGraphic(icon2);
+        } catch (MalformedURLException e1) {
+        }
+
+        EndGameSettings.addButtons(newGame, backHome);
+    }
+
     private Animation unoAnimation;
     private Animation blockTurnAnimation;
     private Animation playingCardAnimation;
@@ -165,7 +209,7 @@ public class App extends Displayer {
 
     private void endGame() {
         Sounds.IN_GAME_SOUNDTRACK.stop();
-        Loop.reset();
+        Loop.getInstance().endGame(true);
         gameThread.interrupt();
     }
 
@@ -236,6 +280,14 @@ public class App extends Displayer {
                 break;
             case "turnEnd":
                 Platform.runLater(() -> root.getChildren().remove(0));
+                break;
+            case "playerWon":
+                Platform.runLater(() -> {
+                    Sounds.IN_GAME_SOUNDTRACK.stop();
+                    gameThread.interrupt();
+                    EndGameSettings.updateGameResults(((Player) data[0]).getNickname(), (int) data[1]);
+                    scene.setRoot(EndGameSettings.GAME_RESULTS);
+                });
                 break;
         }
     }

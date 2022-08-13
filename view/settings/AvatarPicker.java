@@ -21,7 +21,7 @@ public class AvatarPicker extends StackPane {
     private int rowCapacity = 5;
     private Button closeButton = createCloseButton();
 
-    protected AvatarPicker() {
+    AvatarPicker() {
         setMaxHeight(400.0);
         setMaxWidth(400.0);
         setPrefWidth(400.0);

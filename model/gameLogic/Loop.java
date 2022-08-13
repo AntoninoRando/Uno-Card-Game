@@ -34,7 +34,7 @@ public class Loop implements InputListener {
                 c.getEffect().ifPresent(effect -> effect.cast(g.getPlayer(), c));
                 events.notify("cardPlayed", c);
 
-                if (g.getPlayer().getHand().size() == 1 && !unoDeclared) 
+                if (g.getPlayer().isHuman() && g.getPlayer().getHand().size() == 1 && !unoDeclared) 
                     Actions.dealFromDeck(g.getPlayer(), 2);
 
                 events.notify("playerHandChanged", g.getPlayer());
@@ -84,30 +84,6 @@ public class Loop implements InputListener {
 
     private static long timeStart;
 
-    public static void reset() {
-        Game.reset();
-        
-        instance = null; // TODO o metto questo o tutte le cose sotto... questo serve nel caso quei fields non siano statici
-
-        EventManager oldEvents = events;
-        
-        events = new EventManager();
-        g = null;
-        player = null;
-        choice = null;
-        choiceType = null;
-        users = null;
-        unoDeclared = false;
-        currentPhase = 0;
-
-        oldEvents.notify("reset", (Object[]) null);
-
-        int minutesElapsed = (int) ((System.currentTimeMillis() - timeStart) / 60000F);
-        UserInfo.addXp(minutesElapsed);
-        timeStart = 0;
-    }
-
-
     public void setupView(Displayer displayer) {
         disp = displayer;
         events.subscribe(disp, disp.getEventsListening().stream().toArray(String[]::new));
@@ -142,7 +118,7 @@ public class Loop implements InputListener {
                 boolean validChoice = phases.get(currentPhase).apply(this, Game.getInstance());
 
                 if (g.didPlayerWin(g.getPlayer())) {
-                    endGame();
+                    endGame(false);
                     return;
                 }
 
@@ -166,7 +142,7 @@ public class Loop implements InputListener {
         events.notify("firstCard", firstCard);
 
         for (Player p : g.getPlayers())
-            Actions.dealFromDeck(p, 7);
+            Actions.dealFromDeck(p, 1); //TODO change back to 7
 
         player = g.getPlayer(0);
 
@@ -175,14 +151,31 @@ public class Loop implements InputListener {
 
     }
 
-    private void endGame() {
-        events.notify("playerWon", player);
-
+    public void endGame(boolean interrupted) {
         int minutesElapsed = (int) ((System.currentTimeMillis() - timeStart) / 60000F);
-        UserInfo.addXp(minutesElapsed);
-        if (player.isHuman())
-            UserInfo.addXp(5);
-        UserInfo.addGamePlayed(player.isHuman());
+        int xpEarned = minutesElapsed;
+        UserInfo.addXp(xpEarned);
+
+        if (!interrupted) {
+            Player winner = g.getPlayer();
+            if (winner.isHuman())
+                UserInfo.addXp(5);
+            UserInfo.addGamePlayed(winner.isHuman());
+            events.notify("playerWon", g.getPlayer(), xpEarned);
+        }
+
+        Game.reset();
+        
+        g = null;
+        player = null;
+        choice = null;
+        choiceType = null;
+        users = null;
+        unoDeclared = false;
+        currentPhase = 0;
+        timeStart = 0;
+
+        events.notify("reset");
     }
 
     /* INPUTLISTENER */

@@ -136,6 +136,10 @@
     font-weight: bold;
 }
 
+.xp-bar {
+    /* TODO */
+}
+
 #games-played-label {
     -fx-text-fill: white;
     color: white;
@@ -191,4 +195,9 @@
 
     -fx-font-size: 25px;
     font-size: 25px;
+}
+
+#game-results {
+    -fx-font-size: 16px;
+    font-size: 16px;
 }

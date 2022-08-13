@@ -40,7 +40,6 @@ public class TerrainPane extends StackPane implements EventListener {
         terrainCard = new CardContainer();
         getChildren().clear();
         getChildren().add(terrainCard);
-        Loop.events.subscribe(this, "cardPlayed", "firstCard", "reset");
     }
 
     @Override
@@ -51,7 +50,7 @@ public class TerrainPane extends StackPane implements EventListener {
                 Platform.runLater(() -> updateTerrainCard((Card) data[0]));
                 break;
             case "reset":
-                reset();
+                Platform.runLater(() -> reset());
                 break;
         }
     }

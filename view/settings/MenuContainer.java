@@ -3,11 +3,11 @@ package view.settings;
 import javafx.scene.layout.StackPane;
 
 public class MenuContainer extends StackPane {
-    protected SettingsMenu settings;
-    protected ProfileMenu profile;
-    protected AvatarPicker avatarPicker;
+    SettingsMenu settings;
+    ProfileMenu profile;
+    AvatarPicker avatarPicker;
 
-    protected MenuContainer() {
+    MenuContainer() {
         setVisible(false);
 
         settings = new SettingsMenu();
@@ -26,13 +26,13 @@ public class MenuContainer extends StackPane {
         });
     }
 
-    protected void openSettings() {
+    void openSettings() {
         settings.setVisible(true);
         profile.setVisible(false);
         avatarPicker.setVisible(false);
     }
 
-    protected void openProfile() {
+    void openProfile() {
         settings.setVisible(false);
         profile.setVisible(true);
         avatarPicker.setVisible(false);

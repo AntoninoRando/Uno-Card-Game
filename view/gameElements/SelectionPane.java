@@ -29,7 +29,7 @@ public class SelectionPane extends HBox implements EventListener {
         setVisible(false);
         setAlignment(Pos.CENTER);
 
-        Loop.events.subscribe(this, "humanTurn cardSelection", "reset");
+        Loop.events.subscribe(this, "humanTurn cardSelection");
     }
 
     /* ---------------------------------------- */
@@ -53,10 +53,6 @@ public class SelectionPane extends HBox implements EventListener {
         latch.countDown();
         latch = new CountDownLatch(1);
     }
-    
-    private void reset() {
-        Loop.events.subscribe(this, "humanTurn cardSelection", "reset");
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -78,9 +74,6 @@ public class SelectionPane extends HBox implements EventListener {
                 }
                 break;
             // TODO case "enemyTurn cardSelection":
-            case "reset":
-                reset();
-                break;
         }
     }
 }

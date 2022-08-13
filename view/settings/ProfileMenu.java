@@ -51,8 +51,8 @@ public class ProfileMenu extends VBox {
     }
 
     private ProgressBar createXpBar() {
-        ProgressBar xpBar = new ProgressBar(UserInfo.getXp() / UserInfo.getXpGap());
-        xpBar.setId("xp-bar");
+        ProgressBar xpBar = new ProgressBar((double) UserInfo.getXp() / UserInfo.getXpGap());
+        xpBar.getStyleClass().add("xp-bar");
         return xpBar;
     }
 

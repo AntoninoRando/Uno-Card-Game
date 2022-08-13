@@ -55,7 +55,6 @@ public class HandPane extends HBox implements EventListener {
     private void reset() {
         cardsStored.clear();
         getChildren().clear();
-        Loop.events.subscribe(this, "playerDrew", "reset", "humanTurn cardPlayed");
     }
 
     /* ----------------------------------------- */
@@ -138,7 +137,7 @@ public class HandPane extends HBox implements EventListener {
                 Platform.runLater(() -> removeCard(((Card) data[0]).getGuiContainer()));
                 break;
             case "reset":
-                reset();
+                Platform.runLater(() -> reset());
                 break;
         }
     }

@@ -24,7 +24,7 @@ public class SettingsMenu extends BorderPane implements EventListener {
         arrangeElements();
         getStyleClass().add("settings-menu");
 
-        Loop.events.subscribe(this, "gameStart");
+        Loop.events.subscribe(this, "gameStart", "reset");
     }
 
     private Node createTitle() {
@@ -76,6 +76,9 @@ public class SettingsMenu extends BorderPane implements EventListener {
             case "gameStart":
                 Platform.runLater(
                         () -> ((HBox) getBottom()).getChildren().addAll(restartButton, quitButton));
+                break;
+            case "reset":
+                Platform.runLater(() -> ((HBox) getBottom()).getChildren().clear());
                 break;
         }
     }

@@ -1,6 +1,6 @@
 User
-2
-4
-1
-1.0
+8
+9
+45
+26.0
 resources\icons\night.png
