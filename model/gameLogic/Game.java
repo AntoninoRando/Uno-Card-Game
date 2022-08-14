@@ -1,7 +1,7 @@
 package model.gameLogic;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -20,7 +20,7 @@ import model.data.CardsInfo;
  */
 public class Game {
     /* SINGLETON PATTERN */
-    /* ----------------- */
+
     private static Game instance;
 
     public static Game getInstance() {
@@ -36,42 +36,26 @@ public class Game {
     }
 
     /* FIELDS */
-    /* ------ */
-    private TreeMap<Integer, Player> players;
 
+    private TreeMap<Integer, Player> players;
     private Card terrainCard;
     private CardGroup deck = standardDeck();
     private CardGroup discardPile;
-
     private Player[] turnOrder;
     private int currentTurn;
-
     private Predicate<Card> playCondition;
     private Predicate<Player> winCondition;
     private boolean isOver;
 
-    int nextTurn() {
-        return currentTurn + 1 == turnOrder.length ? 0 : currentTurn + 1;
+    int getNextTurn() {
+        return (currentTurn + 1) % countPlayers();
     }
 
     Player getNextPlayer() {
-        return turnOrder[nextTurn()];
-    }
-
-    public Player[] getTurnOrder() {
-        return turnOrder;
-    }
-
-    public void setTurnOrder(Player[] newOrder) {
-        turnOrder = newOrder;
+        return turnOrder[getNextTurn()];
     }
 
     /* GETTERS AND SETTERS */
-    /* ------------------- */
-    Collection<Player> getPlayers() {
-        return players.values();
-    }
-
     void setPlayers(TreeMap<Integer, Player> players) {
         this.players = players;
     }
@@ -88,10 +72,6 @@ public class Game {
         return deck;
     }
 
-    void setDeck(CardGroup deck) {
-        this.deck = deck;
-    }
-
     CardGroup getDiscardPile() {
         return discardPile;
     }
@@ -100,10 +80,13 @@ public class Game {
         return currentTurn;
     }
 
-    void setTurn(int i) {
-        currentTurn = i % countPlayers();
+    Player[] getTurnOrder() {
+        return turnOrder;
     }
 
+    void setTurnOrder(Player[] newOrder) {
+        turnOrder = newOrder;
+    }
     
     void setPlayConditon(Predicate<Card> newCondition) {
         playCondition = newCondition;
@@ -118,12 +101,16 @@ public class Game {
     }
     
     /* USEFUL METHODS */
-    /* -------------- */
-    Player getPlayer() {
+    
+    Collection<Player> getPlayers() {
+        return players.values();
+    }
+
+    Player getCurrentPlayer() {
         return turnOrder[currentTurn];
     }
 
-    Player getPlayer(int theirTurn) {
+    Player getPlayerByTurn(int theirTurn) {
         return turnOrder[theirTurn % countPlayers()];
     }
 
@@ -131,11 +118,8 @@ public class Game {
         return players.size();
     }
 
-    int getTurn(Player p) {
-        return players.entrySet().stream()
-                .filter(entry -> p.equals(entry.getValue()))
-                .map(Map.Entry::getKey)
-                .findFirst().get();
+    int getTurnOf(Player player) {
+        return Arrays.asList(turnOrder).indexOf(player);
     }
 
     void setTurn(Player player) {

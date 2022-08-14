@@ -66,6 +66,7 @@ public class App extends Displayer {
         addGameContents();
         addHomePageContents();
         addSettingsContents();
+        
         newGameResultsScene();
 
         Loop.events.subscribe(this, getEventsListening().stream().toArray(String[]::new));

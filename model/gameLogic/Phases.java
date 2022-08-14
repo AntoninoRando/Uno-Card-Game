@@ -2,7 +2,7 @@ package model.gameLogic;
 
 public abstract class Phases {
     public static final Phase START_TURN = (l, g) -> {
-        Player p = g.getPlayer();
+        Player p = g.getCurrentPlayer();
 
         Loop.events.notify("turnStart", p);
         if (p.isHuman())
@@ -15,7 +15,7 @@ public abstract class Phases {
     };
 
     public static final Phase MAKE_CHOICE = (l, g) -> {
-        if (g.getPlayer().isHuman())
+        if (g.getCurrentPlayer().isHuman())
             synchronized (l) {
                 try {
                     l.wait();
@@ -24,7 +24,7 @@ public abstract class Phases {
             }
         // enemy decision
         else
-            g.getPlayer().getHand().stream().filter(g::isPlayable).findAny()
+            g.getCurrentPlayer().getHand().stream().filter(g::isPlayable).findAny()
                     .ifPresentOrElse(c -> Loop.choice = c, () -> Loop.choice = "draw");
         return true;
     };
@@ -58,7 +58,7 @@ public abstract class Phases {
     };
 
     public static final Phase END_TURN = (l, g) -> {
-        Loop.events.notify("turnEnd", g.getPlayer());
+        Loop.events.notify("turnEnd", g.getCurrentPlayer());
         g.setTurn(g.getNextPlayer());
         Loop.choice = null;
         Loop.choiceType = null;

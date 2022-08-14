@@ -56,7 +56,7 @@ public class EffectBuilder {
     public EffectBuilder directTargetToFollowing(int ahead) {
         effect.steps.add(() -> {
             Game g = Game.getInstance();
-            effect.targetPlayer = Game.getInstance().getPlayer(g.getTurn(effect.sourcePlayer) + ahead);
+            effect.targetPlayer = g.getPlayerByTurn(g.getTurnOf(effect.sourcePlayer) + ahead);
         });
         return this;
     }
@@ -83,10 +83,8 @@ public class EffectBuilder {
             Player[] newA = new Player[oldA.length];
             int n = g.countPlayers();
             int currentTurn = g.getTurn();
-            for (int i = 0; i < n; i++) {
-                int next = ((currentTurn - i) + n) % n;
-                newA[(i + currentTurn) % n] = oldA[next];
-            }
+            for (int i = 0; i < n; i++) 
+                newA[(i + currentTurn) % n] = oldA[((currentTurn - i) + n) % n];
             g.setTurnOrder(newA);
         });
         return this;

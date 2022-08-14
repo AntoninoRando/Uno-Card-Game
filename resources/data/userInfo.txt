@@ -1,6 +1,6 @@
 User
-9
-31
-70
-35.0
+10
+13
+73
+38.0
 resources\icons\pirate.png

@@ -29,14 +29,14 @@ public class Loop implements InputListener {
             Card c = (Card) choice;
             if (g.isPlayable(c)) {
                 Actions.changeCurrentCard(c);
-                g.getPlayer().hand.remove(c);
-                c.getEffect().ifPresent(effect -> effect.cast(g.getPlayer(), c));
+                g.getCurrentPlayer().hand.remove(c);
+                c.getEffect().ifPresent(effect -> effect.cast(g.getCurrentPlayer(), c));
                 events.notify("cardPlayed", c);
 
-                if (g.getPlayer().isHuman() && g.getPlayer().getHand().size() == 1 && !unoDeclared) 
-                    Actions.dealFromDeck(g.getPlayer(), 2);
+                if (g.getCurrentPlayer().isHuman() && g.getCurrentPlayer().getHand().size() == 1 && !unoDeclared) 
+                    Actions.dealFromDeck(g.getCurrentPlayer(), 2);
 
-                events.notify("playerHandChanged", g.getPlayer());
+                events.notify("playerHandChanged", g.getCurrentPlayer());
                 return true;
             } else {
                 events.notify("warning", "Can't play it now!", c);
@@ -44,7 +44,7 @@ public class Loop implements InputListener {
             }
         });
         choiceTypes.put("draw", () -> {
-            Actions.dealFromDeck(g.getPlayer());
+            Actions.dealFromDeck(g.getCurrentPlayer());
             return true;
         });
         choiceTypes.put("unoDeclared", () -> {
@@ -53,10 +53,10 @@ public class Loop implements InputListener {
         });
         choiceTypes.put("cardPosition", () -> {
             try {
-                choice = g.getPlayer().getHand().get((int) choice);
+                choice = g.getCurrentPlayer().getHand().get((int) choice);
                 return choiceTypes.get("card").get();
             } catch (IndexOutOfBoundsException e) {
-                events.notify("warning", "Invalid selection!");
+                events.notify("warning", "Invalid selection!", choice);
                 return false;
             }
         });
@@ -110,7 +110,7 @@ public class Loop implements InputListener {
             while (!g.isOver()) {
                 boolean validChoice = phases.get(currentPhase).apply(this, Game.getInstance());
 
-                if (g.didPlayerWin(g.getPlayer())) {
+                if (g.didPlayerWin(g.getCurrentPlayer())) {
                     endGame(false);
                     return;
                 }
@@ -137,7 +137,7 @@ public class Loop implements InputListener {
         for (Player p : g.getPlayers())
             Actions.dealFromDeck(p, 7);
 
-        player = g.getPlayer(0);
+        player = g.getPlayerByTurn(0);
 
         for (Controller c : users)
             c.setupControls();
@@ -150,11 +150,11 @@ public class Loop implements InputListener {
         UserInfo.addXp(xpEarned);
 
         if (!interrupted) {
-            Player winner = g.getPlayer();
+            Player winner = g.getCurrentPlayer();
             if (winner.isHuman())
                 UserInfo.addXp(5);
             UserInfo.addGamePlayed(winner.isHuman());
-            events.notify("playerWon", g.getPlayer(), xpEarned);
+            events.notify("playerWon", g.getCurrentPlayer(), xpEarned);
         }
 
         Game.reset();
@@ -180,7 +180,7 @@ public class Loop implements InputListener {
         synchronized (this) {
             // We use == instead of equals because they have to be the same object
             if (source != player) {
-                events.notify("warning", "This is not your turn!");
+                events.notify("warning", "This is not your turn!", choice);
                 return;
             }
             Loop.choice = choice;

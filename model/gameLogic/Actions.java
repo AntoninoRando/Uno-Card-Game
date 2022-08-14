@@ -46,7 +46,7 @@ public abstract class Actions {
 
     public static void skipTurn() {
         Loop.currentPhase = Loop.getInstance().phases.size() - 2;
-        Loop.events.notify("turnBlocked", Game.getInstance().getPlayer());
+        Loop.events.notify("turnBlocked", Game.getInstance().getCurrentPlayer());
     }
 
     public static void transformCard(Card source, Card target) {

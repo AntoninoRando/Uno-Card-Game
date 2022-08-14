@@ -26,7 +26,7 @@ public class ControlDrag extends Control {
     }
 
     /* DRAGGABILITY */
-    /* ------------- */
+
     // TODO c'e un bug che se dragghi una carta mentre sta tornando nella posizione
     // iniziale, quella vola via
     private double mouseAnchorX;
@@ -53,7 +53,6 @@ public class ControlDrag extends Control {
         if (e.getButton().equals(MouseButton.SECONDARY))
             return;
 
-        // TODO == perche they have to be the same
         if (e.getPickResult().getIntersectedNode() == target)
             action.accept(handler);
         else {
