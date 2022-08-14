@@ -16,9 +16,22 @@
     -fx-background-repeat: no-repeat;
     background-repeat: no-repeat;
 
-
     -fx-padding: 20px 10px 20px 60px;
     padding: 20px 10px 20px 60px;
+}
+
+#game-results {
+    -fx-background-image: url("resources/EndGameBackground.png");
+    background-image: url("resources/EndGameBackground.png");
+
+    -fx-background-repeat: no-repeat;
+    background-repeat: no-repeat;
+
+    -fx-background-position: center center;
+    background-position: center center;
+
+    -fx-font-size: 16px;
+    font-size: 16px;
 }
 
 .home-menu .title {
@@ -195,9 +208,4 @@
 
     -fx-font-size: 25px;
     font-size: 25px;
-}
-
-#game-results {
-    -fx-font-size: 16px;
-    font-size: 16px;
 }

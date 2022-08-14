@@ -2,7 +2,6 @@ package model.gameLogic;
 
 import model.events.EventManager;
 import model.events.InputListener;
-import view.Displayer;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -68,7 +67,6 @@ public class Loop implements InputListener {
     public static EventManager events = new EventManager();
 
     static HashMap<String, Supplier<Boolean>> choiceTypes;
-    private Displayer disp;
 
     private static Game g;
     private static Player player;
@@ -83,11 +81,6 @@ public class Loop implements InputListener {
     static int currentPhase;
 
     private static long timeStart;
-
-    public void setupView(Displayer displayer) {
-        disp = displayer;
-        events.subscribe(disp, disp.getEventsListening().stream().toArray(String[]::new));
-    }
 
     public void setupGame(TreeMap<Integer, Player> players, Controller... users) {
         Game.reset();
@@ -142,7 +135,7 @@ public class Loop implements InputListener {
         events.notify("firstCard", firstCard);
 
         for (Player p : g.getPlayers())
-            Actions.dealFromDeck(p, 1); //TODO change back to 7
+            Actions.dealFromDeck(p, 7);
 
         player = g.getPlayer(0);
 
@@ -165,7 +158,9 @@ public class Loop implements InputListener {
         }
 
         Game.reset();
-        
+
+        // TODO convertire i metodi statici in non, così che basta fare instance = null per resettare... per fare ciò però bisogna ripristinare tutti gli eventi ogni volta
+        instance = null;
         g = null;
         player = null;
         choice = null;

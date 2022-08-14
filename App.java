@@ -3,8 +3,10 @@ import java.nio.file.Paths;
 import java.util.TreeMap;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -48,7 +50,7 @@ public class App extends Displayer {
 
     public App() {
         super("gameStart", "unoDeclared", "turnBlocked", "enemyTurn cardPlayed", "warning", "turnStart", "turnEnd",
-                "playerWon");
+                "playerWon", "reset");
 
         root = new StackPane();
         root.setId("background");
@@ -65,6 +67,8 @@ public class App extends Displayer {
         addHomePageContents();
         addSettingsContents();
         newGameResultsScene();
+
+        Loop.events.subscribe(this, getEventsListening().stream().toArray(String[]::new));
     }
 
     private void addGameContents() {
@@ -184,9 +188,9 @@ public class App extends Displayer {
 
     private void newGame() {
         Player p1 = new Player(UserInfo.getNick(), true);
-        Player p2 = new Player("Top Princessess", false);
-        Player p3 = new Player("Bot Luca", false);
-        Player p4 = new Player("Bot Giovanni", false);
+        Player p2 = new Player("Top Princessess", false, "resources/icons/queen.png");
+        Player p3 = new Player("Bot Luca", false, "resources/icons/blood.png");
+        Player p4 = new Player("Bot Giovanni", false, "resources/icons/tree.png");
 
         Controller c1 = new ControllerFX();
         c1.setSource(p1);
@@ -198,7 +202,6 @@ public class App extends Displayer {
         players.put(3, p4);
 
         Loop.getInstance().setupGame(players, c1);
-        Loop.getInstance().setupView(this);
 
         gameElements.setVisible(true);
         home.setVisible(false);
@@ -238,7 +241,16 @@ public class App extends Displayer {
         // TODO le animazioni le gioca toppo on the top: stanno sopra al menù di pausa
         switch (eventType) {
             case "gameStart":
-                Platform.runLater(() -> Sounds.IN_GAME_SOUNDTRACK.play());
+                Platform.runLater(() -> {
+                    Sounds.IN_GAME_SOUNDTRACK.play();
+                    int i = 0;
+                    while (i < root.getChildren().size()) {
+                        if (root.getChildren().get(i).getStyleClass().contains("fleeting"))
+                            root.getChildren().remove(i);
+                        else
+                            i += 1;
+                    }
+                });
                 break;
             case "warning":
                 Platform.runLater(() -> ResetTranslate.resetTranslate(((Card) data[1]).getGuiContainer()));
@@ -271,7 +283,10 @@ public class App extends Displayer {
                 focusPlayerOnTurnAnimation.setDimensions(PlayerPane.getInstance().getWidth(), b.getHeight() + 10);
                 focusPlayerOnTurnAnimation.setSceneCoordinates(0.0, b.getMinY() - 5);
 
-                Platform.runLater(() -> focusPlayerOnTurnAnimation.play(root, 0).getValue());
+                Platform.runLater(() -> {
+                    focusPlayerOnTurnAnimation.play(root, 0).getValue().getStyleClass().addAll("fleeting",
+                            "turn-start-animation");
+                });
                 try {
                     focusPlayerOnTurnAnimation.latch.await();
                 } catch (InterruptedException e) {
@@ -279,13 +294,19 @@ public class App extends Displayer {
                 focusPlayerOnTurnAnimation.resetLatch();
                 break;
             case "turnEnd":
-                Platform.runLater(() -> root.getChildren().remove(0));
+                Platform.runLater(() -> {
+                    ObservableList<Node> l = root.getChildren();
+                    l.remove(l.indexOf(l.stream().filter(n -> n.getStyleClass().contains("turn-start-animation"))
+                            .findFirst().get()));
+                });
                 break;
             case "playerWon":
                 Platform.runLater(() -> {
                     Sounds.IN_GAME_SOUNDTRACK.stop();
                     gameThread.interrupt();
-                    EndGameSettings.updateGameResults(((Player) data[0]).getNickname(), (int) data[1]);
+                    Player winner = (Player) data[0];
+                    String iconPath = winner.isHuman() ? UserInfo.getIconPath() : winner.getIconPath();
+                    EndGameSettings.updateGameResults(iconPath, winner.getNickname(), (int) data[1]);
                     scene.setRoot(EndGameSettings.GAME_RESULTS);
                 });
                 break;

@@ -21,36 +21,33 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     private TerrainPane() {
-        Loop.events.subscribe(this, "cardPlayed", "firstCard", "reset");
+        Loop.events.subscribe(this, "gameStart", "cardPlayed", "firstCard");
         getStyleClass().add("terrain");
         setMaxHeight(400);
         setMaxWidth(400);
-
-        getChildren().add(terrainCard);
     }
 
     /* ---------------------------------------- */
-    private CardContainer terrainCard = new CardContainer();
+    private CardContainer terrainCard;
+
+    private void initialize() {
+        terrainCard = new CardContainer();
+        getChildren().setAll(terrainCard);
+    }
 
     private void updateTerrainCard(Card c) {
         terrainCard.update(c.getGuiContainer());
     }
 
-    private void reset() {
-        terrainCard = new CardContainer();
-        getChildren().clear();
-        getChildren().add(terrainCard);
-    }
-
     @Override
     public void update(String eventLabel, Object... data) {
         switch (eventLabel) {
+            case "gameStart":
+                Platform.runLater(() -> initialize());
+                break;
             case "firstCard":
             case "cardPlayed":
                 Platform.runLater(() -> updateTerrainCard((Card) data[0]));
-                break;
-            case "reset":
-                Platform.runLater(() -> reset());
                 break;
         }
     }

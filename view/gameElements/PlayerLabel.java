@@ -1,7 +1,5 @@
 package view.gameElements;
 
-import java.util.HashMap;
-
 import javafx.geometry.Pos;
 
 import javafx.scene.control.Label;
@@ -14,7 +12,6 @@ public class PlayerLabel extends HBox {
     private Circle icon;
     private Label nick;
     private Label cards;
-    protected static HashMap<String, String> botIcons = fillBotIcons();
 
     public PlayerLabel(String imagePathname, String nickname, int cardsQuantity) {
         icon = createIcon(new Image(imagePathname));
@@ -24,14 +21,6 @@ public class PlayerLabel extends HBox {
         arrangeElements();
 
         getStyleClass().add("player-label");
-    }
-
-    private static HashMap<String, String> fillBotIcons() {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("Top Princessess", "resources\\icons\\queen.png");
-        map.put("Bot Luca", "resources\\icons\\blood.png");
-        map.put("Bot Giovanni", "resources\\icons\\tree.png");
-        return map;
     }
 
     private Circle createIcon(Image img) {

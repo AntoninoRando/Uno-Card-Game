@@ -23,26 +23,29 @@ public class PlayerPane extends VBox implements EventListener {
     }
 
     private PlayerPane() {
-        labels = new HashMap<>();
-
-        getStyleClass().add("players");
-        setSpacing(10.0);
-
-        Label title = new Label("Players");
-        title.getStyleClass().add("title");
-        getChildren().add(title);
-
+        addStyle();
         Loop.events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart",
-                "turnEnd", "reset");
+                "turnEnd");
     }
 
     /* ---------------------------------------- */
 
     private Map<Player, PlayerLabel> labels;
 
+    private void addStyle() {
+        getStyleClass().add("players");
+        setSpacing(10.0);
+    }
+
+    private void initialize() {
+        labels = new HashMap<>();
+        Label title = new Label("Players");
+        title.getStyleClass().add("title");
+        getChildren().setAll(title);
+    }
+
     private void addPlayerLabel(Player player) {
-        String iconPath = player.isHuman() ? UserInfo.getIconPath()
-                : PlayerLabel.botIcons.getOrDefault(player.getNickname(), "resources\\icons\\night.png");
+        String iconPath = player.isHuman() ? UserInfo.getIconPath() : player.getIconPath();
         PlayerLabel label = new PlayerLabel(iconPath, player.getNickname(), player.getHand().size());
         getChildren().add(label);
         labels.put(player, label);
@@ -50,15 +53,6 @@ public class PlayerPane extends VBox implements EventListener {
 
     private void updatePlayerInfo(Player player) {
         labels.get(player).changeCards(player.getHand().size());
-    }
-
-
-    private void reset() {
-        labels.clear();
-        getChildren().clear();
-        Label title = new Label("Players");
-        title.getStyleClass().add("title");
-        getChildren().add(title);
     }
 
     /* ------------------------------- */
@@ -74,6 +68,7 @@ public class PlayerPane extends VBox implements EventListener {
         switch (eventLabel) {
             case "gameStart":
                 Platform.runLater(() -> {
+                    initialize();
                     for (Object player : data)
                         addPlayerLabel((Player) player);
                 });
@@ -81,9 +76,6 @@ public class PlayerPane extends VBox implements EventListener {
             case "playerHandChanged":
             case "playerDrew":
                 Platform.runLater(() -> updatePlayerInfo((Player) data[0]));
-                break;
-            case "reset":
-                Platform.runLater(() -> reset());
                 break;
         }
     }

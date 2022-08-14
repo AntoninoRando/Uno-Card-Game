@@ -9,14 +9,21 @@ public class Player {
     private String nickname;
     boolean isHuman;
     CardGroup hand;
-    private int ID;
     private TreeSet<Effect> conditions;
+    private String iconPath = "resources/icons/night.png";
 
-    public Player(String nickname, boolean isHuman, Card... cards) {
+    public Player(String nickname, boolean isHuman) {
         this.nickname = nickname;
         this.isHuman = isHuman;
-        hand = new CardGroup(cards);
+        hand = new CardGroup();
+        conditions = new TreeSet<>();
+    }
 
+    public Player(String nickname, boolean isHuman, String iconPath) {
+        this.nickname = nickname;
+        this.isHuman = isHuman;
+        this.iconPath = iconPath;
+        hand = new CardGroup();
         conditions = new TreeSet<>();
     }
 
@@ -34,8 +41,8 @@ public class Player {
         return hand;
     }
 
-    public int getID() {
-        return ID;
+    public String getIconPath() {
+        return iconPath;
     }
 
     /* OTHERS */
