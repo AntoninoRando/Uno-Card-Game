@@ -12,23 +12,23 @@ import javafx.scene.shape.Circle;
 import model.data.UserInfo;
 
 public class ProfileMenu extends VBox {
-    protected Circle avatar = createAvatar();
-    protected TextField nickField = createNickField();
-    protected Label levelLabel = createLevelLabel();
-    protected ProgressBar xpBar = createXpBar();
-    protected Label xpGapLabel = createXpGapLabel();
-    protected Label gamesPlayedLabel = createGamesPlayedLabel();
-    protected Label winRateLabel = createWinRateLabel();
-    protected Button deleteButton = createDeleteButton();
+    Circle avatar = createAvatar();
+    TextField nickField = createNickField();
+    Label levelLabel = createLevelLabel();
+    ProgressBar xpBar = createXpBar();
+    Label xpGapLabel = createXpGapLabel();
+    Label gamesPlayedLabel = createGamesPlayedLabel();
+    Label winRateLabel = createWinRateLabel();
+    Button deleteButton = createDeleteButton();
 
-    protected ProfileMenu() {
+    ProfileMenu() {
         setMaxHeight(500.0);
         setMaxWidth(700.0);
         setPrefWidth(700.0);
         setPrefHeight(500.0);
 
         arrangeElements();
-        getStyleClass().add("profile-menu");
+        setId("profile-menu");
     }
 
     private Circle createAvatar() {

@@ -121,6 +121,7 @@ public class Loop implements InputListener {
                     currentPhase = (++currentPhase) % phases.size();
             }
         } catch (NullPointerException e) {
+            e.printStackTrace();
             // May be here because of the "reset()" method
             events.notify("gameIsOver", (Object[]) null);
         }
@@ -135,13 +136,14 @@ public class Loop implements InputListener {
         events.notify("firstCard", firstCard);
 
         for (Player p : g.getPlayers())
-            Actions.dealFromDeck(p, 7);
+            Actions.dealFromDeck(p, 1);
 
         player = g.getPlayerByTurn(0);
 
         for (Controller c : users)
             c.setupControls();
-
+        
+        events.notify("gameSetupped", g.getPlayers().toArray());
     }
 
     public void endGame(boolean interrupted) {
@@ -151,10 +153,12 @@ public class Loop implements InputListener {
 
         if (!interrupted) {
             Player winner = g.getCurrentPlayer();
-            if (winner.isHuman())
+            if (winner.isHuman()) {
                 UserInfo.addXp(5);
+                xpEarned += 5;
+            }
             UserInfo.addGamePlayed(winner.isHuman());
-            events.notify("playerWon", g.getCurrentPlayer(), xpEarned);
+            events.notify("playerWon", winner, xpEarned);
         }
 
         Game.reset();
@@ -189,6 +193,7 @@ public class Loop implements InputListener {
     }
 
     /* -------------------------------------- */
+
     private void startUnoTimer() {
         Player unoer = player;
         events.notify("unoDeclared", unoer);

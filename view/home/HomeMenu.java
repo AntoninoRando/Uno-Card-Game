@@ -5,7 +5,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import view.settings.Settings;
 
 public class HomeMenu extends VBox {
     /* SINGLETON */
@@ -26,7 +25,9 @@ public class HomeMenu extends VBox {
     }
 
     /* ---------------------------------------- */
-    protected Node playButton;
+    
+    Node playButton;
+    Node profile = newProfileButton();
 
     private Node createTitle() {
         Label title = new Label("JUno");
@@ -46,12 +47,9 @@ public class HomeMenu extends VBox {
         return adventure;
     }
 
-    private Node createProfileButton() {
+    private Node newProfileButton() {
         Button profile = new Button("Profile");
         profile.getStyleClass().add("button");
-
-        profile.setOnMouseClicked(e -> Settings.openProfile());
-
         return profile;
     }
 
@@ -65,6 +63,6 @@ public class HomeMenu extends VBox {
     }
 
     private void arrangeElements() {
-        getChildren().addAll(createTitle(), createPlayButton(), createAdventureButton(), createProfileButton(), createExitButton());
+        getChildren().addAll(createTitle(), createPlayButton(), createAdventureButton(), profile, createExitButton());
     }
 }

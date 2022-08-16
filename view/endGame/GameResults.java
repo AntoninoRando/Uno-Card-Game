@@ -4,7 +4,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -15,7 +17,7 @@ public class GameResults extends VBox {
     VBox xpEarned;
     HBox buttons;
 
-    GameResults () {
+    GameResults() {
         setId("game-results");
         arrangeElements();
     }
@@ -27,7 +29,12 @@ public class GameResults extends VBox {
     }
 
     private VBox newWinner() {
-        Circle avatar = new Circle(30, 30, 30);
+        Circle icon = new Circle(47.0, 47.0, 47.0);
+        ImageView border = new ImageView(new Image("resources\\WinnerBorder.png"));
+        border.setPreserveRatio(true);
+        border.setFitWidth(100.0);
+        StackPane avatar = new StackPane(icon, border);
+
         Label nickname = new Label();
         VBox e = new VBox(avatar, nickname);
         e.setSpacing(10.0);
@@ -39,7 +46,7 @@ public class GameResults extends VBox {
     private VBox newXpEarned() {
         ProgressBar xpBar = new ProgressBar((double) UserInfo.getXp() / UserInfo.getXpGap());
         xpBar.getStyleClass().add("xp-bar");
-        xpBar.setPrefHeight(10.0);
+        xpBar.setPrefHeight(5.0);
         xpBar.setPrefWidth(200.0);
         Label newXp = new Label();
         VBox e = new VBox(xpBar, newXp);
@@ -57,12 +64,13 @@ public class GameResults extends VBox {
     }
 
     void updateWinner(String iconPath, String nickname) {
-        ((Circle) winner.getChildren().get(0)).setFill(new ImagePattern(new Image(iconPath)));
+        ((Circle) ((StackPane) winner.getChildren().get(0)).getChildren().get(0))
+                .setFill(new ImagePattern(new Image(iconPath)));
         ((Label) winner.getChildren().get(1)).setText(nickname);
     }
 
     void updateXpEarned(int xp) {
         ((ProgressBar) xpEarned.getChildren().get(0)).setProgress((double) UserInfo.getXp() / UserInfo.getXpGap());
-        ((Label) xpEarned.getChildren().get(1)).setText("+" + Integer.toString(xp));
+        ((Label) xpEarned.getChildren().get(1)).setText("+" + Integer.toString(xp) + " xp");
     }
 }

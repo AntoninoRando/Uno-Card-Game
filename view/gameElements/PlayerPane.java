@@ -24,8 +24,7 @@ public class PlayerPane extends VBox implements EventListener {
 
     private PlayerPane() {
         addStyle();
-        Loop.events.subscribe(this, "gameStart", "playerDrew", "playerHandChanged", "turnStart",
-                "turnEnd");
+        Loop.events.subscribe(this, "gameSetupped", "playerDrew", "playerHandChanged");
     }
 
     /* ---------------------------------------- */
@@ -66,7 +65,7 @@ public class PlayerPane extends VBox implements EventListener {
     @Override
     public void update(String eventLabel, Object... data) {
         switch (eventLabel) {
-            case "gameStart":
+            case "gameSetupped":
                 Platform.runLater(() -> {
                     initialize();
                     for (Object player : data)

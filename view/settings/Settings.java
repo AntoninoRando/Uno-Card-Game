@@ -10,11 +10,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 
 public abstract class Settings {
     public static final MenuContainer MENU = new MenuContainer();
 
     /* SETTINGS */
+
     public static final Button SETTINGS_BUTTON = createSettingsButton();
 
     private static final Button createSettingsButton() {
@@ -47,35 +49,37 @@ public abstract class Settings {
     }
 
     /* PROFILE */
+
+    public static final ProfileMenu PROFILE = new ProfileMenu();
+    public static final AvatarPicker AVATAR_PICKER = new AvatarPicker();
+
     public static void setNickFieldAction(Consumer<String> action) {
-        MENU.profile.nickField.setOnKeyReleased(e -> {
+        PROFILE.nickField.setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                action.accept(MENU.profile.nickField.getText());
-                MENU.profile.nickField.clear();
-                MENU.requestFocus(); // Used to remove focus from the text field
-                MENU.profile.updateInfo();
+                action.accept(PROFILE.nickField.getText());
+                PROFILE.nickField.clear();
+                PROFILE.requestFocus(); // Used to remove focus from the text field
+                PROFILE.updateInfo();
             }
         });
     }
 
     public static void setDeleteAccountAction(EventHandler<MouseEvent> action) {
-        MENU.profile.deleteButton.setOnMouseClicked(e -> {
+        PROFILE.deleteButton.setOnMouseClicked(e -> {
             action.handle(e);
-            MENU.profile.updateInfo();
+            PROFILE.updateInfo();
         });
     }
 
     public static void setAvatarClickAction(EventHandler<MouseEvent> action) {
-        MENU.profile.avatar.setOnMouseClicked(action);
+        PROFILE.avatar.setOnMouseClicked(action);
     }
 
-    public static void openProfile() {
-        MENU.profile.updateInfo();
-        MENU.openProfile();
-        MENU.setVisible(!MENU.isVisible());
-    }
-
-    public static void openAvatarPicker() {
-        MENU.avatarPicker.setVisible(!MENU.avatarPicker.isVisible());
-    }
+    // TODO fare che aggiunge l'azione al listener invece che sovrascriverla
+    public static void setCloseProfileOnClickOutside(Pane container) {
+        container.setOnMouseClicked(e -> {
+            if (e.getPickResult().getIntersectedNode() == container)
+                PROFILE.setVisible(false);
+        });
+}
 }

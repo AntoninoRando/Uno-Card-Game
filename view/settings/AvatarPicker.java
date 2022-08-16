@@ -48,6 +48,7 @@ public class AvatarPicker extends StackPane {
         map.put(createIcon("resources\\icons\\tree.png"), "resources\\icons\\tree.png");
         map.put(createIcon("resources\\icons\\pirate.png"), "resources\\icons\\pirate.png");
         map.put(createIcon("resources\\icons\\alien.png"), "resources\\icons\\alien.png");
+        map.put(createIcon("resources\\icons\\Dragonfly dst.png"), "resources\\icons\\Dragonfly dst.png");
         return map;
     }
 
@@ -56,7 +57,7 @@ public class AvatarPicker extends StackPane {
         avatar.setFill(new ImagePattern(new Image(pathname)));
         avatar.setOnMouseClicked(e -> {
             UserInfo.setIconPath(pathname);
-            Settings.MENU.profile.updateInfo();
+            Settings.PROFILE.updateInfo();
         });
         return avatar;
     }

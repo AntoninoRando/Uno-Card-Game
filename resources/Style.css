@@ -149,8 +149,20 @@
     font-weight: bold;
 }
 
-.xp-bar {
-    /* TODO */
+.xp-bar > .track {
+    -fx-text-box-border: white;
+    -fx-control-inner-background: white;
+}
+
+.xp-bar .bar { 
+    -fx-padding: 1px; 
+    padding: 1px;
+
+    -fx-background-color: #0a9396;
+    background-color: #0a9396;
+
+    -fx-background-insets: 0; 
+    -fx-background-radius: 13px;
 }
 
 #games-played-label {
@@ -208,4 +220,9 @@
 
     -fx-font-size: 25px;
     font-size: 25px;
+}
+
+#profile-menu {
+    -fx-background-color: red;
+    background-color: red;
 }

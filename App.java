@@ -1,5 +1,3 @@
-import java.net.MalformedURLException;
-import java.nio.file.Paths;
 import java.util.TreeMap;
 
 import javafx.application.Platform;
@@ -13,8 +11,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.gameLogic.Loop;
 import model.gameLogic.Player;
@@ -43,52 +43,64 @@ import controller.Controls;
 
 public class App extends Displayer {
     private Scene scene;
-    private StackPane root;
+
+    private StackPane homeRoot = newHomeRoot();
     private HomeMenu home;
+
+    private StackPane gameRoot = newGameRoot();
     private StackPane gameElements;
     private Thread gameThread;
+
+    private VBox endGameRoot = newEndGameRoot();
 
     public App() {
         super("gameStart", "unoDeclared", "turnBlocked", "enemyTurn cardPlayed", "warning", "turnStart", "turnEnd",
                 "playerWon", "reset");
 
-        root = new StackPane();
-        root.setId("background");
-
-        scene = new Scene(root, 1000, 600);
+        scene = new Scene(homeRoot, 1000, 600);
         scene.getStylesheets().add(getClass().getResource("resources\\Style.css").toExternalForm());
 
-        UserInfo.loadData("resources\\data\\userInfo.txt");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> UserInfo.writeData("resources\\data\\userInfo.txt")));
     }
 
-    private void arrangeLayers() {
-        addGameContents();
-        addHomePageContents();
-        addSettingsContents();
-        
-        newGameResultsScene();
+    /* ROOTS */
 
-        Loop.events.subscribe(this, getEventsListening().stream().toArray(String[]::new));
+    private StackPane newHomeRoot() {
+        StackPane root = new StackPane();
+
+        HomeMenu home = HomeMenu.getInstance();
+        Homes.setProfileAction(e -> Settings.PROFILE.setVisible(true));
+        Homes.setPlayButtonAction(e -> newGame());
+
+        Settings.setNickFieldAction(e -> UserInfo.setNick(e));
+        Settings.setDeleteAccountAction(e -> UserInfo.reset());
+        Settings.setAvatarClickAction(e -> Settings.AVATAR_PICKER.setVisible(!Settings.AVATAR_PICKER.isVisible()));
+        Settings.setCloseProfileOnClickOutside(home);
+
+        root.getChildren().addAll(home, Settings.PROFILE, Settings.AVATAR_PICKER);
+        StackPane.setAlignment(home, Pos.TOP_LEFT);
+
+        Settings.PROFILE.setVisible(false);
+        Settings.AVATAR_PICKER.setVisible(false);
+
+        return root;
     }
 
-    private void addGameContents() {
-        gameElements = new StackPane();
-        gameElements.setVisible(false);
+    private StackPane newGameRoot() {
+        StackPane root = new StackPane();
+        root.setId("background");
 
-        BorderPane borderPane = new BorderPane();
-        borderPane.setLeft(PlayerPane.getInstance());
-        borderPane.setCenter(TerrainPane.getInstance());
-        borderPane.setBottom(HandPane.getInstance());
-
+        BorderPane gameElements = new BorderPane();
+        gameElements.setLeft(PlayerPane.getInstance());
+        gameElements.setCenter(TerrainPane.getInstance());
+        gameElements.setBottom(HandPane.getInstance());
         // Add padding to the borderPane right to absolute center the node in the
         // borderPane center region
         Region padderRegionRight = new Region();
         padderRegionRight.prefWidthProperty().bind(PlayerPane.getInstance().widthProperty());
-        borderPane.setRight(padderRegionRight);
+        gameElements.setRight(padderRegionRight);
 
-        gameElements.getChildren().addAll(borderPane, PlayzonePane.getInstance(),
-                SelectionPane.getInstance());
+        root.getChildren().addAll(gameElements, PlayzonePane.getInstance(), SelectionPane.getInstance());
 
         PlayzonePane.getInstance().setOnMouseClicked(e -> {
             if (e.getButton().equals(MouseButton.SECONDARY))
@@ -97,19 +109,42 @@ public class App extends Displayer {
                 Controls.DRAW.getAction().handle(e);
         });
 
-        root.getChildren().add(gameElements);
+        addSettingsContents(root);
+
+        return root;
     }
 
-    private void addHomePageContents() {
-        home = HomeMenu.getInstance();
+    private VBox newEndGameRoot() {
+        Button playAgain = new Button();
+        playAgain.setOnMouseClicked(e -> {
+            scene.setRoot(gameRoot);
+            newGame();
+        });
 
-        root.getChildren().add(home);
-        StackPane.setAlignment(home, Pos.TOP_LEFT);
+        playAgain.setStyle("-fx-background-color: none");
+        ImageView icon = new ImageView(new Image("resources\\BlueButton.png"));
+        icon.setPreserveRatio(true);
+        icon.setFitWidth(150.0);
+        playAgain.setGraphic(icon);
 
-        Homes.setPlayButtonAction(e -> newGame());
+        Button backHome = new Button();
+        backHome.setOnMouseClicked(e -> {
+            scene.setRoot(homeRoot);
+            gameElements.setVisible(false);
+            home.setVisible(true);
+        });
+        backHome.setStyle("-fx-background-color: none");
+        ImageView icon2 = new ImageView(new Image("resources\\HomeButton.png"));
+        icon2.setPreserveRatio(true);
+        icon2.setFitWidth(150.0);
+        backHome.setGraphic(icon2);
+
+        EndGameSettings.addButtons(playAgain, backHome);
+
+        return EndGameSettings.GAME_RESULTS;
     }
 
-    private void addSettingsContents() {
+    private void addSettingsContents(Pane root) {
         root.getChildren().addAll(Settings.MENU, Settings.SETTINGS_BUTTON);
         StackPane.setAlignment(Settings.SETTINGS_BUTTON, Pos.TOP_RIGHT);
 
@@ -119,49 +154,11 @@ public class App extends Displayer {
         });
         Settings.setQuitButtonAction(e -> {
             endGame();
-            gameElements.setVisible(false);
-            home.setVisible(true);
+            scene.setRoot(homeRoot);
         });
-        Settings.setNickFieldAction(__ -> UserInfo.setNick(__));
-        Settings.setDeleteAccountAction(e -> UserInfo.reset());
-        Settings.setAvatarClickAction(e -> Settings.openAvatarPicker());
     }
 
-    private void newGameResultsScene() {
-        Button backHome = new Button();
-        backHome.setStyle("-fx-background-color: none");
-        backHome.setOnMouseClicked(e -> {
-            scene.setRoot(root);
-            gameElements.setVisible(false);
-            home.setVisible(true);
-        });
-
-        Button newGame = new Button();
-        newGame.setStyle("-fx-background-color: none");
-        newGame.setOnMouseClicked(e -> {
-            scene.setRoot(root);
-            gameElements.setVisible(true);
-            home.setVisible(false);
-            newGame();
-        });
-
-        try {
-            Image image = new Image(Paths.get("resources\\BlueButton.png").toUri().toURL().toExternalForm());
-            ImageView icon = new ImageView(image);
-            icon.setPreserveRatio(true);
-            icon.setFitWidth(150.0);
-            newGame.setGraphic(icon);
-
-            Image image2 = new Image(Paths.get("resources\\HomeButton.png").toUri().toURL().toExternalForm());
-            ImageView icon2 = new ImageView(image2);
-            icon2.setPreserveRatio(true);
-            icon2.setFitWidth(150.0);
-            backHome.setGraphic(icon2);
-        } catch (MalformedURLException e1) {
-        }
-
-        EndGameSettings.addButtons(newGame, backHome);
-    }
+    /* ANIMATIONS */
 
     private Animation unoAnimation;
     private Animation blockTurnAnimation;
@@ -187,6 +184,8 @@ public class App extends Displayer {
         focusPlayerOnTurnAnimation.setWillStay(true);
     }
 
+    /* GAME INITIALIZATION */
+
     private void newGame() {
         Player p1 = new Player(UserInfo.getNick(), true);
         Player p2 = new Player("Top Princessess", false, "resources/icons/queen.png");
@@ -204,8 +203,7 @@ public class App extends Displayer {
 
         Loop.getInstance().setupGame(players, c1);
 
-        gameElements.setVisible(true);
-        home.setVisible(false);
+        scene.setRoot(gameRoot);
 
         gameThread = new Thread(() -> Loop.getInstance().play());
         gameThread.start();
@@ -215,24 +213,6 @@ public class App extends Displayer {
         Sounds.IN_GAME_SOUNDTRACK.stop();
         Loop.getInstance().endGame(true);
         gameThread.interrupt();
-    }
-
-    /* ---------------------------------------------------- */
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        stage.setTitle("JUno");
-
-        stage.setFullScreen(true);
-        stage.setFullScreenExitHint("");
-
-        stage.setOnCloseRequest(e -> System.exit(0));
-
-        arrangeLayers();
-        loadAnimations();
-
-        stage.setScene(scene);
-        stage.show();
     }
 
     /* EVENT LISTENER METHODS */
@@ -245,9 +225,9 @@ public class App extends Displayer {
                 Platform.runLater(() -> {
                     Sounds.IN_GAME_SOUNDTRACK.play();
                     int i = 0;
-                    while (i < root.getChildren().size()) {
-                        if (root.getChildren().get(i).getStyleClass().contains("fleeting"))
-                            root.getChildren().remove(i);
+                    while (i < gameRoot.getChildren().size()) {
+                        if (gameRoot.getChildren().get(i).getStyleClass().contains("fleeting"))
+                        gameRoot.getChildren().remove(i);
                         else
                             i += 1;
                     }
@@ -257,10 +237,10 @@ public class App extends Displayer {
                 Platform.runLater(() -> ResetTranslate.resetTranslate(((Card) data[1]).getGuiContainer()));
                 break;
             case "unoDeclared":
-                Platform.runLater(() -> unoAnimation.play(root));
+                Platform.runLater(() -> unoAnimation.play(gameRoot));
                 break;
             case "turnBlocked":
-                Platform.runLater(() -> blockTurnAnimation.play(root));
+                Platform.runLater(() -> blockTurnAnimation.play(gameRoot));
                 try {
                     blockTurnAnimation.latch.await();
                 } catch (InterruptedException e) {
@@ -270,7 +250,7 @@ public class App extends Displayer {
             case "enemyTurn cardPlayed":
                 // TODO Aggiungere priorità all'animazione altrimenti parte dopo che è avvenuta
                 // la modifica
-                Platform.runLater(() -> playingCardAnimation.play(root));
+                Platform.runLater(() -> playingCardAnimation.play(gameRoot, gameRoot.getChildren().size() - 2));
                 try {
                     playingCardAnimation.latch.await();
                 } catch (InterruptedException e) {
@@ -278,14 +258,23 @@ public class App extends Displayer {
                 playingCardAnimation.resetLatch();
                 break;
             case "turnStart":
-                PlayerLabel pl = PlayerPane.getInstance().getPlayerLabel((Player) data[0]);
+                PlayerLabel pl;
+                while (true) {
+                    try {
+                        pl = PlayerPane.getInstance().getPlayerLabel((Player) data[0]);
+                        if (pl != null)
+                            break;
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                }
                 Bounds b = pl.localToScene(pl.getBoundsInLocal());
 
                 focusPlayerOnTurnAnimation.setDimensions(PlayerPane.getInstance().getWidth(), b.getHeight() + 10);
                 focusPlayerOnTurnAnimation.setSceneCoordinates(0.0, b.getMinY() - 5);
 
                 Platform.runLater(() -> {
-                    focusPlayerOnTurnAnimation.play(root, 0).getValue().getStyleClass().addAll("fleeting",
+                    focusPlayerOnTurnAnimation.play(gameRoot, 0).getValue().getStyleClass().addAll("fleeting",
                             "turn-start-animation");
                 });
                 try {
@@ -296,7 +285,7 @@ public class App extends Displayer {
                 break;
             case "turnEnd":
                 Platform.runLater(() -> {
-                    ObservableList<Node> l = root.getChildren();
+                    ObservableList<Node> l = gameRoot.getChildren();
                     l.remove(l.indexOf(l.stream().filter(n -> n.getStyleClass().contains("turn-start-animation"))
                             .findFirst().get()));
                 });
@@ -305,10 +294,13 @@ public class App extends Displayer {
                 Platform.runLater(() -> {
                     Sounds.IN_GAME_SOUNDTRACK.stop();
                     gameThread.interrupt();
+
                     Player winner = (Player) data[0];
+                    int xpEarned = (int) data[1];
                     String iconPath = winner.isHuman() ? UserInfo.getIconPath() : winner.getIconPath();
-                    EndGameSettings.updateGameResults(iconPath, winner.getNickname(), (int) data[1]);
-                    scene.setRoot(EndGameSettings.GAME_RESULTS);
+                    EndGameSettings.updateGameResults(iconPath, winner.getNickname(), xpEarned);
+
+                    scene.setRoot(endGameRoot);
                 });
                 break;
         }
@@ -324,9 +316,24 @@ public class App extends Displayer {
         }
     }
 
+    /* APPLICATION METHODS */
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        stage.setTitle("JUno");
+        stage.setFullScreen(true);
+        stage.setFullScreenExitHint("");
+        stage.setOnCloseRequest(e -> System.exit(0));
+        stage.setScene(scene);
+        loadAnimations();
+        Loop.events.subscribe(this, getEventsListening().stream().toArray(String[]::new));
+        stage.show();
+    }
+
     /* MAIN */
 
     public static void main(String[] args) {
+        UserInfo.loadData("resources\\data\\userInfo.txt");
         launch(args);
     }
 

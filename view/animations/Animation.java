@@ -103,8 +103,10 @@ public class Animation {
         t.setCycleCount(1);
 
         StackPane animation = new StackPane();
+        // Since the animation layer is a StackPane, if this field were false we could
+        // not click any node behind the StackPane
+        animation.setMouseTransparent(true);
 
-        // TODO questo si può forse evitare per ogni nuova animazione
         for (int i = 0; i < images.length; i++) {
             ImageView img = images[i];
 
