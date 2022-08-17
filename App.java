@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -14,7 +15,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.gameLogic.Loop;
 import model.gameLogic.Player;
@@ -51,11 +52,11 @@ public class App extends Displayer {
     private StackPane gameElements;
     private Thread gameThread;
 
-    private VBox endGameRoot = newEndGameRoot();
+    private StackPane endGameRoot = newEndGameRoot();
 
     public App() {
         super("gameStart", "unoDeclared", "turnBlocked", "enemyTurn cardPlayed", "warning", "turnStart", "turnEnd",
-                "playerWon", "reset");
+                "playerWon", "reset", "gameSetupped");
 
         scene = new Scene(homeRoot, 1000, 600);
         scene.getStylesheets().add(getClass().getResource("resources\\Style.css").toExternalForm());
@@ -114,14 +115,11 @@ public class App extends Displayer {
         return root;
     }
 
-    private VBox newEndGameRoot() {
+    private StackPane newEndGameRoot() {
         Button playAgain = new Button();
-        playAgain.setOnMouseClicked(e -> {
-            scene.setRoot(gameRoot);
-            newGame();
-        });
-
+        playAgain.setOnMouseClicked(e -> newGame());
         playAgain.setStyle("-fx-background-color: none");
+
         ImageView icon = new ImageView(new Image("resources\\BlueButton.png"));
         icon.setPreserveRatio(true);
         icon.setFitWidth(150.0);
@@ -141,7 +139,7 @@ public class App extends Displayer {
 
         EndGameSettings.addButtons(playAgain, backHome);
 
-        return EndGameSettings.GAME_RESULTS;
+        return new StackPane(EndGameSettings.GAME_RESULTS);
     }
 
     private void addSettingsContents(Pane root) {
@@ -164,6 +162,7 @@ public class App extends Displayer {
     private Animation blockTurnAnimation;
     private Animation playingCardAnimation;
     private Animation focusPlayerOnTurnAnimation;
+    private Animation newGameAnimation;
 
     private void loadAnimations() {
         Animations.FOCUS_PLAYER.get().load();
@@ -176,12 +175,18 @@ public class App extends Displayer {
         blockTurnAnimation.setWillCountdown(true);
 
         playingCardAnimation = Animations.CARD_PLAYED.get();
+        playingCardAnimation.setSceneCoordinates(scene.getWidth() / 2, scene.getHeight() / 2);
         playingCardAnimation.setDimensions(400.0, null);
         playingCardAnimation.setWillCountdown(true);
 
         focusPlayerOnTurnAnimation = Animations.FOCUS_PLAYER.get();
         focusPlayerOnTurnAnimation.setWillCountdown(true);
         focusPlayerOnTurnAnimation.setWillStay(true);
+
+        newGameAnimation = Animations.NEW_GAME.get();
+        Rectangle2D screenB = Screen.getPrimary().getBounds();
+        newGameAnimation.setWillCountdown(true);
+        newGameAnimation.setDimensions(screenB.getWidth(), screenB.getHeight());
     }
 
     /* GAME INITIALIZATION */
@@ -203,10 +208,12 @@ public class App extends Displayer {
 
         Loop.getInstance().setupGame(players, c1);
 
-        scene.setRoot(gameRoot);
-
-        gameThread = new Thread(() -> Loop.getInstance().play());
-        gameThread.start();
+        newGameAnimation.setOnFinishAction(e -> {
+            scene.setRoot(gameRoot);
+            gameThread = new Thread(() -> Loop.getInstance().play());
+            gameThread.start();
+        });
+        newGameAnimation.play((Pane) scene.getRoot());
     }
 
     private void endGame() {
@@ -227,11 +234,20 @@ public class App extends Displayer {
                     int i = 0;
                     while (i < gameRoot.getChildren().size()) {
                         if (gameRoot.getChildren().get(i).getStyleClass().contains("fleeting"))
-                        gameRoot.getChildren().remove(i);
+                            gameRoot.getChildren().remove(i);
                         else
                             i += 1;
                     }
                 });
+                break;
+            case "gameSetupped":
+            case "enemyTurn cardPlayed":
+                Platform.runLater(() -> playingCardAnimation.play(gameRoot, gameRoot.getChildren().size() - 2));
+                try {
+                    playingCardAnimation.latch.await();
+                } catch (InterruptedException e) {
+                }
+                playingCardAnimation.resetLatch();
                 break;
             case "warning":
                 Platform.runLater(() -> ResetTranslate.resetTranslate(((Card) data[1]).getGuiContainer()));
@@ -247,33 +263,21 @@ public class App extends Displayer {
                 }
                 blockTurnAnimation.resetLatch();
                 break;
-            case "enemyTurn cardPlayed":
-                // TODO Aggiungere priorità all'animazione altrimenti parte dopo che è avvenuta
-                // la modifica
-                Platform.runLater(() -> playingCardAnimation.play(gameRoot, gameRoot.getChildren().size() - 2));
-                try {
-                    playingCardAnimation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                playingCardAnimation.resetLatch();
-                break;
             case "turnStart":
-                PlayerLabel pl;
-                while (true) {
-                    try {
-                        pl = PlayerPane.getInstance().getPlayerLabel((Player) data[0]);
-                        if (pl != null)
-                            break;
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Bounds b = pl.localToScene(pl.getBoundsInLocal());
-
-                focusPlayerOnTurnAnimation.setDimensions(PlayerPane.getInstance().getWidth(), b.getHeight() + 10);
-                focusPlayerOnTurnAnimation.setSceneCoordinates(0.0, b.getMinY() - 5);
-
                 Platform.runLater(() -> {
+                    PlayerLabel pl;
+                    while (true) {
+                        try {
+                            pl = PlayerPane.getInstance().getPlayerLabel((Player) data[0]);
+                            if (pl != null)
+                                break;
+                        } catch (NullPointerException e) {
+                        }
+                    }
+                    Bounds b = pl.localToScene(pl.getBoundsInLocal());
+
+                    focusPlayerOnTurnAnimation.setDimensions(PlayerPane.getInstance().getWidth(), b.getHeight() + 10);
+                    focusPlayerOnTurnAnimation.setSceneCoordinates(0.0, b.getMinY() - 5);
                     focusPlayerOnTurnAnimation.play(gameRoot, 0).getValue().getStyleClass().addAll("fleeting",
                             "turn-start-animation");
                 });

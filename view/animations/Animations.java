@@ -10,4 +10,6 @@ public abstract class Animations {
     public static final Supplier<Animation> CARD_PLAYED = () -> new Animation("resources\\PlayCard");
 
     public static final Supplier<Animation> FOCUS_PLAYER = () -> new Animation("resources\\FocusTurn");
+
+    public static final Supplier<Animation> NEW_GAME = () -> new Animation("resources\\NewGame");
 }

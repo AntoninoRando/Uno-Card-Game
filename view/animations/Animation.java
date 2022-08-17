@@ -15,12 +15,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
-import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
@@ -96,13 +94,13 @@ public class Animation {
         imagesLoaded.put(folderPath.toString(), images);
     };
 
-    public Pair<Timeline, StackPane> createAnimation(Consumer<StackPane> action) {
+    public Pair<Timeline, AnchorPane> createAnimation(Consumer<AnchorPane> action) {
         ImageView[] images = imagesLoaded.get(folderPath.toString());
 
         Timeline t = new Timeline();
         t.setCycleCount(1);
 
-        StackPane animation = new StackPane();
+        AnchorPane animation = new AnchorPane();
         // Since the animation layer is a StackPane, if this field were false we could
         // not click any node behind the StackPane
         animation.setMouseTransparent(true);
@@ -123,30 +121,39 @@ public class Animation {
                     images[j].setVisible(false);
                 img.setVisible(true);
             });
+
+            sceneX.ifPresent(x -> AnchorPane.setLeftAnchor(img, x)); // x = animationRealX + translateQuantity
+            sceneY.ifPresent(y -> AnchorPane.setTopAnchor(img, y));
+
             t.getKeyFrames().add(frame);
         }
-
-        Node firstFrame = animation.getChildren().get(0);
-        Bounds b = firstFrame.localToScene(firstFrame.getBoundsInLocal());
-        sceneX.ifPresent(x -> animation.setTranslateX(x - b.getMinX())); // x = animationRealX + translateQuantity
-        sceneY.ifPresent(y -> animation.setTranslateY(y - b.getMinY()));
 
         t.setOnFinished(e -> {
             onFinishAction.handle(e);
             action.accept(animation);
         });
 
-        return new Pair<Timeline, StackPane>(t, animation);
+        return new Pair<Timeline, AnchorPane>(t, animation);
     }
 
-    private Pair<Timeline, StackPane> play(Pane animationLayer, Consumer<StackPane> action, int index) {
-        Pair<Timeline, StackPane> animation = createAnimation(action);
+    private Pair<Timeline, AnchorPane> play(Pane animationLayer, Consumer<AnchorPane> action, int index) {
+        Pair<Timeline, AnchorPane> animation = createAnimation(action);
+
         animationLayer.getChildren().add(index, animation.getValue());
+
+        // TODO anche la soluzione sotto dovrebbe andar bene, al posto di settare l'anchor per ogni immagine
+        // Node firstFrame = animation.getValue().getChildren().get(0);
+        // Bounds b = firstFrame.localToScene(firstFrame.getBoundsInLocal());
+        // sceneX.ifPresent(x -> animation.getValue().setTranslateX(x - b.getMinX())); // x = animationRealX +
+        //                                                                             // translateQuantity
+        // sceneY.ifPresent(y -> animation.getValue().setTranslateY(y - b.getMinY()));
+
         animation.getKey().play();
+
         return animation;
     }
 
-    public Pair<Timeline, StackPane> play(Pane animationLayer) {
+    public Pair<Timeline, AnchorPane> play(Pane animationLayer) {
         return play(animationLayer, g -> {
             if (!willStay)
                 animationLayer.getChildren().remove(g);
@@ -155,7 +162,7 @@ public class Animation {
         }, animationLayer.getChildren().size());
     }
 
-    public Pair<Timeline, StackPane> play(Pane animationLayer, int index) {
+    public Pair<Timeline, AnchorPane> play(Pane animationLayer, int index) {
         return play(animationLayer, g -> {
             if (!willStay)
                 animationLayer.getChildren().remove(g);
