@@ -1,3 +1,5 @@
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 
 import javafx.application.Platform;
@@ -28,6 +30,7 @@ import view.animations.Animations;
 import view.animations.ResetTranslate;
 import view.endGame.EndGameSettings;
 import view.gameElements.PlayerPane;
+import view.gameElements.Chronology;
 import view.gameElements.HandPane;
 import view.gameElements.PlayerLabel;
 import view.gameElements.PlayzonePane;
@@ -45,6 +48,8 @@ import controller.Controls;
 public class App extends Displayer {
     private Scene scene;
 
+    private StackPane rootContainer = new StackPane();
+
     private StackPane homeRoot = newHomeRoot();
     private HomeMenu home;
 
@@ -58,13 +63,19 @@ public class App extends Displayer {
         super("gameStart", "unoDeclared", "turnBlocked", "enemyTurn cardPlayed", "warning", "turnStart", "turnEnd",
                 "playerWon", "reset", "gameSetupped");
 
-        scene = new Scene(homeRoot, 1000, 600);
+        scene = new Scene(rootContainer, 1000, 600);
+        changeRoot(homeRoot);
+
         scene.getStylesheets().add(getClass().getResource("resources\\Style.css").toExternalForm());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> UserInfo.writeData("resources\\data\\userInfo.txt")));
     }
 
     /* ROOTS */
+
+    private void changeRoot(Pane newRoot) {
+        rootContainer.getChildren().setAll(newRoot);
+    }
 
     private StackPane newHomeRoot() {
         StackPane root = new StackPane();
@@ -87,16 +98,20 @@ public class App extends Displayer {
         return root;
     }
 
+    private Timer scrollTimer;
+
     private StackPane newGameRoot() {
         StackPane root = new StackPane();
         root.setId("background");
 
         BorderPane gameElements = new BorderPane();
         gameElements.setLeft(PlayerPane.getInstance());
-        gameElements.setCenter(TerrainPane.getInstance());
         gameElements.setBottom(HandPane.getInstance());
-        // Add padding to the borderPane right to absolute center the node in the
-        // borderPane center region
+
+        StackPane center = new StackPane(TerrainPane.getInstance(), Chronology.getInstance());
+        Chronology.getInstance().setVisible(false);
+        gameElements.setCenter(center);
+
         Region padderRegionRight = new Region();
         padderRegionRight.prefWidthProperty().bind(PlayerPane.getInstance().widthProperty());
         gameElements.setRight(padderRegionRight);
@@ -108,6 +123,22 @@ public class App extends Displayer {
                 Controls.DECLARE_UNO.getAction().handle(e);
             else
                 Controls.DRAW.getAction().handle(e);
+        });
+        PlayzonePane.getInstance().setOnScroll(e -> {
+            if (scrollTimer != null)
+                scrollTimer.cancel();
+            
+            Chronology.getInstance().setVisible(true);
+            Chronology.getInstance().scroll(e.getDeltaY());
+            
+            scrollTimer = new Timer();
+            scrollTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Chronology.getInstance().setVisible(false);
+                    Chronology.getInstance().bringToTheEnd();
+                }
+            }, 2000L);
         });
 
         addSettingsContents(root);
@@ -127,7 +158,7 @@ public class App extends Displayer {
 
         Button backHome = new Button();
         backHome.setOnMouseClicked(e -> {
-            scene.setRoot(homeRoot);
+            changeRoot(homeRoot);
             gameElements.setVisible(false);
             home.setVisible(true);
         });
@@ -152,7 +183,7 @@ public class App extends Displayer {
         });
         Settings.setQuitButtonAction(e -> {
             endGame();
-            scene.setRoot(homeRoot);
+            changeRoot(homeRoot);
         });
     }
 
@@ -162,31 +193,26 @@ public class App extends Displayer {
     private Animation blockTurnAnimation;
     private Animation playingCardAnimation;
     private Animation focusPlayerOnTurnAnimation;
-    private Animation newGameAnimation;
 
     private void loadAnimations() {
         Animations.FOCUS_PLAYER.get().load();
+        Animations.NEW_GAME.get().load();
 
         unoAnimation = Animations.UNO_TEXT.get();
         unoAnimation.setDimensions(400.0, null);
 
         blockTurnAnimation = Animations.BLOCK_TURN.get();
+        blockTurnAnimation.setSceneCoordinates(scene.getWidth() / 2, scene.getHeight() / 2);
         blockTurnAnimation.setDimensions(200.0, null);
         blockTurnAnimation.setWillCountdown(true);
 
         playingCardAnimation = Animations.CARD_PLAYED.get();
-        playingCardAnimation.setSceneCoordinates(scene.getWidth() / 2, scene.getHeight() / 2);
         playingCardAnimation.setDimensions(400.0, null);
         playingCardAnimation.setWillCountdown(true);
 
         focusPlayerOnTurnAnimation = Animations.FOCUS_PLAYER.get();
         focusPlayerOnTurnAnimation.setWillCountdown(true);
         focusPlayerOnTurnAnimation.setWillStay(true);
-
-        newGameAnimation = Animations.NEW_GAME.get();
-        Rectangle2D screenB = Screen.getPrimary().getBounds();
-        newGameAnimation.setWillCountdown(true);
-        newGameAnimation.setDimensions(screenB.getWidth(), screenB.getHeight());
     }
 
     /* GAME INITIALIZATION */
@@ -208,12 +234,27 @@ public class App extends Displayer {
 
         Loop.getInstance().setupGame(players, c1);
 
-        newGameAnimation.setOnFinishAction(e -> {
-            scene.setRoot(gameRoot);
+        Animation a1 = Animations.NEW_GAME.get();
+        Animation a2 = Animations.NEW_GAME.get();
+        Rectangle2D screenB = Screen.getPrimary().getBounds();
+        a1.setDimensions(screenB.getWidth(), screenB.getHeight());
+        a2.setDimensions(screenB.getWidth(), screenB.getHeight());
+
+        a1.setStopFrame(5);
+        a1.setWillStay(true);
+        a1.setOnFinishAction(e -> {
             gameThread = new Thread(() -> Loop.getInstance().play());
             gameThread.start();
+
+            rootContainer.getChildren().remove(0);
+            rootContainer.getChildren().add(0, gameRoot);
+
+            a2.play(rootContainer);
         });
-        newGameAnimation.play((Pane) scene.getRoot());
+
+        a2.setStartFrame(6);
+
+        a1.play(rootContainer);
     }
 
     private void endGame() {
@@ -242,7 +283,10 @@ public class App extends Displayer {
                 break;
             case "gameSetupped":
             case "enemyTurn cardPlayed":
-                Platform.runLater(() -> playingCardAnimation.play(gameRoot, gameRoot.getChildren().size() - 2));
+                Platform.runLater(() -> {
+                    playingCardAnimation.setSceneCoordinates(scene.getWidth() / 2, scene.getHeight() / 2);
+                    playingCardAnimation.play(gameRoot, gameRoot.getChildren().size() - 2);
+                });
                 try {
                     playingCardAnimation.latch.await();
                 } catch (InterruptedException e) {
@@ -253,7 +297,10 @@ public class App extends Displayer {
                 Platform.runLater(() -> ResetTranslate.resetTranslate(((Card) data[1]).getGuiContainer()));
                 break;
             case "unoDeclared":
-                Platform.runLater(() -> unoAnimation.play(gameRoot));
+                Platform.runLater(() -> {
+                    unoAnimation.setSceneCoordinates(scene.getWidth() / 2 - 200, scene.getHeight() / 2 - 111.85);
+                    unoAnimation.play(gameRoot);
+                });
                 break;
             case "turnBlocked":
                 Platform.runLater(() -> blockTurnAnimation.play(gameRoot));
@@ -304,7 +351,7 @@ public class App extends Displayer {
                     String iconPath = winner.isHuman() ? UserInfo.getIconPath() : winner.getIconPath();
                     EndGameSettings.updateGameResults(iconPath, winner.getNickname(), xpEarned);
 
-                    scene.setRoot(endGameRoot);
+                    changeRoot(endGameRoot);
                 });
                 break;
         }

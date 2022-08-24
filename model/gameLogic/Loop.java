@@ -136,7 +136,7 @@ public class Loop implements InputListener {
         events.notify("firstCard", firstCard);
 
         for (Player p : g.getPlayers())
-            Actions.dealFromDeck(p, 1);
+            Actions.dealFromDeck(p, 7);
 
         player = g.getPlayerByTurn(0);
 

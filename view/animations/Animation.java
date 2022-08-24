@@ -26,6 +26,8 @@ public class Animation {
     private Path folderPath;
     private File folder;
     private double frameDuration = 60.0;
+    private int startFrame;
+    private int stopFrame;
     private EventHandler<ActionEvent> onFinishAction = e -> {
     };
     private Optional<Double> resizeW = Optional.empty();
@@ -75,18 +77,28 @@ public class Animation {
         willStay = value;
     }
 
+    public void setStartFrame(int frame) {
+        startFrame = frame;
+    }
+
+    public void setStopFrame(int frame) {
+        stopFrame = frame;
+    }
+
     /* LOADING METHODS */
 
     public void load() {
         ImageView[] images = imagesLoaded.get(folderPath.toString());
 
-        if (images != null)
+        stopFrame = folder.listFiles().length - 1;
+
+        if (images != null) 
             return;
 
-        images = new ImageView[folder.listFiles().length];
+        images = new ImageView[stopFrame + 1];
 
         try {
-            for (int i = 0; i < images.length; i++)
+            for (int i = 0; i <= stopFrame; i++)
                 images[i] = new ImageView(new Image(folderPath.resolve(i + ".png").toUri().toURL().toExternalForm()));
         } catch (MalformedURLException e) {
         }
@@ -105,7 +117,7 @@ public class Animation {
         // not click any node behind the StackPane
         animation.setMouseTransparent(true);
 
-        for (int i = 0; i < images.length; i++) {
+        for (int i = startFrame; i <= stopFrame; i++) {
             ImageView img = images[i];
 
             if (resizeW.isEmpty() || resizeH.isEmpty())

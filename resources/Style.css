@@ -48,7 +48,7 @@
 .home-menu .button {
     -fx-background-color: none;
     background-color: none;
-    
+
     -fx-text-fill: white;
     color: white;
 
@@ -80,13 +80,13 @@
 }
 
 .settings-menu {
-    -fx-background-color: radial-gradient(center 0% 0% , radius 200% , #FF000A, black);
-    background-color: radial-gradient(center 0% 0% , radius 200% , #FF000A, black);
+    -fx-background-color: radial-gradient(center 0% 0%, radius 200%, #FF000A, black);
+    background-color: radial-gradient(center 0% 0%, radius 200%, #FF000A, black);
 
     -fx-background-radius: 13px;
 
-    -fx-effect: dropshadow(gaussian , rgba(0, 0, 0, 0.5) , 50 , 0.3 , 0, 0);
-    box-shadow: dropshadow(gaussian , rgba(0, 0, 0, 0.5) , 50 , 0.3 , 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 50, 0.3, 0, 0);
+    box-shadow: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 50, 0.3, 0, 0);
 }
 
 .settings-menu .label {
@@ -149,19 +149,19 @@
     font-weight: bold;
 }
 
-.xp-bar > .track {
+.xp-bar>.track {
     -fx-text-box-border: white;
     -fx-control-inner-background: white;
 }
 
-.xp-bar .bar { 
-    -fx-padding: 1px; 
+.xp-bar .bar {
+    -fx-padding: 1px;
     padding: 1px;
 
     -fx-background-color: #0a9396;
     background-color: #0a9396;
 
-    -fx-background-insets: 0; 
+    -fx-background-insets: 0;
     -fx-background-radius: 13px;
 }
 
@@ -198,7 +198,7 @@
 .player-label .cards-in-hand {
     -fx-font-size: 18px;
     font-size: 18px;
-    
+
     -fx-font-weight: bold;
     font-weight: bold;
 }
@@ -225,4 +225,9 @@
 #profile-menu {
     -fx-background-color: red;
     background-color: red;
+}
+
+#chronology {
+    -fx-background-color: linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.25));
+    background-color: linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.25));
 }
