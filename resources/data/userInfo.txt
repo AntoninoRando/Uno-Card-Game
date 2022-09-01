@@ -1,6 +1,6 @@
 pino
 121607
-6
-38
+8
+39
 14.0
 resources\icons\blood.png

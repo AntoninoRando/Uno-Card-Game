@@ -81,8 +81,14 @@ public class App extends Displayer {
         StackPane root = new StackPane();
 
         HomeMenu home = HomeMenu.getInstance();
-        Homes.setProfileAction(e -> Settings.PROFILE.setVisible(true));
-        Homes.setPlayButtonAction(e -> newGame());
+        Homes.setProfileAction(e -> {
+            Sounds.BUTTON_CLICK.get().play();
+            Settings.PROFILE.setVisible(!Settings.PROFILE.isVisible());
+        });
+        Homes.setPlayButtonAction(e -> {
+            Sounds.BUTTON_CLICK.get().play();
+            newGame();
+        });
 
         Settings.setNickFieldAction(e -> UserInfo.setNick(e));
         Settings.setDeleteAccountAction(e -> UserInfo.reset());
@@ -127,10 +133,10 @@ public class App extends Displayer {
         PlayzonePane.getInstance().setOnScroll(e -> {
             if (scrollTimer != null)
                 scrollTimer.cancel();
-            
+
             Chronology.getInstance().setVisible(true);
             Chronology.getInstance().scroll(e.getDeltaY());
-            
+
             scrollTimer = new Timer();
             scrollTimer.schedule(new TimerTask() {
                 @Override
@@ -148,7 +154,10 @@ public class App extends Displayer {
 
     private StackPane newEndGameRoot() {
         Button playAgain = new Button();
-        playAgain.setOnMouseClicked(e -> newGame());
+        playAgain.setOnMouseClicked(e -> {
+            Sounds.BUTTON_CLICK.get().play();
+            newGame();
+        });
         playAgain.setStyle("-fx-background-color: none");
 
         ImageView icon = new ImageView(new Image("resources\\BlueButton.png"));
@@ -158,6 +167,7 @@ public class App extends Displayer {
 
         Button backHome = new Button();
         backHome.setOnMouseClicked(e -> {
+            Sounds.BUTTON_CLICK.get().play();
             changeRoot(homeRoot);
             gameElements.setVisible(false);
             home.setVisible(true);
@@ -218,7 +228,7 @@ public class App extends Displayer {
     /* GAME INITIALIZATION */
 
     private void newGame() {
-        Player p1 = new Player(UserInfo.getNick(), true);
+        Player p1 = new Player(UserInfo.getNick(), true, UserInfo.getIconPath());
         Player p2 = new Player("Top Princessess", false, "resources/icons/queen.png");
         Player p3 = new Player("Bot Luca", false, "resources/icons/blood.png");
         Player p4 = new Player("Bot Giovanni", false, "resources/icons/tree.png");

@@ -2,11 +2,16 @@ package view.gameElements;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
-
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import model.events.EventListener;
 import model.gameLogic.Loop;
+import model.gameLogic.Player;
 import model.gameLogic.Card;
 
 public class Chronology extends ScrollPane implements EventListener {
@@ -43,7 +48,6 @@ public class Chronology extends ScrollPane implements EventListener {
         setStyle("-fx-background: none");
     }
 
-
     public void scroll(double deltaY) {
         setHvalue(getHvalue() + (deltaY < 0 ? 0.1 : -0.1));
     }
@@ -56,8 +60,11 @@ public class Chronology extends ScrollPane implements EventListener {
     public void update(String eventLabel, Object... data) {
         switch (eventLabel) {
             case "firstCard":
-            case "cardPlayed":
                 Platform.runLater(() -> content.getChildren().add(new CardContainer(((Card) data[0]))));
+                break;
+            case "cardPlayed":
+                Player p = (Player) data[1];
+                Platform.runLater(() -> content.getChildren().add(new Memory((Card) data[0], p.getIconPath(), p.getNickname())));
                 break;
             case "reset":
                 Platform.runLater(() -> {
@@ -67,5 +74,16 @@ public class Chronology extends ScrollPane implements EventListener {
                 break;
         }
     }
+}
 
+class Memory extends VBox {
+    Memory(Card card, String playerIcon, String nickname) {
+        setAlignment(Pos.CENTER);
+        CardContainer cardContainer = new CardContainer(card);
+        Circle avatar = new Circle(30, new ImagePattern(new Image(playerIcon)));
+        Label nick = new Label(nickname);
+        nick.getStyleClass().add(".player-label");
+        getChildren().addAll(cardContainer, avatar, nick);
+        avatar.setTranslateY(-30.0);
+    }
 }

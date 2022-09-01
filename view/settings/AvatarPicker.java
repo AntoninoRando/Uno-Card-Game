@@ -53,8 +53,7 @@ public class AvatarPicker extends StackPane {
     }
 
     private Circle createIcon(String pathname) {
-        Circle avatar = new Circle(30, 30, 30);
-        avatar.setFill(new ImagePattern(new Image(pathname)));
+        Circle avatar = new Circle(30, new ImagePattern(new Image(pathname)));
         avatar.setOnMouseClicked(e -> {
             UserInfo.setIconPath(pathname);
             Settings.PROFILE.updateInfo();

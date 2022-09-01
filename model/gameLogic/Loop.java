@@ -31,7 +31,7 @@ public class Loop implements InputListener {
                 Actions.changeCurrentCard(c);
                 g.getCurrentPlayer().hand.remove(c);
                 c.getEffect().ifPresent(effect -> effect.cast(g.getCurrentPlayer(), c));
-                events.notify("cardPlayed", c);
+                events.notify("cardPlayed", c, g.getCurrentPlayer());
 
                 if (g.getCurrentPlayer().isHuman() && g.getCurrentPlayer().getHand().size() == 1 && !unoDeclared) 
                     Actions.dealFromDeck(g.getCurrentPlayer(), 2);
