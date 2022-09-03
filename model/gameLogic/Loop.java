@@ -1,15 +1,15 @@
 package model.gameLogic;
 
-import model.events.EventManager;
-import model.events.InputListener;
+import model.data.PlayerData;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
-import controller.Controller;
-import model.data.UserInfo;
+import controller.controls.Controller;
+import events.EventManager;
+import events.InputListener;
 
 public class Loop implements InputListener {
     /* SINGLETON */
@@ -33,7 +33,7 @@ public class Loop implements InputListener {
                 c.getEffect().ifPresent(effect -> effect.cast(g.getCurrentPlayer(), c));
                 events.notify("cardPlayed", c, g.getCurrentPlayer());
 
-                if (g.getCurrentPlayer().isHuman() && g.getCurrentPlayer().getHand().size() == 1 && !unoDeclared) 
+                if (g.getCurrentPlayer().info().isHuman() && g.getCurrentPlayer().getHand().size() == 1 && !unoDeclared)
                     Actions.dealFromDeck(g.getCurrentPlayer(), 2);
 
                 events.notify("playerHandChanged", g.getCurrentPlayer());
@@ -142,28 +142,31 @@ public class Loop implements InputListener {
 
         for (Controller c : users)
             c.setupControls();
-        
+
         events.notify("gameSetupped", g.getPlayers().toArray());
     }
 
     public void endGame(boolean interrupted) {
-        int minutesElapsed = (int) ((System.currentTimeMillis() - timeStart) / 60000F);
-        int xpEarned = minutesElapsed;
-        UserInfo.addXp(xpEarned);
+        Player winner = g.getCurrentPlayer();
+        int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F); // xpEarned = minutes elapsed from the
+                                                                                  // start of the game.
+        PlayerData.addXp(xpEarned);
 
         if (!interrupted) {
-            Player winner = g.getCurrentPlayer();
-            if (winner.isHuman()) {
-                UserInfo.addXp(5);
+            boolean humanWon = g.getCurrentPlayer().info().isHuman();
+            if (humanWon) {
+                PlayerData.addXp(5);
                 xpEarned += 5;
             }
-            UserInfo.addGamePlayed(winner.isHuman());
+            PlayerData.addGamePlayed(humanWon);
             events.notify("playerWon", winner, xpEarned);
         }
 
         Game.reset();
 
-        // TODO convertire i metodi statici in non, così che basta fare instance = null per resettare... per fare ciò però bisogna ripristinare tutti gli eventi ogni volta
+        // TODO convertire i metodi statici in non, così che basta fare instance = null
+        // per resettare... per fare ciò però bisogna ripristinare tutti gli eventi ogni
+        // volta
         instance = null;
         g = null;
         player = null;

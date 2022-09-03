@@ -1,4 +1,4 @@
-package model.events;
+package events;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class EventManager {
         listeners.get(eventLabel).remove(listener);
     }
 
-    public void notify(String eventLabel, Object data) {
+    public void notify(String eventLabel, Object... data) {
         changeState(eventLabel);
 
         LinkedList<Pair<String, EventListener>> toNotify = new LinkedList<>();
@@ -47,17 +47,6 @@ public class EventManager {
         toNotify.sort((pair1, pair2) -> -Integer.compare(pair1.getValue().getEventPriority(pair1.getKey()),
                 pair2.getValue().getEventPriority(pair2.getKey())));
         toNotify.forEach(pair -> pair.getValue().update(pair.getKey(), data));
-    }
-
-    public void notify(String eventLabel, Object... data) {
-        changeState(eventLabel);
-
-        if (listeners.containsKey(eventLabel))
-            listeners.get(eventLabel).forEach(e -> e.update(eventLabel, data));
-
-        for (String complexEvent : getComplexEventsVerified()) {
-            listeners.get(complexEvent).forEach(e -> e.update(complexEvent, data));
-        }
     }
 
     /* ------------------------------ */

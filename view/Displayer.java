@@ -4,8 +4,7 @@ package view;
 import java.util.HashSet;
 import java.util.Set;
 
-import model.events.EventListener;
-
+import events.EventListener;
 import javafx.application.Application;
 
 public abstract class Displayer extends Application implements EventListener {

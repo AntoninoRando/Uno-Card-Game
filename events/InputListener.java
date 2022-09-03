@@ -1,4 +1,4 @@
-package model.events;
+package events;
 
 import model.gameLogic.Player;
 

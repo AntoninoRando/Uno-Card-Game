@@ -30,7 +30,7 @@
 			"they pass",
 			"select one of",
 			"Standard RED DRAW 4  Standard BLUE DRAW 4  Standard YELLOW DRAW 4  Standard GREEN DRAW 4",
-			"became target"
+			"become target"
 		],
 		"Quantity": 4
 	},
@@ -60,7 +60,7 @@
 		"Effect": [
 			"select one of",
 			"Standard RED COLOR  Standard BLUE COLOR  Standard YELLOW COLOR  Standard GREEN COLOR",
-			"became target"
+			"become target"
 		],
 		"Quantity": 4
 	},

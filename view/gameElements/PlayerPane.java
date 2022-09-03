@@ -3,12 +3,12 @@ package view.gameElements;
 import java.util.HashMap;
 import java.util.Map;
 
+import events.EventListener;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+
 import model.gameLogic.Loop;
-import model.data.UserInfo;
-import model.events.EventListener;
 import model.gameLogic.Player;
 
 public class PlayerPane extends VBox implements EventListener {
@@ -44,8 +44,8 @@ public class PlayerPane extends VBox implements EventListener {
     }
 
     private void addPlayerLabel(Player player) {
-        String iconPath = player.isHuman() ? UserInfo.getIconPath() : player.getIconPath();
-        PlayerLabel label = new PlayerLabel(iconPath, player.getNickname(), player.getHand().size());
+        PlayerLabel label = new PlayerLabel(player.info().getIcon(), player.info().getNick(),
+                player.getHand().size());
         getChildren().add(label);
         labels.put(player, label);
     }
@@ -63,7 +63,7 @@ public class PlayerPane extends VBox implements EventListener {
     /* ------------------------------- */
 
     @Override
-    public void update(String eventLabel, Object... data) {
+    public void update(String eventLabel, Object[] data) {
         switch (eventLabel) {
             case "gameStart":
                 Platform.runLater(() -> initialize());

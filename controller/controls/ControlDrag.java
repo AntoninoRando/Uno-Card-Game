@@ -1,4 +1,4 @@
-package controller;
+package controller.controls;
 
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;

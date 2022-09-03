@@ -1,6 +1,12 @@
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+
+import controller.actions.UserProfileActions;
+import controller.controls.Controller;
+import controller.controls.ControllerFX;
+import controller.controls.Controls;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -19,10 +25,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
 import model.gameLogic.Loop;
 import model.gameLogic.Player;
 import model.gameLogic.Card;
-import model.data.UserInfo;
+import model.data.Info;
+import model.data.PlayerData;
 
 import view.Displayer;
 import view.animations.Animation;
@@ -40,10 +48,6 @@ import view.home.HomeMenu;
 import view.home.Homes;
 import view.settings.Settings;
 import view.sounds.Sounds;
-
-import controller.Controller;
-import controller.ControllerFX;
-import controller.Controls;
 
 public class App extends Displayer {
     private Scene scene;
@@ -67,11 +71,9 @@ public class App extends Displayer {
         changeRoot(homeRoot);
 
         scene.getStylesheets().add(getClass().getResource("resources\\Style.css").toExternalForm());
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> UserInfo.writeData("resources\\data\\userInfo.txt")));
     }
 
-    /* ROOTS */
+    // ROOTS
 
     private void changeRoot(Pane newRoot) {
         rootContainer.getChildren().setAll(newRoot);
@@ -90,8 +92,14 @@ public class App extends Displayer {
             newGame();
         });
 
-        Settings.setNickFieldAction(e -> UserInfo.setNick(e));
-        Settings.setDeleteAccountAction(e -> UserInfo.reset());
+        Info.events.subscribe(Settings.PROFILE, "newUserNick", "newUserIcon", "xpEarned", "gamePlayed", "infoResetted");
+        Settings.AVATAR_PICKER.onChoice(icoPath -> UserProfileActions.changeIcon(icoPath));
+        try {
+            Settings.AVATAR_PICKER.addOptions(Info.allIcons());
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        Settings.setDeleteAccountAction(e -> PlayerData.reset());
         Settings.setAvatarClickAction(e -> Settings.AVATAR_PICKER.setVisible(!Settings.AVATAR_PICKER.isVisible()));
         Settings.setCloseProfileOnClickOutside(home);
 
@@ -184,6 +192,7 @@ public class App extends Displayer {
     }
 
     private void addSettingsContents(Pane root) {
+        Loop.events.subscribe(Settings.MENU.settings, "gameStart", "reset");
         root.getChildren().addAll(Settings.MENU, Settings.SETTINGS_BUTTON);
         StackPane.setAlignment(Settings.SETTINGS_BUTTON, Pos.TOP_RIGHT);
 
@@ -228,10 +237,10 @@ public class App extends Displayer {
     /* GAME INITIALIZATION */
 
     private void newGame() {
-        Player p1 = new Player(UserInfo.getNick(), true, UserInfo.getIconPath());
-        Player p2 = new Player("Top Princessess", false, "resources/icons/queen.png");
-        Player p3 = new Player("Bot Luca", false, "resources/icons/blood.png");
-        Player p4 = new Player("Bot Giovanni", false, "resources/icons/tree.png");
+        Player p1 = new Player("resources/Data/userInfo.txt");
+        Player p2 = new Player("resources/Data/BotTopPrincessess.txt");
+        Player p3 = new Player("resources/Data/BotLuca.txt");
+        Player p4 = new Player("resources/Data/BotGiorgio.txt");
 
         Controller c1 = new ControllerFX();
         c1.setSource(p1);
@@ -273,10 +282,15 @@ public class App extends Displayer {
         gameThread.interrupt();
     }
 
+    // CONTROLLERS
+    private void setupControllers() {
+        UserProfileActions.setActionListener(PlayerData.getThisForStaticCalls());
+    }
+
     /* EVENT LISTENER METHODS */
 
     @Override
-    public void update(String eventType, Object... data) {
+    public void update(String eventType, Object[] data) {
         // TODO le animazioni le gioca toppo on the top: stanno sopra al menù di pausa
         switch (eventType) {
             case "gameStart":
@@ -358,8 +372,8 @@ public class App extends Displayer {
 
                     Player winner = (Player) data[0];
                     int xpEarned = (int) data[1];
-                    String iconPath = winner.isHuman() ? UserInfo.getIconPath() : winner.getIconPath();
-                    EndGameSettings.updateGameResults(iconPath, winner.getNickname(), xpEarned);
+                    String iconPath = winner.info().getIcon();
+                    EndGameSettings.updateGameResults(iconPath, winner.info().getNick(), xpEarned, Info.userLevelProgress());
 
                     changeRoot(endGameRoot);
                 });
@@ -387,6 +401,7 @@ public class App extends Displayer {
         stage.setOnCloseRequest(e -> System.exit(0));
         stage.setScene(scene);
         loadAnimations();
+        setupControllers();
         Loop.events.subscribe(this, getEventsListening().stream().toArray(String[]::new));
         stage.show();
     }
@@ -394,7 +409,7 @@ public class App extends Displayer {
     /* MAIN */
 
     public static void main(String[] args) {
-        UserInfo.loadData("resources\\data\\userInfo.txt");
+        PlayerData.getPlayerData("resources/Data/userInfo.txt"); // Used to load the user info
         launch(args);
     }
 

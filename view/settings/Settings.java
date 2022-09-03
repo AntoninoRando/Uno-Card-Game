@@ -59,16 +59,12 @@ public abstract class Settings {
                 action.accept(PROFILE.nickField.getText());
                 PROFILE.nickField.clear();
                 PROFILE.requestFocus(); // Used to remove focus from the text field
-                PROFILE.updateInfo();
             }
         });
     }
 
     public static void setDeleteAccountAction(EventHandler<MouseEvent> action) {
-        PROFILE.deleteButton.setOnMouseClicked(e -> {
-            action.handle(e);
-            PROFILE.updateInfo();
-        });
+        PROFILE.deleteButton.setOnMouseClicked(action);
     }
 
     public static void setAvatarClickAction(EventHandler<MouseEvent> action) {

@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
+import events.EventListener;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import model.gameLogic.Loop;
-import model.events.EventListener;
 import model.gameLogic.Card;
 
 public class SelectionPane extends HBox implements EventListener {
@@ -56,7 +56,7 @@ public class SelectionPane extends HBox implements EventListener {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void update(String eventLabel, Object... data) {
+    public void update(String eventLabel, Object[] data) {
         switch (eventLabel) {
             case "humanTurn cardSelection":
                 CardContainer[] nodes = new CardContainer[data.length - 1];

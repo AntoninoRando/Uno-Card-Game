@@ -1,5 +1,7 @@
 package view.settings;
 
+import events.EventListener;
+
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -8,8 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.gameLogic.Loop;
-import model.events.EventListener;
 
 public class SettingsMenu extends BorderPane implements EventListener {
     protected Node restartButton = createRestartButton();
@@ -23,8 +23,6 @@ public class SettingsMenu extends BorderPane implements EventListener {
 
         arrangeElements();
         getStyleClass().add("settings-menu");
-
-        Loop.events.subscribe(this, "gameStart", "reset");
     }
 
     private Node createTitle() {
@@ -71,7 +69,7 @@ public class SettingsMenu extends BorderPane implements EventListener {
 
     /* EVENT LISTENER */
     @Override
-    public void update(String eventType, Object... data) {
+    public void update(String eventType, Object[] data) {
         switch (eventType) {
             case "gameStart":
                 Platform.runLater(

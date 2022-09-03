@@ -9,6 +9,7 @@ import javafx.animation.ScaleTransition;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+
 import model.gameLogic.Card;
 
 public class CardContainer extends ImageView {

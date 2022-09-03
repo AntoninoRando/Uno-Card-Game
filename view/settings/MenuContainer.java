@@ -3,7 +3,7 @@ package view.settings;
 import javafx.scene.layout.StackPane;
 
 public class MenuContainer extends StackPane {
-    SettingsMenu settings = new SettingsMenu();
+    public SettingsMenu settings = new SettingsMenu();
 
     MenuContainer() {
         setVisible(false);

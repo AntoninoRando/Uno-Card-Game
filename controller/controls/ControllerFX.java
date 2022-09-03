@@ -1,4 +1,4 @@
-package controller;
+package controller.controls;
 
 import model.gameLogic.Card;
 
@@ -16,11 +16,11 @@ public class ControllerFX extends Controller {
     }
 
     @Override
-    public void update(String eventType, Object... data) {
+    public void update(String eventType, Object[] data) {
         switch (eventType) {
             // TODO dara errore se viene chiamato addAll che passa come data una collection
             case "add":
-                Control control = new ControlDrag((Card) data[0], PlayzonePane.getInstance());
+                Control control = new ControlDrag((Card) data[cardField], PlayzonePane.getInstance());
                 control.setHandler(this);
                 break;
         }

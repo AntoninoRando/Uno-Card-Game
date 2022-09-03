@@ -34,7 +34,7 @@ public class EffectBuilder {
                 case "reverse turn":
                     reverseTurnOrder();
                     break;
-                case "became target":
+                case "become target":
                     transformIntoTarget();
                     break;
                 case "select one of":
@@ -104,7 +104,7 @@ public class EffectBuilder {
 
     public EffectBuilder selectOneCardOf(Card... cards) {
         effect.steps.add(() -> {
-            if (!effect.sourcePlayer.isHuman()) {
+            if (!effect.sourcePlayer.info().isHuman()) {
                 Loop.events.notify("cardSelection", effect.sourcePlayer);
                 effect.targetCard = cards[(int) (Math.random() * cards.length)];
                 return;
@@ -127,7 +127,7 @@ public class EffectBuilder {
                 cards[i] = CardsInfo.allCards.get(fullName).getCopy();
             }
 
-            if (!effect.sourcePlayer.isHuman()) {
+            if (!effect.sourcePlayer.info().isHuman()) {
                 Loop.events.notify("cardSelection", effect.sourcePlayer);
                 effect.targetCard = cards[(int) (Math.random() * cards.length)];
                 return;

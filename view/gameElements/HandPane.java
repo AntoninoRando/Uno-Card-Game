@@ -3,6 +3,7 @@ package view.gameElements;
 import java.util.HashSet;
 import java.util.Set;
 
+import events.EventListener;
 import javafx.application.Platform;
 
 import javafx.scene.Node;
@@ -13,8 +14,6 @@ import javafx.stage.Stage;
 import model.gameLogic.Loop;
 import model.gameLogic.Card;
 import model.gameLogic.Player;
-
-import model.events.EventListener;
 
 public class HandPane extends HBox implements EventListener {
     /* SINGLETON */
@@ -128,19 +127,19 @@ public class HandPane extends HBox implements EventListener {
     /* ----------------------------------------- */
 
     @Override
-    public void update(String eventLabel, Object... data) {
+    public void update(String eventLabel, Object[] data) {
         switch (eventLabel) {
             case "gameStart":
                 Platform.runLater(() -> initialize());
                 break;
             case "playerDrew":
                 Platform.runLater(() -> {
-                    if (((Player) data[0]).isHuman())
+                    if (((Player) data[0]).info().isHuman())
                         addCard((Card) data[1]);
                 });
                 break;
             case "humanTurn cardPlayed":
-                Platform.runLater(() -> removeCard(((Card) data[0]).getGuiContainer()));
+                Platform.runLater(() -> removeCard(((Card) data[cardField]).getGuiContainer()));
                 break;
         }
     }

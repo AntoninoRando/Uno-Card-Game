@@ -1,4 +1,4 @@
-package controller;
+package controller.controls;
 
 public abstract class Controls {
     public static final Control DECLARE_UNO = new Control(handler -> handler.sendInput("unoDeclared"));

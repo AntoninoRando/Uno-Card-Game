@@ -1,3 +1,22 @@
+#chronology {
+    -fx-background-image: url("resources/ScrollBackground.png");
+    background-image: url("resources/ScrollBackground.png");
+
+    -fx-background-repeat: no-repeat;
+    background-repeat: no-repeat;
+
+    -fx-background-position: center center;
+    background-position: center center;
+}
+
+#chronology .player-label {
+    -fx-font-size: 25px;
+    font-size: 25px;
+
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+
 #background {
     -fx-background-image: url("resources/background.png");
     background-image: url("resources/background.png");
@@ -225,20 +244,4 @@
 #profile-menu {
     -fx-background-color: red;
     background-color: red;
-}
-
-#chronology {
-    -fx-background-image: url("resources/Scroll Background.png");
-    background-image: url("resources/Scroll Background.png");
-
-    -fx-background-repeat: no-repeat;
-    background-repeat: no-repeat;
-}
-
-#chronology .player-label {
-    -fx-font-size: 25px;
-    font-size: 25px;
-
-    -fx-font-weight: bold;
-    font-weight: bold;
 }

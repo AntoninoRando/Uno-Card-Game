@@ -10,7 +10,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import model.data.UserInfo;
 
 public class GameResults extends VBox {
     VBox winner;
@@ -30,7 +29,7 @@ public class GameResults extends VBox {
 
     private VBox newWinner() {
         Circle icon = new Circle(47.0, 47.0, 47.0);
-        ImageView border = new ImageView(new Image("resources\\WinnerBorder.png"));
+        ImageView border = new ImageView(new Image("resources/WinnerBorder.png"));
         border.setPreserveRatio(true);
         border.setFitWidth(100.0);
         StackPane avatar = new StackPane(icon, border);
@@ -44,7 +43,7 @@ public class GameResults extends VBox {
     }
 
     private VBox newXpEarned() {
-        ProgressBar xpBar = new ProgressBar((double) UserInfo.getXp() / UserInfo.getXpGap());
+        ProgressBar xpBar = new ProgressBar();
         xpBar.getStyleClass().add("xp-bar");
         xpBar.setPrefHeight(5.0);
         xpBar.setPrefWidth(200.0);
@@ -69,8 +68,8 @@ public class GameResults extends VBox {
         ((Label) winner.getChildren().get(1)).setText(nickname);
     }
 
-    void updateXpEarned(int xp) {
-        ((ProgressBar) xpEarned.getChildren().get(0)).setProgress((double) UserInfo.getXp() / UserInfo.getXpGap());
+    void updateXpEarned(int xp, double userLevelProgress) {
+        ((ProgressBar) xpEarned.getChildren().get(0)).setProgress(userLevelProgress);
         ((Label) xpEarned.getChildren().get(1)).setText("+" + Integer.toString(xp) + " xp");
     }
 }

@@ -1,6 +1,7 @@
+true
 pino
-121607
-8
-39
-14.0
-resources\icons\blood.png
+0
+0
+0
+0
+resources\icons\Dragonfly dst.png

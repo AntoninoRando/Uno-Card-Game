@@ -1,20 +1,24 @@
 package view.gameElements;
 
+import events.EventListener;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import model.events.EventListener;
+
+import model.data.PlayerData;
 import model.gameLogic.Loop;
 import model.gameLogic.Player;
+import model.gameLogic.Suit;
 import model.gameLogic.Card;
 
-public class Chronology extends ScrollPane implements EventListener {
+public class Chronology extends StackPane implements EventListener {
     /* SINGLETON */
     /* --------- */
     private static Chronology instance;
@@ -26,9 +30,10 @@ public class Chronology extends ScrollPane implements EventListener {
     }
 
     private Chronology() {
-        Loop.events.subscribe(this, "firstCard", "cardPlayed", "reset");
+        Loop.events.subscribe(this, "firstCard", "cardPlayed", "playerDrew", "turnBlocked", "reset");
+        ScrollPane sp = new ScrollPane(content);
+        getChildren().add(sp);
         addStyle();
-        setContent(content);
     }
 
     /* ---------------------------------------- */
@@ -36,40 +41,58 @@ public class Chronology extends ScrollPane implements EventListener {
     private HBox content = new HBox();
 
     private void addStyle() {
-        setMaxHeight(400.0);
-        setMaxWidth(1000.0);
-        setFitToHeight(true);
-        setFitToWidth(true);
-        hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-        vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        ScrollPane sp = (ScrollPane) getChildren().get(0);
+        sp.setMaxHeight(400.0);
+        sp.setMaxWidth(1000.0);
+        sp.setFitToHeight(true);
+        sp.setFitToWidth(true);
+        sp.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        sp.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
+        sp.setStyle("-fx-background: none");
 
-        content.setId("chronology");
         content.setAlignment(Pos.CENTER_LEFT);
-        setStyle("-fx-background: none");
+
+        setId("chronology");
     }
 
     public void scroll(double deltaY) {
-        setHvalue(getHvalue() + (deltaY < 0 ? 0.1 : -0.1));
+        ScrollPane sp = (ScrollPane) getChildren().get(0);
+        sp.setHvalue(sp.getHvalue() + (deltaY < 0 ? 0.1 : -0.1));
     }
 
     public void bringToTheEnd() {
-        setHvalue(getHmax());
+        ScrollPane sp = (ScrollPane) getChildren().get(0);
+        sp.setHvalue(sp.getHmax());
     }
 
     @Override
-    public void update(String eventLabel, Object... data) {
+    public void update(String eventLabel, Object[] data) {
         switch (eventLabel) {
             case "firstCard":
                 Platform.runLater(() -> content.getChildren().add(new CardContainer(((Card) data[0]))));
                 break;
             case "cardPlayed":
-                Player p = (Player) data[1];
-                Platform.runLater(() -> content.getChildren().add(new Memory((Card) data[0], p.getIconPath(), p.getNickname())));
+                PlayerData p = ((Player) data[1]).info();
+                Platform.runLater(
+                        () -> content.getChildren().add(new Memory((Card) data[0], p.getIcon(), p.getNick())));
+                break;
+            case "playerDrew":
+                PlayerData p2 = ((Player) data[0]).info();
+                Platform.runLater(
+                        () -> content.getChildren()
+                                .add(new Memory(new Card(Suit.WILD, -1), p2.getIcon(), p2.getNick())));
+                break;
+            case "turnBlocked":
+                PlayerData p3 = ((Player) data[0]).info();
+                Platform.runLater(
+                        () -> content.getChildren()
+                                .add(new Memory(new Card(Suit.WILD, -2), p3.getIcon(), p3.getNick())));
                 break;
             case "reset":
                 Platform.runLater(() -> {
                     content = new HBox();
-                    setContent(content);
+                    ScrollPane sp = (ScrollPane) getChildren().get(0);
+                    sp.setContent(content);
                 });
                 break;
         }

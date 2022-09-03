@@ -1,13 +1,12 @@
 package view.gameElements;
 
+import events.EventListener;
 import javafx.application.Platform;
 
 import javafx.scene.layout.StackPane;
 
 import model.gameLogic.Loop;
 import model.gameLogic.Card;
-
-import model.events.EventListener;
 
 public class TerrainPane extends StackPane implements EventListener {
     /* SINGLETON */
@@ -27,7 +26,6 @@ public class TerrainPane extends StackPane implements EventListener {
         setMaxWidth(400);
     }
 
-    /* ---------------------------------------- */
     private CardContainer terrainCard;
 
     private void initialize() {
@@ -40,7 +38,7 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     @Override
-    public void update(String eventLabel, Object... data) {
+    public void update(String eventLabel, Object[] data) {
         switch (eventLabel) {
             case "gameStart":
                 Platform.runLater(() -> initialize());

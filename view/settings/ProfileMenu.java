@@ -1,5 +1,7 @@
 package view.settings;
 
+import events.EventListener;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -9,9 +11,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import model.data.UserInfo;
 
-public class ProfileMenu extends VBox {
+public class ProfileMenu extends VBox implements EventListener {
     Circle avatar = createAvatar();
     TextField nickField = createNickField();
     Label levelLabel = createLevelLabel();
@@ -34,43 +35,40 @@ public class ProfileMenu extends VBox {
     private Circle createAvatar() {
         Circle avatar = new Circle(20, 20, 20);
         avatar.setId("avatar");
-        avatar.setFill(new ImagePattern(new Image(UserInfo.getIconPath())));
         return avatar;
     }
 
     private TextField createNickField() {
         TextField nickField = new TextField();
-        nickField.setPromptText(UserInfo.getNick());
         return nickField;
     }
 
     private Label createLevelLabel() {
-        Label levelLabel = new Label("Level " + Integer.toString(UserInfo.getLevel()));
+        Label levelLabel = new Label();
         levelLabel.setId("level-label");
         return levelLabel;
     }
 
     private ProgressBar createXpBar() {
-        ProgressBar xpBar = new ProgressBar((double) UserInfo.getXp() / UserInfo.getXpGap());
+        ProgressBar xpBar = new ProgressBar();
         xpBar.getStyleClass().add("xp-bar");
         return xpBar;
     }
 
     private Label createXpGapLabel() {
-        Label xpGapLabel = new Label(
-                Integer.toString(UserInfo.getXp()) + " / " + Integer.toString(UserInfo.getXpGap()) + " xp");
+        Label xpGapLabel = new Label();
         xpGapLabel.setId("xp-gap-label");
         return xpGapLabel;
     }
 
     private Label createGamesPlayedLabel() {
-        Label gamesPlayedLabel = new Label(Integer.toString(UserInfo.getGames()));
+        Label gamesPlayedLabel = new Label();
         gamesPlayedLabel.setId("games-played-label");
         return gamesPlayedLabel;
     }
 
     private Label createWinRateLabel() {
-        Label winRateLabel = new Label(Double.toString(UserInfo.getWinRate()));
+        Label winRateLabel = new Label();
         winRateLabel.setId("win-rate-label");
         return winRateLabel;
     }
@@ -99,13 +97,27 @@ public class ProfileMenu extends VBox {
         setSpacing(40.0);
     }
 
-    protected void updateInfo() {
-        avatar.setFill(new ImagePattern(new Image(UserInfo.getIconPath())));
-        nickField.setPromptText(UserInfo.getNick());
-        levelLabel.setText("Level " + Integer.toString(UserInfo.getLevel()));
-        xpBar.setProgress((double) UserInfo.getXp() / UserInfo.getXpGap());
-        xpGapLabel.setText(Integer.toString(UserInfo.getXp()) + " / " + Integer.toString(UserInfo.getXpGap()) + " xp");
-        gamesPlayedLabel.setText(Integer.toString(UserInfo.getGames()));
-        winRateLabel.setText(Double.toString(UserInfo.getWinRate()));
+    @Override
+    public void update(String eventLabel, Object[] data) {
+        switch (eventLabel) {
+            case "newUserNick":
+                nickField.setPromptText((String) data[0]);
+                break;
+            case "newUserIcon":
+                avatar.setFill(new ImagePattern(new Image((String) data[0])));
+                break;
+            case "xpEarned":
+                levelLabel.setText("Level " + (int) data[1]);
+                xpBar.setProgress((double) data[2]);
+                xpGapLabel.setText((double) data[2] + "%");
+                break;
+            case "gamePlayed":
+                gamesPlayedLabel.setText((int) data[0] + "");
+                winRateLabel.setText((double) ((int) data[0] / (int) data[1]) + "");
+                break;
+            case "infoResetted":
+                // TODO
+                break;
+        }
     }
 }

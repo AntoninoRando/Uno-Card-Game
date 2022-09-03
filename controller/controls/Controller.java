@@ -1,10 +1,10 @@
-package controller;
+package controller.controls;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import model.events.EventListener;
-import model.events.InputListener;
+import events.EventListener;
+import events.InputListener;
 import model.gameLogic.Player;
 
 /**

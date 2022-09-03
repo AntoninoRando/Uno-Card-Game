@@ -5,7 +5,7 @@ public abstract class Phases {
         Player p = g.getCurrentPlayer();
 
         Loop.events.notify("turnStart", p);
-        if (p.isHuman())
+        if (p.info().isHuman())
             Loop.events.notify("humanTurn", p);
         else 
             Loop.events.notify("enemyTurn", p);
@@ -15,7 +15,7 @@ public abstract class Phases {
     };
 
     public static final Phase MAKE_CHOICE = (l, g) -> {
-        if (g.getCurrentPlayer().isHuman())
+        if (g.getCurrentPlayer().info().isHuman())
             synchronized (l) {
                 try {
                     l.wait();
