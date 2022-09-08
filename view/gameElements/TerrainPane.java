@@ -1,11 +1,13 @@
 package view.gameElements;
 
 import events.EventListener;
+import events.EventType;
 import javafx.application.Platform;
 
 import javafx.scene.layout.StackPane;
 
 import model.gameLogic.Loop;
+import model.gameLogic.Player;
 import model.gameLogic.Card;
 
 public class TerrainPane extends StackPane implements EventListener {
@@ -20,7 +22,7 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     private TerrainPane() {
-        Loop.events.subscribe(this, "gameStart", "cardPlayed", "firstCard");
+        Loop.events.subscribe(this, EventType.GAME_READY, EventType.CARD_CHANGE);
         getStyleClass().add("terrain");
         setMaxHeight(400);
         setMaxWidth(400);
@@ -38,15 +40,24 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     @Override
-    public void update(String eventLabel, Object[] data) {
-        switch (eventLabel) {
-            case "gameStart":
+    public void update(EventType event, Card data) {
+        switch (event) {
+            case CARD_CHANGE:
+                Platform.runLater(() -> updateTerrainCard(data));
+                break;
+            default:
+                throwUnsupportedError(event, data);
+        }
+    }
+
+    @Override
+    public void update(EventType event, Player[] data) {
+        switch (event) {
+            case GAME_READY:
                 Platform.runLater(() -> initialize());
                 break;
-            case "firstCard":
-            case "cardPlayed":
-                Platform.runLater(() -> updateTerrainCard((Card) data[0]));
-                break;
+            default:
+                throwUnsupportedError(event, null);
         }
     }
 }

@@ -1,7 +1,7 @@
 package view.settings;
 
 import events.EventListener;
-
+import events.EventType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -98,26 +98,41 @@ public class ProfileMenu extends VBox implements EventListener {
     }
 
     @Override
-    public void update(String eventLabel, Object[] data) {
-        switch (eventLabel) {
-            case "newUserNick":
-                nickField.setPromptText((String) data[0]);
+    public void update(EventType event, String data) {
+        switch (event) {
+            case USER_NEW_NICK:
+                nickField.setPromptText(data);
                 break;
-            case "newUserIcon":
-                avatar.setFill(new ImagePattern(new Image((String) data[0])));
+            case USER_NEW_ICON:
+                avatar.setFill(new ImagePattern(new Image(data)));
                 break;
-            case "xpEarned":
-                levelLabel.setText("Level " + (int) data[1]);
-                xpBar.setProgress((double) data[2]);
-                xpGapLabel.setText((double) data[2] + "%");
+            default:
+                throwUnsupportedError(event, data);
+            // case "infoResetted":
+            //     // TODO
+            //     break;
+        }
+    }
+
+    @Override
+    public void update(EventType event, int data) {
+        switch (event) {
+            case XP_EARNED:
+                levelLabel.setText("Level " + data);
+                // xpBar.setProgress((double) data[2]);
+                // xpGapLabel.setText((double) data[2] + "%");
                 break;
-            case "gamePlayed":
-                gamesPlayedLabel.setText((int) data[0] + "");
-                winRateLabel.setText((double) ((int) data[0] / (int) data[1]) + "");
+            case LEVELED_UP:
+                levelLabel.setText("Level " + data);
                 break;
-            case "infoResetted":
-                // TODO
+            case USER_PLAYED_GAME:
+                gamesPlayedLabel.setText(data + "");
                 break;
+            case USER_WON:
+                winRateLabel.setText(data + "");
+                break;
+            default:
+                throwUnsupportedError(event, data);
         }
     }
 }

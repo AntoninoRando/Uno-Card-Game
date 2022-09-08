@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import events.EventListener;
+import events.EventType;
 import events.InputListener;
 import model.gameLogic.Player;
 
@@ -31,14 +32,14 @@ public abstract class Controller extends Thread implements EventListener {
     public abstract void setupControls();
 
     /* GETTERS AND SETTERS */
-    /* ------------------- */
+    
     public Player getSource() {
         return source;
     }
 
     public void setSource(Player source) {
         this.source = source;
-        source.getHand().observers.subscribe(this, "add");
+        source.getHand().observers.subscribe(this, EventType.ADD);
     }
 
     public void setInputListener(InputListener inputListener) {

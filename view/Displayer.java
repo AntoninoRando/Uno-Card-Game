@@ -5,30 +5,31 @@ import java.util.HashSet;
 import java.util.Set;
 
 import events.EventListener;
+import events.EventType;
 import javafx.application.Application;
 
 public abstract class Displayer extends Application implements EventListener {
-    private Set<String> eventsListening;
+    private Set<EventType> eventsListening;
 
     public Displayer self() {
         return this;
     }
 
-    public Displayer(Set<String> events) {
+    public Displayer(Set<EventType> events) {
         eventsListening = events;
     }
 
-    public Displayer(String... events) {
+    public Displayer(EventType... events) {
         eventsListening = new HashSet<>();
-        for (String e : events)
+        for (EventType e : events)
             addEventToListen(e);
     }
 
-    public Set<String> getEventsListening() {
+    public Set<EventType> getEventsListening() {
         return eventsListening;
     }
 
-    public void addEventToListen(String eventType) {
+    public void addEventToListen(EventType eventType) {
         eventsListening.add(eventType);
     }
 }

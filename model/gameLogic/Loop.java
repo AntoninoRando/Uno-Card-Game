@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import controller.controls.Controller;
 import events.EventManager;
+import events.EventType;
 import events.InputListener;
 
 public class Loop implements InputListener {
@@ -26,20 +27,26 @@ public class Loop implements InputListener {
         choiceTypes = new HashMap<>();
 
         choiceTypes.put("card", () -> {
+            Player player = g.getCurrentPlayer();
             Card c = (Card) choice;
             if (g.isPlayable(c)) {
                 Actions.changeCurrentCard(c);
-                g.getCurrentPlayer().hand.remove(c);
-                c.getEffect().ifPresent(effect -> effect.cast(g.getCurrentPlayer(), c));
-                events.notify("cardPlayed", c, g.getCurrentPlayer());
+                player.hand.remove(c);
+                c.getEffect().ifPresent(effect -> effect.cast(player, c));
+                events.notify(EventType.CARD_CHANGE, c);
+                events.notify(EventType.PLAYER_HAND_DECREASE, player);
 
-                if (g.getCurrentPlayer().info().isHuman() && g.getCurrentPlayer().getHand().size() == 1 && !unoDeclared)
+                if (!player.info().isHuman()) 
+                    return true;
+                
+                events.notify(EventType.USER_PLAYED_CARD, c);
+
+                if (player.getHand().size() == 1 && !unoDeclared)
                     Actions.dealFromDeck(g.getCurrentPlayer(), 2);
 
-                events.notify("playerHandChanged", g.getCurrentPlayer());
                 return true;
             } else {
-                events.notify("warning", "Can't play it now!", c);
+                events.notify(EventType.INVALID_CARD, c);
                 return false;
             }
         });
@@ -56,7 +63,7 @@ public class Loop implements InputListener {
                 choice = g.getCurrentPlayer().getHand().get((int) choice);
                 return choiceTypes.get("card").get();
             } catch (IndexOutOfBoundsException e) {
-                events.notify("warning", "Invalid selection!", choice);
+                events.notify(EventType.INVALID_CARD, choice);
                 return false;
             }
         });
@@ -123,17 +130,16 @@ public class Loop implements InputListener {
         } catch (NullPointerException e) {
             e.printStackTrace();
             // May be here because of the "reset()" method
-            events.notify("gameIsOver", (Object[]) null);
         }
     }
 
     private void setupFirstTurn() {
-        events.notify("gameStart", g.getPlayers().toArray());
+        events.notify(EventType.GAME_READY, g.getPlayers().toArray(Player[]::new));
 
         Actions.shuffleDeck();
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
-        events.notify("firstCard", firstCard);
+        events.notify(EventType.CARD_CHANGE, firstCard);
 
         for (Player p : g.getPlayers())
             Actions.dealFromDeck(p, 7);
@@ -143,7 +149,7 @@ public class Loop implements InputListener {
         for (Controller c : users)
             c.setupControls();
 
-        events.notify("gameSetupped", g.getPlayers().toArray());
+        events.notify(EventType.GAME_START, g.getPlayers().toArray(Player[]::new));
     }
 
     public void endGame(boolean interrupted) {
@@ -159,7 +165,7 @@ public class Loop implements InputListener {
                 xpEarned += 5;
             }
             PlayerData.addGamePlayed(humanWon);
-            events.notify("playerWon", winner, xpEarned);
+            events.notify(EventType.PLAYER_WON, winner);
         }
 
         Game.reset();
@@ -177,7 +183,7 @@ public class Loop implements InputListener {
         currentPhase = 0;
         timeStart = 0;
 
-        events.notify("reset");
+        events.notify(EventType.RESET);
     }
 
     /* INPUTLISTENER */
@@ -187,7 +193,7 @@ public class Loop implements InputListener {
         synchronized (this) {
             // We use == instead of equals because they have to be the same object
             if (source != player) {
-                events.notify("warning", "This is not your turn!", choice);
+                events.notify(EventType.INVALID_CARD, choice);
                 return;
             }
             Loop.choice = choice;
@@ -199,7 +205,7 @@ public class Loop implements InputListener {
 
     private void startUnoTimer() {
         Player unoer = player;
-        events.notify("unoDeclared", unoer);
+        events.notify(EventType.UNO_DECLARED);
         unoDeclared = true;
 
         new Thread() {

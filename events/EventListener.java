@@ -1,18 +1,46 @@
 package events;
 
+import model.gameLogic.Card;
+import model.gameLogic.Player;
+
 // [null, null, null, null, null, null, null]
 public interface EventListener {
-    public static final int cardField = 0;
-    public static final int playerField = 1;
-    public static final int gameField = 2;
+    default void update(EventType event) {
+    }
 
-    public void update(String eventLabel, Object[] data);
+    default void update(EventType event, Object[] data) {
+    }
 
-    default int getEventPriority(String eventLabel) {
+    default void update(EventType event, String data) {
+    }
+
+    default void update(EventType event, int data) {
+    }
+
+    default void update(EventType event, Card data) {
+    }
+
+    default void update(EventType event, Card[] data) {
+    }
+
+    default void update(EventType event, Player data) {
+    }
+
+    default void update(EventType event, Player[] data) {
+    }
+
+    default void update(byte combinedEvent, Object[] data) {
+    }
+
+    default int getEventPriority(EventType event) {
         return 1;
     }
 
-    default int compareTo(String eventLabel, EventListener otherListener) {
-        return -Integer.compare(getEventPriority(eventLabel), otherListener.getEventPriority(eventLabel));
+    default void throwUnsupportedError(EventType event, Object data) throws Error {
+        throw new Error(this + " was listening for " + event + " with " + data + " as data, but it does not support this event!");
+    }
+
+    default int compareTo(EventType event, EventListener otherListener) throws Error {
+        return -Integer.compare(getEventPriority(event), otherListener.getEventPriority(event));
     }
 }

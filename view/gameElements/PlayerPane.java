@@ -3,6 +3,7 @@ package view.gameElements;
 import java.util.HashMap;
 import java.util.Map;
 
+import events.EventType;
 import events.EventListener;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
@@ -24,7 +25,8 @@ public class PlayerPane extends VBox implements EventListener {
 
     private PlayerPane() {
         addStyle();
-        Loop.events.subscribe(this, "gameStart", "gameSetupped", "playerDrew", "playerHandChanged");
+        Loop.events.subscribe(this, EventType.GAME_READY, EventType.PLAYER_HAND_DECREASE,
+                EventType.PLAYER_HAND_INCREASE);
     }
 
     /* ---------------------------------------- */
@@ -50,34 +52,38 @@ public class PlayerPane extends VBox implements EventListener {
         labels.put(player, label);
     }
 
-    private void updatePlayerInfo(Player player) {
-        labels.get(player).changeCards(player.getHand().size());
-    }
-
     /* ------------------------------- */
 
     public PlayerLabel getPlayerLabel(Player player) {
         return labels.get(player);
     }
 
-    /* ------------------------------- */
-
     @Override
-    public void update(String eventLabel, Object[] data) {
-        switch (eventLabel) {
-            case "gameStart":
-                Platform.runLater(() -> initialize());
-                break;
-            case "gameSetupped":
+    public void update(EventType event, Player[] data) {
+        switch (event) {
+            case GAME_READY:
                 Platform.runLater(() -> {
-                    for (Object player : data)
-                        addPlayerLabel((Player) player);
+                    initialize();
+                    for (Player player : data)
+                        addPlayerLabel(player);
                 });
                 break;
-            case "playerHandChanged":
-            case "playerDrew":
-                Platform.runLater(() -> updatePlayerInfo((Player) data[0]));
+            default:
+                throwUnsupportedError(event, data);
+        }
+    }
+
+    @Override
+    public void update(EventType event, Player data) {
+        switch (event) {
+            case PLAYER_HAND_INCREASE:
+                Platform.runLater(() -> labels.get(data).modifyHandSize(1));
                 break;
+            case PLAYER_HAND_DECREASE:
+                Platform.runLater(() -> labels.get(data).modifyHandSize(-1));
+                break;
+            default:
+                throwUnsupportedError(event, data);
         }
     }
 }

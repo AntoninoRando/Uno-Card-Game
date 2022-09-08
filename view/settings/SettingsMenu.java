@@ -1,7 +1,7 @@
 package view.settings;
 
 import events.EventListener;
-
+import events.EventType;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import model.gameLogic.Player;
 
 public class SettingsMenu extends BorderPane implements EventListener {
     protected Node restartButton = createRestartButton();
@@ -69,15 +70,25 @@ public class SettingsMenu extends BorderPane implements EventListener {
 
     /* EVENT LISTENER */
     @Override
-    public void update(String eventType, Object[] data) {
-        switch (eventType) {
-            case "gameStart":
+    public void update(EventType event) {
+        switch (event) {
+            case RESET:
+                Platform.runLater(() -> ((HBox) getBottom()).getChildren().clear());
+                break;
+            default:
+                throwUnsupportedError(event, null);
+        }
+    }
+
+    @Override
+    public void update(EventType event, Player[] data) {
+        switch (event) {
+            case GAME_START:
                 Platform.runLater(
                         () -> ((HBox) getBottom()).getChildren().addAll(restartButton, quitButton));
                 break;
-            case "reset":
-                Platform.runLater(() -> ((HBox) getBottom()).getChildren().clear());
-                break;
+            default:
+                throwUnsupportedError(event, null);
         }
     }
 }

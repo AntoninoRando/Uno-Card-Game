@@ -51,4 +51,8 @@ public class PlayerLabel extends HBox {
     protected void changeCards(int newQuantity) {
         cards.setText(Integer.toString(newQuantity));
     }
+
+    public void modifyHandSize(int toAdd) {
+        cards.setText(Integer.toString(Integer.parseInt(cards.getText()) + toAdd)); 
+    }
 }

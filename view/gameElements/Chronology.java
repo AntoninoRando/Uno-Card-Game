@@ -1,6 +1,8 @@
 package view.gameElements;
 
 import events.EventListener;
+import events.EventType;
+
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -12,7 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
-import model.data.PlayerData;
 import model.gameLogic.Loop;
 import model.gameLogic.Player;
 import model.gameLogic.Suit;
@@ -30,7 +31,8 @@ public class Chronology extends StackPane implements EventListener {
     }
 
     private Chronology() {
-        Loop.events.subscribe(this, "firstCard", "cardPlayed", "playerDrew", "turnBlocked", "reset");
+        Loop.events.subscribe(this, EventType.CARD_CHANGE, EventType.TURN_BLOCKED, EventType.PLAYER_DREW,
+                EventType.RESET);
         ScrollPane sp = new ScrollPane(content);
         getChildren().add(sp);
         addStyle();
@@ -38,7 +40,24 @@ public class Chronology extends StackPane implements EventListener {
 
     /* ---------------------------------------- */
 
-    private HBox content = new HBox();
+    private HBox cardLine = new HBox();
+    private HBox iconLine = new HBox();
+    private HBox nickLine = new HBox();
+    private VBox content = new VBox(cardLine, iconLine, nickLine);
+
+    private void addCard(CardContainer card) {
+        cardLine.getChildren().add(card);
+    }
+
+    private void addIcon(String icon) {
+        Circle avatar = new Circle(30, new ImagePattern(new Image(icon)));
+        iconLine.getChildren().add(avatar);
+    }
+
+    private void addNick(String nick) {
+        Label nickL = new Label(nick);
+        nickLine.getChildren().add(nickL);
+    }
 
     private void addStyle() {
         ScrollPane sp = (ScrollPane) getChildren().get(0);
@@ -48,7 +67,6 @@ public class Chronology extends StackPane implements EventListener {
         sp.setFitToWidth(true);
         sp.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
         sp.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-        sp.setStyle("-fx-background: none");
 
         content.setAlignment(Pos.CENTER_LEFT);
 
@@ -66,47 +84,60 @@ public class Chronology extends StackPane implements EventListener {
     }
 
     @Override
-    public void update(String eventLabel, Object[] data) {
-        switch (eventLabel) {
-            case "firstCard":
-                Platform.runLater(() -> content.getChildren().add(new CardContainer(((Card) data[0]))));
+    public void update(EventType event, Card data) {
+        switch (event) {
+            case CARD_CHANGE:
+                Platform.runLater(() -> addCard(data.getGuiContainer()));
                 break;
-            case "cardPlayed":
-                PlayerData p = ((Player) data[1]).info();
-                Platform.runLater(
-                        () -> content.getChildren().add(new Memory((Card) data[0], p.getIcon(), p.getNick())));
+            default:
+                // TODO risolvere throwUnsupportedError(event, data);
                 break;
-            case "playerDrew":
-                PlayerData p2 = ((Player) data[0]).info();
-                Platform.runLater(
-                        () -> content.getChildren()
-                                .add(new Memory(new Card(Suit.WILD, -1), p2.getIcon(), p2.getNick())));
-                break;
-            case "turnBlocked":
-                PlayerData p3 = ((Player) data[0]).info();
-                Platform.runLater(
-                        () -> content.getChildren()
-                                .add(new Memory(new Card(Suit.WILD, -2), p3.getIcon(), p3.getNick())));
-                break;
-            case "reset":
+        }
+    }
+
+    @Override
+    public void update(EventType event, Player data) {
+        switch (event) {
+            case CARD_CHANGE:
                 Platform.runLater(() -> {
-                    content = new HBox();
+                    addIcon(data.info().getIcon());
+                    addNick(data.info().getNick());
+                });
+                break;
+            case TURN_BLOCKED:
+                Platform.runLater(() -> {
+                    addCard(new Card(Suit.WILD, -2).getGuiContainer());
+                    addIcon(data.info().getIcon());
+                    addNick(data.info().getNick());
+                });
+                break;
+            case PLAYER_DREW:
+                Platform.runLater(() -> {
+                    addCard(new Card(Suit.WILD, -1).getGuiContainer());
+                    addIcon(data.info().getIcon());
+                    addNick(data.info().getNick());
+                });
+                break;
+            default:
+                throwUnsupportedError(event, data);
+        }
+    }
+
+    @Override
+    public void update(EventType event) {
+        switch (event) {
+            case RESET:
+                Platform.runLater(() -> {
+                    cardLine = new HBox();
+                    iconLine = new HBox();
+                    nickLine = new HBox();
+                    content = new VBox(cardLine, iconLine, nickLine);
                     ScrollPane sp = (ScrollPane) getChildren().get(0);
                     sp.setContent(content);
                 });
                 break;
+            default:
+                throwUnsupportedError(event, null);
         }
-    }
-}
-
-class Memory extends VBox {
-    Memory(Card card, String playerIcon, String nickname) {
-        setAlignment(Pos.CENTER);
-        CardContainer cardContainer = new CardContainer(card);
-        Circle avatar = new Circle(30, new ImagePattern(new Image(playerIcon)));
-        Label nick = new Label(nickname);
-        nick.getStyleClass().add(".player-label");
-        getChildren().addAll(cardContainer, avatar, nick);
-        avatar.setTranslateY(-30.0);
     }
 }

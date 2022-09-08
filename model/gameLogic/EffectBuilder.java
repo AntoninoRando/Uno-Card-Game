@@ -2,6 +2,7 @@ package model.gameLogic;
 
 import java.util.function.Consumer;
 
+import events.EventType;
 import model.data.CardsInfo;
 
 public class EffectBuilder {
@@ -83,7 +84,7 @@ public class EffectBuilder {
             Player[] newA = new Player[oldA.length];
             int n = g.countPlayers();
             int currentTurn = g.getTurn();
-            for (int i = 0; i < n; i++) 
+            for (int i = 0; i < n; i++)
                 newA[(i + currentTurn) % n] = oldA[((currentTurn - i) + n) % n];
             g.setTurnOrder(newA);
         });
@@ -105,7 +106,6 @@ public class EffectBuilder {
     public EffectBuilder selectOneCardOf(Card... cards) {
         effect.steps.add(() -> {
             if (!effect.sourcePlayer.info().isHuman()) {
-                Loop.events.notify("cardSelection", effect.sourcePlayer);
                 effect.targetCard = cards[(int) (Math.random() * cards.length)];
                 return;
             }
@@ -114,7 +114,7 @@ public class EffectBuilder {
             data[0] = (Consumer<Card>) card -> effect.targetCard = card;
             for (int i = 0; i < cards.length; i++)
                 data[i + 1] = cards[i];
-            Loop.events.notify("cardSelection", data);
+            Loop.events.notify(EventType.USER_SELECTING_CARD, cards);
         });
         return this;
     }
@@ -128,7 +128,6 @@ public class EffectBuilder {
             }
 
             if (!effect.sourcePlayer.info().isHuman()) {
-                Loop.events.notify("cardSelection", effect.sourcePlayer);
                 effect.targetCard = cards[(int) (Math.random() * cards.length)];
                 return;
             }
@@ -137,7 +136,7 @@ public class EffectBuilder {
             data[0] = (Consumer<Card>) card -> effect.targetCard = card;
             for (int i = 0; i < cards.length; i++)
                 data[i + 1] = cards[i];
-            Loop.events.notify("cardSelection", data);
+            Loop.events.notify(EventType.USER_SELECTING_CARD, cards);
         });
         return this;
     }

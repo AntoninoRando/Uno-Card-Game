@@ -7,7 +7,7 @@ import controller.actions.UserProfileActions;
 import controller.controls.Controller;
 import controller.controls.ControllerFX;
 import controller.controls.Controls;
-
+import events.EventType;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
@@ -64,8 +64,10 @@ public class App extends Displayer {
     private StackPane endGameRoot = newEndGameRoot();
 
     public App() {
-        super("gameStart", "unoDeclared", "turnBlocked", "enemyTurn cardPlayed", "warning", "turnStart", "turnEnd",
-                "playerWon", "reset", "gameSetupped");
+        super(EventType.GAME_READY, EventType.GAME_START, EventType.CARD_CHANGE, EventType.UNO_DECLARED,
+                EventType.TURN_BLOCKED,
+                EventType.TURN_END, EventType.INVALID_CARD, EventType.TURN_START, EventType.PLAYER_WON,
+                EventType.XP_EARNED);
 
         scene = new Scene(rootContainer, 1000, 600);
         changeRoot(homeRoot);
@@ -92,7 +94,8 @@ public class App extends Displayer {
             newGame();
         });
 
-        Info.events.subscribe(Settings.PROFILE, "newUserNick", "newUserIcon", "xpEarned", "gamePlayed", "infoResetted");
+        Info.events.subscribe(Settings.PROFILE, EventType.USER_NEW_NICK, EventType.USER_NEW_ICON, EventType.XP_EARNED,
+                EventType.USER_PLAYED_GAME, EventType.USER_WON, EventType.LEVELED_UP);
         Settings.AVATAR_PICKER.onChoice(icoPath -> UserProfileActions.changeIcon(icoPath));
         try {
             Settings.AVATAR_PICKER.addOptions(Info.allIcons());
@@ -192,7 +195,7 @@ public class App extends Displayer {
     }
 
     private void addSettingsContents(Pane root) {
-        Loop.events.subscribe(Settings.MENU.settings, "gameStart", "reset");
+        Loop.events.subscribe(Settings.MENU.settings, EventType.GAME_START, EventType.RESET);
         root.getChildren().addAll(Settings.MENU, Settings.SETTINGS_BUTTON);
         StackPane.setAlignment(Settings.SETTINGS_BUTTON, Pos.TOP_RIGHT);
 
@@ -212,6 +215,8 @@ public class App extends Displayer {
     private Animation blockTurnAnimation;
     private Animation playingCardAnimation;
     private Animation focusPlayerOnTurnAnimation;
+    private Animation a1 = Animations.NEW_GAME.get();
+    private Animation a2 = Animations.NEW_GAME.get();
 
     private void loadAnimations() {
         Animations.FOCUS_PLAYER.get().load();
@@ -232,6 +237,18 @@ public class App extends Displayer {
         focusPlayerOnTurnAnimation = Animations.FOCUS_PLAYER.get();
         focusPlayerOnTurnAnimation.setWillCountdown(true);
         focusPlayerOnTurnAnimation.setWillStay(true);
+
+        a1.setStopFrame(5);
+        a1.setWillStay(true);
+        a1.setOnFinishAction(e -> {
+            gameThread = new Thread(() -> Loop.getInstance().play());
+            gameThread.start();
+
+            rootContainer.getChildren().remove(0);
+            rootContainer.getChildren().add(0, gameRoot);
+        });
+
+        a2.setStartFrame(6);
     }
 
     /* GAME INITIALIZATION */
@@ -253,25 +270,9 @@ public class App extends Displayer {
 
         Loop.getInstance().setupGame(players, c1);
 
-        Animation a1 = Animations.NEW_GAME.get();
-        Animation a2 = Animations.NEW_GAME.get();
         Rectangle2D screenB = Screen.getPrimary().getBounds();
         a1.setDimensions(screenB.getWidth(), screenB.getHeight());
         a2.setDimensions(screenB.getWidth(), screenB.getHeight());
-
-        a1.setStopFrame(5);
-        a1.setWillStay(true);
-        a1.setOnFinishAction(e -> {
-            gameThread = new Thread(() -> Loop.getInstance().play());
-            gameThread.start();
-
-            rootContainer.getChildren().remove(0);
-            rootContainer.getChildren().add(0, gameRoot);
-
-            a2.play(rootContainer);
-        });
-
-        a2.setStartFrame(6);
 
         a1.play(rootContainer);
     }
@@ -289,13 +290,27 @@ public class App extends Displayer {
 
     /* EVENT LISTENER METHODS */
 
+    // TODO le animazioni le gioca toppo on the top: stanno sopra al menù di pausa
+
     @Override
-    public void update(String eventType, Object[] data) {
-        // TODO le animazioni le gioca toppo on the top: stanno sopra al menù di pausa
-        switch (eventType) {
-            case "gameStart":
+    public void update(EventType event) {
+        switch (event) {
+            case UNO_DECLARED:
                 Platform.runLater(() -> {
-                    Sounds.IN_GAME_SOUNDTRACK.play();
+                    unoAnimation.setSceneCoordinates(scene.getWidth() / 2 - 200, scene.getHeight() / 2 - 111.85);
+                    unoAnimation.play(gameRoot);
+                });
+                break;
+            default:
+                throwUnsupportedError(event, null);
+        }
+    }
+
+    @Override
+    public void update(EventType event, Player[] data) {
+        switch (event) {
+            case GAME_READY:
+                Platform.runLater(() -> {
                     int i = 0;
                     while (i < gameRoot.getChildren().size()) {
                         if (gameRoot.getChildren().get(i).getStyleClass().contains("fleeting"))
@@ -305,8 +320,21 @@ public class App extends Displayer {
                     }
                 });
                 break;
-            case "gameSetupped":
-            case "enemyTurn cardPlayed":
+            case GAME_START:
+                Platform.runLater(() -> {
+                    Sounds.IN_GAME_SOUNDTRACK.play();
+                    a2.play(rootContainer);
+                });
+                break;
+            default:
+                throwUnsupportedError(event, null);
+        }
+    }
+
+    @Override
+    public void update(EventType event, Card data) {
+        switch (event) {
+            case CARD_CHANGE:
                 Platform.runLater(() -> {
                     playingCardAnimation.setSceneCoordinates(scene.getWidth() / 2, scene.getHeight() / 2);
                     playingCardAnimation.play(gameRoot, gameRoot.getChildren().size() - 2);
@@ -317,34 +345,21 @@ public class App extends Displayer {
                 }
                 playingCardAnimation.resetLatch();
                 break;
-            case "warning":
-                Platform.runLater(() -> ResetTranslate.resetTranslate(((Card) data[1]).getGuiContainer()));
+            case INVALID_CARD:
+                Platform.runLater(() -> ResetTranslate.resetTranslate(data.getGuiContainer()));
                 break;
-            case "unoDeclared":
+            default:
+                throwUnsupportedError(event, data);
+        }
+    }
+
+    @Override
+    public void update(EventType event, Player data) {
+        switch (event) {
+            case TURN_START:
                 Platform.runLater(() -> {
-                    unoAnimation.setSceneCoordinates(scene.getWidth() / 2 - 200, scene.getHeight() / 2 - 111.85);
-                    unoAnimation.play(gameRoot);
-                });
-                break;
-            case "turnBlocked":
-                Platform.runLater(() -> blockTurnAnimation.play(gameRoot));
-                try {
-                    blockTurnAnimation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                blockTurnAnimation.resetLatch();
-                break;
-            case "turnStart":
-                Platform.runLater(() -> {
-                    PlayerLabel pl;
-                    while (true) {
-                        try {
-                            pl = PlayerPane.getInstance().getPlayerLabel((Player) data[0]);
-                            if (pl != null)
-                                break;
-                        } catch (NullPointerException e) {
-                        }
-                    }
+                    PlayerLabel pl = PlayerPane.getInstance().getPlayerLabel(data);
+                    ;
                     Bounds b = pl.localToScene(pl.getBoundsInLocal());
 
                     focusPlayerOnTurnAnimation.setDimensions(PlayerPane.getInstance().getWidth(), b.getHeight() + 10);
@@ -358,36 +373,51 @@ public class App extends Displayer {
                 }
                 focusPlayerOnTurnAnimation.resetLatch();
                 break;
-            case "turnEnd":
+            case TURN_END:
                 Platform.runLater(() -> {
                     ObservableList<Node> l = gameRoot.getChildren();
                     l.remove(l.indexOf(l.stream().filter(n -> n.getStyleClass().contains("turn-start-animation"))
                             .findFirst().get()));
                 });
                 break;
-            case "playerWon":
+            case TURN_BLOCKED:
+                Platform.runLater(() -> blockTurnAnimation.play(gameRoot));
+                try {
+                    blockTurnAnimation.latch.await();
+                } catch (InterruptedException e) {
+                }
+                blockTurnAnimation.resetLatch();
+                break;
+            case PLAYER_WON:
                 Platform.runLater(() -> {
                     Sounds.IN_GAME_SOUNDTRACK.stop();
                     gameThread.interrupt();
-
-                    Player winner = (Player) data[0];
-                    int xpEarned = (int) data[1];
-                    String iconPath = winner.info().getIcon();
-                    EndGameSettings.updateGameResults(iconPath, winner.info().getNick(), xpEarned, Info.userLevelProgress());
-
+                    EndGameSettings.updateWinner(data.info().getIcon(), data.info().getNick());
                     changeRoot(endGameRoot);
                 });
-                break;
+            default:
+                throwUnsupportedError(event, data);
         }
     }
 
     @Override
-    public int getEventPriority(String eventLabel) {
-        switch (eventLabel) {
-            case "enemyTurn cardPlayed":
+    public void update(EventType event, int data) {
+        switch (event) {
+            case XP_EARNED:
+                Platform.runLater(() -> EndGameSettings.updateUser(data, Info.userLevelProgress()));
+                break;
+            default:
+                throwUnsupportedError(event, data);
+        }
+    }
+
+    @Override
+    public int getEventPriority(EventType event) {
+        switch (event) {
+            case CARD_CHANGE:
                 return 2;
             default:
-                return super.getEventPriority(eventLabel);
+                return super.getEventPriority(event);
         }
     }
 
@@ -402,7 +432,7 @@ public class App extends Displayer {
         stage.setScene(scene);
         loadAnimations();
         setupControllers();
-        Loop.events.subscribe(this, getEventsListening().stream().toArray(String[]::new));
+        Loop.events.subscribe(this, getEventsListening().stream().toArray(EventType[]::new));
         stage.show();
     }
 

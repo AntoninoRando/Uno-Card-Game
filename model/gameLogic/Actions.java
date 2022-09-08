@@ -1,5 +1,7 @@
 package model.gameLogic;
 
+import events.EventType;
+
 /**
  * This class contains several static methods to modify the game state. If an
  * action should be displayed, a listener will be triggered. Complex actions can
@@ -31,7 +33,13 @@ public abstract class Actions {
     public static void dealFromDeck(Player player) {
         Card card = takeFromDeck();
         player.getHand().add(card);
-        Loop.events.notify("playerDrew", player, card);
+        if (player.info().isHuman()) 
+            Loop.events.notify(EventType.USER_DREW, card);
+        else {
+            Loop.events.notify(EventType.PLAYER_DREW, player);
+            Loop.events.notify(EventType.PLAYER_DREW, card);
+        }
+        Loop.events.notify(EventType.PLAYER_HAND_INCREASE, player);
     }
 
     public static void dealFromDeck(Player p, int times) {
@@ -46,7 +54,7 @@ public abstract class Actions {
 
     public static void skipTurn() {
         Loop.currentPhase = Loop.getInstance().phases.size() - 2;
-        Loop.events.notify("turnBlocked", Game.getInstance().getCurrentPlayer());
+        Loop.events.notify(EventType.TURN_BLOCKED, Game.getInstance().getCurrentPlayer());
     }
 
     public static void transformCard(Card source, Card target) {

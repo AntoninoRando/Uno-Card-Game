@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 
 import events.ActionListener;
+import events.EventType;
 
 /**
  * A class containig player's info. It also contains static info about the user.
@@ -76,7 +77,7 @@ public class PlayerData implements ActionListener {
         nick = nick.trim();
         if (!nick.equals("") && nick.length() <= Info.getNickMaxLength())
             PlayerData.userNick = nick;
-        Info.events.notify("newUserNick", nick);
+        Info.events.notify(EventType.USER_NEW_NICK, nick);
     }
 
     /**
@@ -101,7 +102,7 @@ public class PlayerData implements ActionListener {
      */
     private static void setIcon(String icon) {
         PlayerData.userIcon = icon;
-        Info.events.notify("newUserIcon", icon);
+        Info.events.notify(EventType.USER_NEW_ICON, icon);
     }
 
     /**
@@ -154,15 +155,17 @@ public class PlayerData implements ActionListener {
     public static void addXp(int quantity) {
         int gap = Info.getXpGap(level);
 
+        // Default case
         if (xp + quantity < gap) {
             PlayerData.xp += quantity;
-            Info.events.notify("xpEarned", PlayerData.xp, PlayerData.level, Info.userLevelProgress());
+            Info.events.notify(EventType.XP_EARNED, PlayerData.xp);
             return;
         }
 
         quantity -= gap - xp;
         PlayerData.xp = 0;
         PlayerData.level++;
+        Info.events.notify(EventType.LEVELED_UP, PlayerData.level);
         addXp(quantity);
     }
 
@@ -174,9 +177,11 @@ public class PlayerData implements ActionListener {
      */
     public static void addGamePlayed(boolean win) {
         PlayerData.games++;
-        if (win)
+        Info.events.notify(EventType.USER_PLAYED_GAME, PlayerData.games);
+        if (win) {
             PlayerData.wins++;
-        Info.events.notify("gamePlayed", PlayerData.games, PlayerData.wins);
+            Info.events.notify(EventType.USER_WON, PlayerData.wins);
+        }
     }
 
     /**
@@ -190,7 +195,7 @@ public class PlayerData implements ActionListener {
         PlayerData.games = 0;
         PlayerData.wins = 0;
 
-        Info.events.notify("infoResetted", PlayerData.getUserNick(), PlayerData.getUserIcon());
+        // Info.events.notify("infoResetted", PlayerData.getUserNick(), PlayerData.getUserIcon());
     }
 
     //

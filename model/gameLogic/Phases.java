@@ -1,15 +1,13 @@
 package model.gameLogic;
 
+import events.EventType;
+
 public abstract class Phases {
     public static final Phase START_TURN = (l, g) -> {
         Player p = g.getCurrentPlayer();
 
-        Loop.events.notify("turnStart", p);
-        if (p.info().isHuman())
-            Loop.events.notify("humanTurn", p);
-        else 
-            Loop.events.notify("enemyTurn", p);
-            
+        Loop.events.notify(EventType.TURN_START, p);
+
         p.consumeConditions();
         return true;
     };
@@ -42,7 +40,8 @@ public abstract class Phases {
                     break;
                 default:
                     throw new Error(
-                            "The Loop said: someone notifyed me \"" + Loop.choice + "\" but I can't handle that event!");
+                            "The Loop said: someone notifyed me \"" + Loop.choice
+                                    + "\" but I can't handle that event!");
             }
         } else if (Loop.choice instanceof Integer) {
             Loop.choiceType = "cardPosition";
@@ -52,13 +51,13 @@ public abstract class Phases {
 
     public static final Phase RESOLVE_CHOICE = (l, g) -> {
         return Loop.choiceTypes.getOrDefault(Loop.choiceType, () -> {
-            Loop.events.notify("warning", "Invalid choice!");
+            // Loop.events.notify("warning", "Invalid choice!");
             return false;
         }).get();
     };
 
     public static final Phase END_TURN = (l, g) -> {
-        Loop.events.notify("turnEnd", g.getCurrentPlayer());
+        Loop.events.notify(EventType.TURN_END, g.getCurrentPlayer());
         g.setTurn(g.getNextPlayer());
         Loop.choice = null;
         Loop.choiceType = null;

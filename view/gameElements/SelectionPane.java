@@ -3,9 +3,9 @@ package view.gameElements;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.function.Consumer;
 
 import events.EventListener;
+import events.EventType;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
@@ -29,20 +29,21 @@ public class SelectionPane extends HBox implements EventListener {
         setVisible(false);
         setAlignment(Pos.CENTER);
 
-        Loop.events.subscribe(this, "humanTurn cardSelection");
+        Loop.events.subscribe(this, EventType.USER_SELECTING_CARD);
     }
 
-    /* ---------------------------------------- */
+    //
+
     private CountDownLatch latch = new CountDownLatch(1);
     private Map<CardContainer, Card> options;
-    
-    public void newSelection(Consumer<Card> onSelectAction, CardContainer... nodes) {
+
+    public void newSelection(CardContainer... nodes) {
         getChildren().addAll(nodes);
-        for (CardContainer n : nodes)
-            n.setOnMouseClicked(e -> {
-                onSelectAction.accept(options.get(n));
-                completeSelection();
-            });
+        // for (CardContainer n : nodes)
+        //     n.setOnMouseClicked(e -> {
+        //         onSelectAction.accept(options.get(n));
+        //         completeSelection();
+        //     });
 
         setVisible(true);
     }
@@ -52,28 +53,28 @@ public class SelectionPane extends HBox implements EventListener {
         getChildren().clear();
         latch.countDown();
         latch = new CountDownLatch(1);
+        options = new HashMap<>();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void update(String eventLabel, Object[] data) {
-        switch (eventLabel) {
-            case "humanTurn cardSelection":
-                CardContainer[] nodes = new CardContainer[data.length - 1];
-                options = new HashMap<>();
-                for (int i = 1; i < data.length; i++) {
-                    Card c = ((Card) data[i]);
-                    CardContainer cc = c.getGuiContainer();
-                    options.put(cc, c);
-                    nodes[i-1] = cc;
+    public void update(EventType event, Card[] data) {
+        switch (event) {
+            case USER_SELECTING_CARD:
+                CardContainer[] nodes = new CardContainer[data.length];
+                for (int i = 0; i < data.length; i++) {
+                    CardContainer cardContainer = data[i].getGuiContainer();
+                    nodes[i] = cardContainer;
+                    options.put(cardContainer, data[i]);
                 }
-                Platform.runLater(() -> newSelection((Consumer<Card>) data[0], nodes));
+                Platform.runLater(() -> newSelection( nodes));
                 try {
                     latch.await();
                 } catch (InterruptedException e) {
                 }
                 break;
             // TODO case "enemyTurn cardSelection":
+            default:
+                throwUnsupportedError(event, data);
         }
     }
 }

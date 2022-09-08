@@ -9,6 +9,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import events.EventManager;
+import events.EventType;
 
 // !Visto che le carte nel gruppo potrebbero cambiare per via di molti effetti, 
 // potrei aggiungere un metodo che permette di iterare anche se viene modificato 
@@ -38,7 +39,7 @@ public class CardGroup implements Collection<Card> {
 
     public void add(int index, Card card) {
         cards.add(index, card);
-        observers.notify("add", card);
+        observers.notify(EventType.ADD, card);
     }
 
     public int indexOf(Card c) {
@@ -121,14 +122,14 @@ public class CardGroup implements Collection<Card> {
     @Override
     public boolean add(Card e) {
         cards.add(e);
-        observers.notify("add", e);
+        observers.notify(EventType.ADD, e);
         return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends Card> c) {
         if(cards.addAll(c)) {
-            observers.notify("add", c);
+            observers.notify(EventType.ADD, c);
             return true;
         }
         return false;

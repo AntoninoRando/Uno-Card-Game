@@ -1,5 +1,6 @@
 package controller.controls;
 
+import events.EventType;
 import model.gameLogic.Card;
 
 import view.gameElements.PlayzonePane;
@@ -16,13 +17,15 @@ public class ControllerFX extends Controller {
     }
 
     @Override
-    public void update(String eventType, Object[] data) {
-        switch (eventType) {
+    public void update(EventType event, Card data) {
+        switch (event) {
             // TODO dara errore se viene chiamato addAll che passa come data una collection
-            case "add":
-                Control control = new ControlDrag((Card) data[cardField], PlayzonePane.getInstance());
+            case ADD:
+                Control control = new ControlDrag(data, PlayzonePane.getInstance());
                 control.setHandler(this);
                 break;
+            default:
+                throwUnsupportedError(event, data);
         }
     }
 }

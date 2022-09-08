@@ -3,6 +3,7 @@ package view.gameElements;
 import java.util.HashSet;
 import java.util.Set;
 
+import events.EventType;
 import events.EventListener;
 import javafx.application.Platform;
 
@@ -27,7 +28,7 @@ public class HandPane extends HBox implements EventListener {
     }
 
     private HandPane() {
-        Loop.events.subscribe(this, "gameStart", "playerDrew", "reset", "humanTurn cardPlayed");
+        Loop.events.subscribe(this, EventType.GAME_READY, EventType.USER_PLAYED_CARD, EventType.USER_DREW);
         addStyle();
     }
 
@@ -39,6 +40,7 @@ public class HandPane extends HBox implements EventListener {
         getChildren().add(card.getGuiContainer());
         cardsStored.add(card.getGuiContainer());
         adjustCards();
+
     }
 
     public void removeCard(CardContainer cardGuContainer) {
@@ -127,20 +129,27 @@ public class HandPane extends HBox implements EventListener {
     /* ----------------------------------------- */
 
     @Override
-    public void update(String eventLabel, Object[] data) {
-        switch (eventLabel) {
-            case "gameStart":
+    public void update(EventType event, Player[] data) {
+        switch (event) {
+            case GAME_READY:
                 Platform.runLater(() -> initialize());
                 break;
-            case "playerDrew":
-                Platform.runLater(() -> {
-                    if (((Player) data[0]).info().isHuman())
-                        addCard((Card) data[1]);
-                });
+            default:
+                throwUnsupportedError(event, null);
+        }
+    }
+
+    @Override
+    public void update(EventType event, Card data) {
+        switch (event) {
+            case USER_DREW:
+                Platform.runLater(() -> addCard(data));
                 break;
-            case "humanTurn cardPlayed":
-                Platform.runLater(() -> removeCard(((Card) data[cardField]).getGuiContainer()));
+            case USER_PLAYED_CARD:
+                Platform.runLater(() -> removeCard(data.getGuiContainer()));
                 break;
+            default:
+                throwUnsupportedError(event, data);
         }
     }
 }

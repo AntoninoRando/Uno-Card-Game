@@ -9,8 +9,11 @@ public abstract class EndGameSettings {
         GAME_RESULTS.buttons.getChildren().addAll(buttons);
     }
 
-    public static void updateGameResults(String winnerIconPath, String winnerNick, int xpEarned, double userLevelProgress) {
+    public static void updateWinner(String winnerIconPath, String winnerNick) {
         GAME_RESULTS.updateWinner(winnerIconPath, winnerNick);
+    }
+
+    public static void updateUser(int xpEarned, double userLevelProgress) {
         GAME_RESULTS.updateXpEarned(xpEarned, userLevelProgress);
     }
 }
