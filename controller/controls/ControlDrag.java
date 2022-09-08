@@ -11,9 +11,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
 import javafx.util.Duration;
-
-import model.gameLogic.Card;
-
+import prefabs.Card;
 import view.gameElements.CardContainer;
 import view.gameElements.TerrainPane;
 

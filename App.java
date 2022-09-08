@@ -27,8 +27,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import model.gameLogic.Loop;
-import model.gameLogic.Player;
-import model.gameLogic.Card;
+import prefabs.Card;
+import prefabs.Player;
 import model.data.Info;
 import model.data.PlayerData;
 
@@ -54,14 +54,14 @@ public class App extends Displayer {
 
     private StackPane rootContainer = new StackPane();
 
-    private StackPane homeRoot = newHomeRoot();
+    private StackPane homeRoot;
     private HomeMenu home;
 
-    private StackPane gameRoot = newGameRoot();
+    private StackPane gameRoot;
     private StackPane gameElements;
     private Thread gameThread;
 
-    private StackPane endGameRoot = newEndGameRoot();
+    private StackPane endGameRoot;
 
     public App() {
         super(EventType.GAME_READY, EventType.GAME_START, EventType.CARD_CHANGE, EventType.UNO_DECLARED,
@@ -70,6 +70,9 @@ public class App extends Displayer {
                 EventType.XP_EARNED);
 
         scene = new Scene(rootContainer, 1000, 600);
+        homeRoot = newHomeRoot();
+        gameRoot = newGameRoot();
+        endGameRoot = newEndGameRoot();
         changeRoot(homeRoot);
 
         scene.getStylesheets().add(getClass().getResource("resources\\Style.css").toExternalForm());
@@ -86,33 +89,47 @@ public class App extends Displayer {
 
         HomeMenu home = HomeMenu.getInstance();
         Homes.setProfileAction(e -> {
-            Sounds.BUTTON_CLICK.get().play();
+            Sounds.BUTTON_CLICK.play();
             Settings.PROFILE.setVisible(!Settings.PROFILE.isVisible());
         });
         Homes.setPlayButtonAction(e -> {
-            Sounds.BUTTON_CLICK.get().play();
+            Sounds.BUTTON_CLICK.play();
             newGame();
         });
 
+        root.getChildren().addAll(home, Settings.PROFILE, Settings.AVATAR_PICKER);
+        StackPane.setAlignment(home, Pos.TOP_LEFT);
+
+        initializeProfile(home);
+
+        return root;
+    }
+
+    private void initializeProfile(Pane settingsContainer) {
+        Settings.PROFILE.setVisible(false);
+        Settings.AVATAR_PICKER.setVisible(false);
+
         Info.events.subscribe(Settings.PROFILE, EventType.USER_NEW_NICK, EventType.USER_NEW_ICON, EventType.XP_EARNED,
                 EventType.USER_PLAYED_GAME, EventType.USER_WON, EventType.LEVELED_UP);
+
         Settings.AVATAR_PICKER.onChoice(icoPath -> UserProfileActions.changeIcon(icoPath));
         try {
             Settings.AVATAR_PICKER.addOptions(Info.allIcons());
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+
         Settings.setDeleteAccountAction(e -> PlayerData.reset());
         Settings.setAvatarClickAction(e -> Settings.AVATAR_PICKER.setVisible(!Settings.AVATAR_PICKER.isVisible()));
-        Settings.setCloseProfileOnClickOutside(home);
+        Settings.setCloseProfileOnClickOutside(settingsContainer);
 
-        root.getChildren().addAll(home, Settings.PROFILE, Settings.AVATAR_PICKER);
-        StackPane.setAlignment(home, Pos.TOP_LEFT);
-
-        Settings.PROFILE.setVisible(false);
-        Settings.AVATAR_PICKER.setVisible(false);
-
-        return root;
+        // Setting the first values
+        Settings.PROFILE.update(EventType.USER_NEW_NICK, PlayerData.getUserNick());
+        Settings.PROFILE.update(EventType.USER_NEW_ICON, PlayerData.getUserIcon());
+        Settings.PROFILE.update(EventType.LEVELED_UP, PlayerData.getLevel());
+        Settings.PROFILE.update(EventType.USER_PLAYED_GAME, PlayerData.getGames());
+        Settings.PROFILE.update(EventType.USER_WON, (int) PlayerData.getWins());
+        Settings.PROFILE.update(EventType.XP_EARNED, PlayerData.getXp());
     }
 
     private Timer scrollTimer;
@@ -166,7 +183,7 @@ public class App extends Displayer {
     private StackPane newEndGameRoot() {
         Button playAgain = new Button();
         playAgain.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.get().play();
+            Sounds.BUTTON_CLICK.play();
             newGame();
         });
         playAgain.setStyle("-fx-background-color: none");
@@ -178,7 +195,7 @@ public class App extends Displayer {
 
         Button backHome = new Button();
         backHome.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.get().play();
+            Sounds.BUTTON_CLICK.play();
             changeRoot(homeRoot);
             gameElements.setVisible(false);
             home.setVisible(true);
@@ -218,7 +235,7 @@ public class App extends Displayer {
     private Animation a1 = Animations.NEW_GAME.get();
     private Animation a2 = Animations.NEW_GAME.get();
 
-    private void loadAnimations() {
+    private void loadMedia() {
         Animations.FOCUS_PLAYER.get().load();
         Animations.NEW_GAME.get().load();
 
@@ -249,6 +266,8 @@ public class App extends Displayer {
         });
 
         a2.setStartFrame(6);
+
+        Sounds.loadAll();
     }
 
     /* GAME INITIALIZATION */
@@ -430,7 +449,7 @@ public class App extends Displayer {
         stage.setFullScreenExitHint("");
         stage.setOnCloseRequest(e -> System.exit(0));
         stage.setScene(scene);
-        loadAnimations();
+        loadMedia();
         setupControllers();
         Loop.events.subscribe(this, getEventsListening().stream().toArray(EventType[]::new));
         stage.show();

@@ -4,6 +4,8 @@ import java.util.function.Consumer;
 
 import events.EventType;
 import model.data.CardsInfo;
+import prefabs.Card;
+import prefabs.Player;
 
 public class EffectBuilder {
     private Effect effect;
@@ -131,11 +133,8 @@ public class EffectBuilder {
                 effect.targetCard = cards[(int) (Math.random() * cards.length)];
                 return;
             }
-
-            Object[] data = new Object[cards.length + 1];
-            data[0] = (Consumer<Card>) card -> effect.targetCard = card;
-            for (int i = 0; i < cards.length; i++)
-                data[i + 1] = cards[i];
+            
+            Loop.getInstance().setSeleciontEvent(card -> effect.targetCard = card);
             Loop.events.notify(EventType.USER_SELECTING_CARD, cards);
         });
         return this;

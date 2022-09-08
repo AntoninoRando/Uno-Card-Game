@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.gameLogic.Player;
+import prefabs.Player;
 
 public class SettingsMenu extends BorderPane implements EventListener {
     protected Node restartButton = createRestartButton();

@@ -12,10 +12,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import model.gameLogic.Card;
-import model.gameLogic.CardGroup;
 import model.gameLogic.EffectBuilder;
-import model.gameLogic.Suit;
+import prefabs.Card;
+import prefabs.CardGroup;
+import prefabs.Suit;
 
 public abstract class CardsInfo {
     public static HashMap<String, Card> allCards = new HashMap<>();

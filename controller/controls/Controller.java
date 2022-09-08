@@ -6,7 +6,7 @@ import java.util.List;
 import events.EventListener;
 import events.EventType;
 import events.InputListener;
-import model.gameLogic.Player;
+import prefabs.Player;
 
 /**
  * This class enables a player to take choices (input) that modify the game

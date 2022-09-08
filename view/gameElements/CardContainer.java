@@ -10,7 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
-import model.gameLogic.Card;
+import prefabs.Card;
 
 public class CardContainer extends ImageView {
     // TODO non so se vanno bene per qualsiasi sistema operativo quei separatori

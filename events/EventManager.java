@@ -5,13 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import model.gameLogic.Card;
-import model.gameLogic.Player;
+import prefabs.Card;
+import prefabs.Player;
 
 // TODO gestire meglio gli eventi del tipo che se ci sono due eventi con lo stesso tipo vengono accorpati in un solo metodo da eseguire
 public class EventManager {
-    /* OBSERVER PATTERN */
-    /* ---------------- */
     private Map<EventType, List<EventListener>> listeners;
 
     public EventManager() {

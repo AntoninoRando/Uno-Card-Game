@@ -2,6 +2,7 @@ package view.settings;
 
 import events.EventListener;
 import events.EventType;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -118,8 +119,7 @@ public class ProfileMenu extends VBox implements EventListener {
     public void update(EventType event, int data) {
         switch (event) {
             case XP_EARNED:
-                levelLabel.setText("Level " + data);
-                // xpBar.setProgress((double) data[2]);
+                xpBar.setProgress(data);
                 // xpGapLabel.setText((double) data[2] + "%");
                 break;
             case LEVELED_UP:

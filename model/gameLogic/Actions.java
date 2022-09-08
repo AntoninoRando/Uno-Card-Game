@@ -1,6 +1,8 @@
 package model.gameLogic;
 
 import events.EventType;
+import prefabs.Card;
+import prefabs.Player;
 
 /**
  * This class contains several static methods to modify the game state. If an

@@ -7,6 +7,10 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import model.data.CardsInfo;
+import prefabs.Card;
+import prefabs.CardGroup;
+import prefabs.Player;
+import prefabs.Suit;
 
 /**
  * This class represents a game frame. Think of this class as a node
@@ -167,7 +171,7 @@ public class Game {
 
     private Predicate<Player> defaultWinCondition() {
         return player -> {
-            return player.hand.isEmpty();
+            return player.getHand().isEmpty();
         };
     }
 

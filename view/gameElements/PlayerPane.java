@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 import model.gameLogic.Loop;
-import model.gameLogic.Player;
+import prefabs.Player;
 
 public class PlayerPane extends VBox implements EventListener {
     /* SINGLETON */

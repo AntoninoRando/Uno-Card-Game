@@ -1,7 +1,5 @@
 package view.gameElements;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import events.EventListener;
@@ -10,7 +8,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import model.gameLogic.Loop;
-import model.gameLogic.Card;
+import prefabs.Card;
 
 public class SelectionPane extends HBox implements EventListener {
     /* SINGLETON */
@@ -35,16 +33,18 @@ public class SelectionPane extends HBox implements EventListener {
     //
 
     private CountDownLatch latch = new CountDownLatch(1);
-    private Map<CardContainer, Card> options;
 
-    public void newSelection(CardContainer... nodes) {
-        getChildren().addAll(nodes);
-        // for (CardContainer n : nodes)
-        //     n.setOnMouseClicked(e -> {
-        //         onSelectAction.accept(options.get(n));
-        //         completeSelection();
-        //     });
-
+    public void newSelection(Card[] cards) {
+        CardContainer[] cardContainers = new CardContainer[cards.length];
+        for (int i = 0; i < cards.length; i++) {
+            cardContainers[i] = cards[i].getGuiContainer();
+            int j = i;
+            cardContainers[i].setOnMouseClicked(e -> {
+                Loop.getInstance().completeSelectionEvent(cards[j]);
+                completeSelection();
+            });
+        }
+        getChildren().addAll(cardContainers);
         setVisible(true);
     }
 
@@ -53,20 +53,13 @@ public class SelectionPane extends HBox implements EventListener {
         getChildren().clear();
         latch.countDown();
         latch = new CountDownLatch(1);
-        options = new HashMap<>();
     }
 
     @Override
     public void update(EventType event, Card[] data) {
         switch (event) {
             case USER_SELECTING_CARD:
-                CardContainer[] nodes = new CardContainer[data.length];
-                for (int i = 0; i < data.length; i++) {
-                    CardContainer cardContainer = data[i].getGuiContainer();
-                    nodes[i] = cardContainer;
-                    options.put(cardContainer, data[i]);
-                }
-                Platform.runLater(() -> newSelection( nodes));
+                Platform.runLater(() -> newSelection(data));
                 try {
                     latch.await();
                 } catch (InterruptedException e) {

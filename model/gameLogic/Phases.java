@@ -1,6 +1,8 @@
 package model.gameLogic;
 
 import events.EventType;
+import prefabs.Card;
+import prefabs.Player;
 
 public abstract class Phases {
     public static final Phase START_TURN = (l, g) -> {

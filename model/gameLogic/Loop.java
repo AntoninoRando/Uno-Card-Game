@@ -1,20 +1,26 @@
 package model.gameLogic;
 
-import model.data.PlayerData;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import controller.controls.Controller;
 import events.EventManager;
 import events.EventType;
 import events.InputListener;
 
+import prefabs.Card;
+import prefabs.Player;
+
+import model.data.PlayerData;
+
+
+
+
+import controller.controls.Controller;
+
 public class Loop implements InputListener {
-    /* SINGLETON */
-    /* ------------------------------ */
     private static Loop instance;
 
     public static Loop getInstance() {
@@ -31,9 +37,10 @@ public class Loop implements InputListener {
             Card c = (Card) choice;
             if (g.isPlayable(c)) {
                 Actions.changeCurrentCard(c);
-                player.hand.remove(c);
+                player.getHand().remove(c);
                 c.getEffect().ifPresent(effect -> effect.cast(player, c));
                 events.notify(EventType.CARD_CHANGE, c);
+                events.notify(EventType.PLAYER_PLAYED_CARD, player);
                 events.notify(EventType.PLAYER_HAND_DECREASE, player);
 
                 if (!player.info().isHuman()) 
@@ -68,8 +75,6 @@ public class Loop implements InputListener {
             }
         });
     }
-
-    /* ------------------------------ */
 
     public static EventManager events = new EventManager();
 
@@ -186,8 +191,6 @@ public class Loop implements InputListener {
         events.notify(EventType.RESET);
     }
 
-    /* INPUTLISTENER */
-    /* ------------- */
     @Override
     public void accept(Object choice, Player source) {
         synchronized (this) {
@@ -200,8 +203,21 @@ public class Loop implements InputListener {
             notify();
         }
     }
+    
+    // 
 
-    /* -------------------------------------- */
+    private Consumer<Card> selectionEvent;
+    
+    public void setSeleciontEvent(Consumer<Card> selectionEvent) {
+        this.selectionEvent = selectionEvent;
+    }
+
+    public void completeSelectionEvent(Card card) {
+        selectionEvent.accept(card);
+        selectionEvent = null;
+    }
+
+    //
 
     private void startUnoTimer() {
         Player unoer = player;

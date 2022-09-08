@@ -5,29 +5,26 @@ import java.io.File;
 import javafx.animation.Timeline;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 public class Sound {
-    protected MediaPlayer mp3;
+    private MediaPlayer mp3;
     
-    protected Sound(String filePath) {
+    public Sound(String filePath, boolean inLoop) {
         mp3 = new MediaPlayer(new Media(new File(filePath).toURI().toString()));
         mp3.setCycleCount(Timeline.INDEFINITE);
     }
 
-    protected Sound(String filePath, int times) {
+    public Sound(String filePath) {
         mp3 = new MediaPlayer(new Media(new File(filePath).toURI().toString()));
-        mp3.setCycleCount(times);
     }
 
     public void play() {
         mp3.play();
+        mp3.seek(Duration.ZERO);
     }
 
     public void stop() {
         mp3.stop();
-    }
-
-    public void load() {
-        // TODO
     }
 }

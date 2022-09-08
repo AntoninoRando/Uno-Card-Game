@@ -5,20 +5,21 @@ import java.util.Set;
 
 import events.EventType;
 import events.EventListener;
-import javafx.application.Platform;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
-
 import javafx.stage.Stage;
 
+import prefabs.Card;
+import prefabs.Player;
+
+
+
+
 import model.gameLogic.Loop;
-import model.gameLogic.Card;
-import model.gameLogic.Player;
 
 public class HandPane extends HBox implements EventListener {
-    /* SINGLETON */
-    /* --------- */
     private static HandPane instance;
 
     public static HandPane getInstance() {

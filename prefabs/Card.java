@@ -1,7 +1,8 @@
-package model.gameLogic;
+package prefabs;
 
 import java.util.Optional;
 
+import model.gameLogic.Effect;
 import view.gameElements.CardContainer;
 
 public class Card implements Comparable<Card> {
@@ -23,8 +24,8 @@ public class Card implements Comparable<Card> {
         ID = generateID();
     }
 
-    /* GETTERS AND SETTERS */
-    /* ------------------- */
+    // Getters and Setters
+
     public Suit getSuit() {
         return suit;
     }
@@ -80,12 +81,6 @@ public class Card implements Comparable<Card> {
         return effect.isPresent() ? new Card(suit, value, effect.get()) : new Card(suit, value);
     }
 
-    @Override
-    public int compareTo(Card o) {
-        return suit != o.suit ? suit.compareTo(o.suit) : Integer.compare(value, o.value);
-    }
-
-    /* ------------------------- */
     private CardContainer guiContainer;
 
     public CardContainer getGuiContainer() {
@@ -96,5 +91,10 @@ public class Card implements Comparable<Card> {
         return guiContainer;
         // TODO fare che si distrugge il guiContiner quando non si vede la carta nella
         // gui
+    }
+
+    @Override
+    public int compareTo(Card o) {
+        return suit != o.suit ? suit.compareTo(o.suit) : Integer.compare(value, o.value);
     }
 }

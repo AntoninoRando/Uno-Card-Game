@@ -1,15 +1,16 @@
-package model.gameLogic;
+package prefabs;
 
 import java.util.TreeSet;
 
 import model.data.PlayerData;
+import model.gameLogic.Effect;
 
 /**
  * This class contains all the info about the player state.
  */
 public class Player {
     private PlayerData playerData;
-    CardGroup hand;
+    private CardGroup hand;
     private TreeSet<Effect> conditions;
 
     public Player(String DataFilepath) {
@@ -24,7 +25,7 @@ public class Player {
         conditions = new TreeSet<>();
     }
 
-    /* GETTERS AND SETTERS */
+    // Getters and Setters
 
     public PlayerData info() {
         return playerData;

@@ -1,8 +1,7 @@
 package controller.controls;
 
 import events.EventType;
-import model.gameLogic.Card;
-
+import prefabs.Card;
 import view.gameElements.PlayzonePane;
 
 public class ControllerFX extends Controller {

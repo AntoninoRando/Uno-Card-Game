@@ -2,6 +2,9 @@ package model.gameLogic;
 
 import java.util.LinkedList;
 
+import prefabs.Card;
+import prefabs.Player;
+
 public class Effect implements Comparable<Effect> {
     Player sourcePlayer;
     Card sourceCard;

@@ -1,7 +1,7 @@
 package events;
 
-import model.gameLogic.Card;
-import model.gameLogic.Player;
+import prefabs.Card;
+import prefabs.Player;
 
 // [null, null, null, null, null, null, null]
 public interface EventListener {

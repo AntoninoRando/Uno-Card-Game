@@ -7,8 +7,8 @@ import javafx.application.Platform;
 import javafx.scene.layout.StackPane;
 
 import model.gameLogic.Loop;
-import model.gameLogic.Player;
-import model.gameLogic.Card;
+import prefabs.Card;
+import prefabs.Player;
 
 public class TerrainPane extends StackPane implements EventListener {
     /* SINGLETON */
