@@ -17,6 +17,9 @@ public interface EventListener {
     default void update(EventType event, int data) {
     }
 
+    default void update(EventType event, double data) {
+    }
+
     default void update(EventType event, Card data) {
     }
 

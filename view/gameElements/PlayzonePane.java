@@ -3,8 +3,6 @@ package view.gameElements;
 import javafx.scene.layout.Pane;
 
 public class PlayzonePane extends Pane {
-    /* SINGLETON */
-    /* --------- */
     private static PlayzonePane instance;
 
     public static PlayzonePane getInstance() {

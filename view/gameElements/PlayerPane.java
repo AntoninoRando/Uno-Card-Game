@@ -5,16 +5,14 @@ import java.util.Map;
 
 import events.EventType;
 import events.EventListener;
+
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-import model.gameLogic.Loop;
 import prefabs.Player;
 
 public class PlayerPane extends VBox implements EventListener {
-    /* SINGLETON */
-    /* --------- */
     private static PlayerPane instance;
 
     public static PlayerPane getInstance() {
@@ -25,8 +23,6 @@ public class PlayerPane extends VBox implements EventListener {
 
     private PlayerPane() {
         addStyle();
-        Loop.events.subscribe(this, EventType.GAME_READY, EventType.PLAYER_HAND_DECREASE,
-                EventType.PLAYER_HAND_INCREASE);
     }
 
     /* ---------------------------------------- */
@@ -46,7 +42,7 @@ public class PlayerPane extends VBox implements EventListener {
     }
 
     private void addPlayerLabel(Player player) {
-        PlayerLabel label = new PlayerLabel(player.info().getIcon(), player.info().getNick(),
+        PlayerLabel label = new PlayerLabel(player.getIcon(), player.getNick(),
                 player.getHand().size());
         getChildren().add(label);
         labels.put(player, label);

@@ -8,7 +8,6 @@ import java.util.Map;
 import prefabs.Card;
 import prefabs.Player;
 
-// TODO gestire meglio gli eventi del tipo che se ci sono due eventi con lo stesso tipo vengono accorpati in un solo metodo da eseguire
 public class EventManager {
     private Map<EventType, List<EventListener>> listeners;
 
@@ -49,6 +48,12 @@ public class EventManager {
     }
 
     public void notify(EventType event, int data) {
+        if (!listeners.containsKey(event))
+            return;
+        listeners.get(event).forEach(listener -> listener.update(event, data));
+    }
+
+    public void notify(EventType event, double data) {
         if (!listeners.containsKey(event))
             return;
         listeners.get(event).forEach(listener -> listener.update(event, data));

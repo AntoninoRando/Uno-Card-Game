@@ -2,6 +2,9 @@ package view.settings;
 
 import events.EventListener;
 import events.EventType;
+
+import prefabs.Player;
+
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -10,70 +13,82 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import prefabs.Player;
 
+/**
+ * A GUI element containing different settings about the applications that are changeable by the user.
+ */
 public class SettingsMenu extends BorderPane implements EventListener {
-    protected Node restartButton = createRestartButton();
-    protected Node quitButton = createQuitButton();
+    private static SettingsMenu instance;
 
-    public SettingsMenu() {
+    public static SettingsMenu getInstance() {
+        if (instance == null)
+            instance = new SettingsMenu();
+        return instance;
+    }
+
+    private SettingsMenu() {
+        getStyleClass().add("settings-menu");
+        initialize();
+        arrangeElements();
+    }
+
+    private Label title;
+    private VBox optionsMenu;
+    private HBox contextMenu;
+    private Button general;
+    private Button audio;
+    private Runnable displayInGameMenu;
+
+    private void initialize() {
+        newTitle();
+        newOptionsMenu();
+        newContextMenu();
+    }
+
+    private void arrangeElements() {
         setMaxHeight(500.0);
         setMaxWidth(700.0);
         setPrefWidth(700.0);
         setPrefHeight(500.0);
-
-        arrangeElements();
-        getStyleClass().add("settings-menu");
+        
+        setTop(title);
+        setLeft(optionsMenu);
+        setBottom(contextMenu);
     }
 
-    private Node createTitle() {
-        Label text = new Label("Settings");
-        text.getStyleClass().add("label");
-        return text;
+    private void newTitle() {
+        title = new Label("Settings");
+        title.getStyleClass().add("label");
     }
 
-    private Node createOptions() {
-        VBox options = new VBox();
-
-        Button general = new Button("General");
-        Button audio = new Button("Audio");
+    private void newOptionsMenu() {
+        general = new Button("General");
+        audio = new Button("Audio");
+        optionsMenu = new VBox(general, audio);
 
         general.getStyleClass().add("button");
         audio.getStyleClass().add("button");
-        options.getStyleClass().add("VBox");
-
-        options.getChildren().addAll(general, audio);
-        return options;
+        optionsMenu.getStyleClass().add("VBox");
     }
 
-    private Node createContextMenu() {
-        HBox contextOptions = new HBox();
-        contextOptions.setAlignment(Pos.CENTER);
-        return contextOptions;
+    private void newContextMenu() {
+        contextMenu = new HBox();
+        contextMenu.setAlignment(Pos.CENTER);
     }
 
-    private Node createRestartButton() {
-        Button restartButton = new Button("Restart");
-        return restartButton;
+    /**
+     * Set the nodes that will appear only during a game.
+     * @param nodes The nodes with their properties.
+     */
+    public void inGameMenu(Node... nodes) {
+        displayInGameMenu = () -> contextMenu.getChildren().addAll(nodes);
     }
 
-    private Node createQuitButton() {
-        Button quitButton = new Button("Quit");
-        return quitButton;
-    }
-
-    private void arrangeElements() {
-        setTop(createTitle());
-        setLeft(createOptions());
-        setBottom(createContextMenu());
-    }
-
-    /* EVENT LISTENER */
     @Override
     public void update(EventType event) {
         switch (event) {
             case RESET:
-                Platform.runLater(() -> ((HBox) getBottom()).getChildren().clear());
+                Platform.runLater(() -> contextMenu.getChildren().clear());
                 break;
             default:
                 throwUnsupportedError(event, null);
@@ -84,8 +99,7 @@ public class SettingsMenu extends BorderPane implements EventListener {
     public void update(EventType event, Player[] data) {
         switch (event) {
             case GAME_START:
-                Platform.runLater(
-                        () -> ((HBox) getBottom()).getChildren().addAll(restartButton, quitButton));
+                Platform.runLater(displayInGameMenu);
                 break;
             default:
                 throwUnsupportedError(event, null);

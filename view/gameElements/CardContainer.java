@@ -13,8 +13,7 @@ import javafx.util.Duration;
 import prefabs.Card;
 
 public class CardContainer extends ImageView {
-    // TODO non so se vanno bene per qualsiasi sistema operativo quei separatori
-    private static Path imgFolder = Paths.get("C:/Users/anton/OneDrive/Desktop/AllUnoCards");
+    private static Path imgFolder = Paths.get("resources/AllUnoCards");
 
     public CardContainer() {
         getStyleClass().add("card");

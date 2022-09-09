@@ -1,30 +1,26 @@
 package model.gameLogic;
 
+import java.io.IOException;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
+import org.json.simple.parser.ParseException;
+
 import model.data.CardsInfo;
+
 import prefabs.Card;
 import prefabs.CardGroup;
 import prefabs.Player;
 import prefabs.Suit;
 
 /**
- * This class represents a game frame. Think of this class as a node
- * in a finite state machine. The transitions between nodes are
- * performed by the MainLoop. Any destination node is still represent by this
- * class, but with different values in its fields.
- * <hr>
- * Following this analogy, the Game can not modify itself, but it can only
- * return its values to the requesters. The MainLoop will modify the Game's
- * fileds.
+ * A class representing the game state. This class does not modify itself, because that is the <code>Loop</code> class job.
  */
 public class Game {
-    /* SINGLETON PATTERN */
-
     private static Game instance;
 
     public static Game getInstance() {
@@ -39,10 +35,11 @@ public class Game {
         restoreWinCondition();
     }
 
-    /* FIELDS */
+    //
 
     private TreeMap<Integer, Player> players;
     private Card terrainCard;
+    private final int firstHandSize = 7;
     private CardGroup deck = standardDeck();
     private CardGroup discardPile;
     private Player[] turnOrder;
@@ -59,7 +56,12 @@ public class Game {
         return turnOrder[getNextTurn()];
     }
 
-    /* GETTERS AND SETTERS */
+    // Getters and Setters
+
+    int getFirstHandSize() {
+        return firstHandSize;
+    }
+
     void setPlayers(TreeMap<Integer, Player> players) {
         this.players = players;
     }
@@ -141,8 +143,6 @@ public class Game {
     }
 
 
-    /* RESET */
-    /* ----- */
     static void reset() {
         instance = null;
     }
@@ -163,8 +163,8 @@ public class Game {
         turnOrder = defaultTurnOrder();
     }
 
-    /* DEFAULT */
-    /* ------- */
+    // Default values of fields
+
     private Player[] defaultTurnOrder() {
         return IntStream.range(0, countPlayers()).mapToObj(i -> players.get(i)).toArray(Player[]::new);
     }
@@ -184,6 +184,11 @@ public class Game {
     }
 
     private CardGroup standardDeck() {
-        return CardsInfo.load("Standard");
+        try {
+            return CardsInfo.load("Standard");
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

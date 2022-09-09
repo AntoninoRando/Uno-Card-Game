@@ -2,17 +2,17 @@ package view.gameElements;
 
 import events.EventListener;
 import events.EventType;
-import javafx.application.Platform;
 
+import javafx.application.Platform;
 import javafx.scene.layout.StackPane;
 
-import model.gameLogic.Loop;
 import prefabs.Card;
 import prefabs.Player;
 
+/**
+ * A GUI element representing the current card on the ground.
+ */
 public class TerrainPane extends StackPane implements EventListener {
-    /* SINGLETON */
-    /* --------- */
     private static TerrainPane instance;
 
     public static TerrainPane getInstance() {
@@ -22,7 +22,6 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     private TerrainPane() {
-        Loop.events.subscribe(this, EventType.GAME_READY, EventType.CARD_CHANGE);
         getStyleClass().add("terrain");
         setMaxHeight(400);
         setMaxWidth(400);

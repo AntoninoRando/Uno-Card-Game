@@ -5,20 +5,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
-import events.ActionListener;
 import events.EventType;
 
 /**
  * A class containig player's info. It also contains static info about the user.
  */
-public class PlayerData implements ActionListener {
+public class PlayerData {
     // Used by bots and user
     private String nick;
     private String icon;
     private boolean isHuman;
-
     // Used by user
     private static String userNick;
     private static String userIcon;
@@ -26,14 +26,9 @@ public class PlayerData implements ActionListener {
     private static int xp;
     private static int games;
     private static int wins;
-
     // Data already Loaded
     private static HashMap<String, PlayerData> dataLoaded = new HashMap<>();
 
-    /**
-     * 
-     * @param filePathname The path of the file containing the player's info.
-     */
     private PlayerData(String filePathname) {
         loadData(filePathname);
         if (isHuman)
@@ -43,15 +38,16 @@ public class PlayerData implements ActionListener {
     private PlayerData() {
     }
 
+    // Getters and Setters
+
+    /**
+     * Get the <code>PlayerData</code> object associated with the given info file path.
+     * @param filePathname The path of the file containing the player's info.
+     * @return The <code>PlayerData</code> containing the info about the player.
+     */
     public static PlayerData getPlayerData(String filePathname) {
         return dataLoaded.containsKey(filePathname) ? dataLoaded.get(filePathname) : new PlayerData(filePathname);
     }
-
-    public static PlayerData getThisForStaticCalls() {
-        return new PlayerData();
-    }
-
-    // GETTERS AND SETTERS
 
     /**
      * 
@@ -73,7 +69,7 @@ public class PlayerData implements ActionListener {
      * 
      * @param nick The new nickname of the <b>user</b>.
      */
-    private static void setNick(String nick) {
+    public static void setUserNick(String nick) {
         nick = nick.trim();
         if (!nick.equals("") && nick.length() <= Info.getNickMaxLength())
             PlayerData.userNick = nick;
@@ -100,7 +96,7 @@ public class PlayerData implements ActionListener {
      * 
      * @param icon The name of the new icon of the <b>user</b>.
      */
-    private static void setIcon(String icon) {
+    public static void setUserIcon(String icon) {
         PlayerData.userIcon = icon;
         Info.events.notify(EventType.USER_NEW_ICON, icon);
     }
@@ -141,7 +137,7 @@ public class PlayerData implements ActionListener {
      * 
      * @return Number of games won by the <b>user</b>.
      */
-    public static double getWins() {
+    public static int getWins() {
         return wins;
     }
 
@@ -153,20 +149,18 @@ public class PlayerData implements ActionListener {
      * @param quantity Number of xp earned.
      */
     public static void addXp(int quantity) {
-        int gap = Info.getXpGap(level);
-
-        // Default case
-        if (xp + quantity < gap) {
-            PlayerData.xp += quantity;
-            Info.events.notify(EventType.XP_EARNED, PlayerData.xp);
-            return;
+        int gap = Info.getXpGap(getLevel());
+        int startingLevel =  getLevel();
+        
+        while (getXp() + quantity >= gap) {
+            PlayerData.level++;
+            gap += Info.getXpGap(level);
         }
 
-        quantity -= gap - xp;
-        PlayerData.xp = 0;
-        PlayerData.level++;
-        Info.events.notify(EventType.LEVELED_UP, PlayerData.level);
-        addXp(quantity);
+        PlayerData.xp = Info.getXpGap(getLevel()) - (gap - quantity - getXp());
+        Info.events.notify(EventType.NEW_LEVEL_PROGRESS, Info.userLevelProgress());
+        if (PlayerData.getLevel() != startingLevel)
+            Info.events.notify(EventType.LEVELED_UP, PlayerData.level);
     }
 
     /**
@@ -195,7 +189,7 @@ public class PlayerData implements ActionListener {
         PlayerData.games = 0;
         PlayerData.wins = 0;
 
-        // Info.events.notify("infoResetted", PlayerData.getUserNick(), PlayerData.getUserIcon());
+        Info.events.notify(EventType.INFO_RESET, new Object[] { PlayerData.userNick, PlayerData.userIcon });
     }
 
     //
@@ -203,15 +197,12 @@ public class PlayerData implements ActionListener {
     private HashMap<Integer, Consumer<String>> ReadMap = fillReadMap();
 
     private void loadData(String filePathname) {
-        try (FileInputStream fis = new FileInputStream(filePathname)) {
-            Scanner sc = new Scanner(fis);
-
+        try (Scanner sc = new Scanner(new FileInputStream(filePathname))) {
             int i = 0;
             while (sc.hasNextLine()) {
                 ReadMap.get(i).accept(sc.nextLine());
                 i++;
             }
-            sc.close();
         } catch (IOException e) {
         }
 
@@ -228,48 +219,31 @@ public class PlayerData implements ActionListener {
             else
                 nick = line;
         });
-        map.put(2, line -> PlayerData.level = Integer.parseInt(line));
-        map.put(3, line -> PlayerData.xp = Integer.parseInt(line));
-        map.put(4, line -> PlayerData.games = Integer.parseInt(line));
-        map.put(5, line -> PlayerData.wins = Integer.parseInt(line));
-        map.put(6, line -> {
+        map.put(2, line -> {
             if (isHuman())
                 PlayerData.userIcon = line;
             else
                 icon = line;
         });
+        map.put(3, line -> PlayerData.level = Integer.parseInt(line));
+        map.put(4, line -> PlayerData.xp = Integer.parseInt(line));
+        map.put(5, line -> PlayerData.games = Integer.parseInt(line));
+        map.put(6, line -> PlayerData.wins = Integer.parseInt(line));
 
         return map;
     }
 
+    /**
+     * Writes the <b>user</b> info.
+     * @param filePathname The path to the file containing user info.
+     */
     private void writeData(String filePathname) {
         try (FileOutputStream fos = new FileOutputStream(filePathname)) {
-            fos.write((isHuman ? "true" : "false").getBytes());
-            fos.write("\n".getBytes());
-            fos.write(getNick().getBytes());
-            fos.write("\n".getBytes());
-            fos.write(Integer.toString(level).getBytes());
-            fos.write("\n".getBytes());
-            fos.write(Integer.toString(xp).getBytes());
-            fos.write("\n".getBytes());
-            fos.write(Integer.toString(games).getBytes());
-            fos.write("\n".getBytes());
-            fos.write(Integer.toString(wins).getBytes());
-            fos.write("\n".getBytes());
-            fos.write(getIcon().getBytes());
+            StringJoiner sj = new StringJoiner("\n");
+            sj.add("true").add(getUserNick()).add(getUserIcon());
+            IntStream.of(level, xp, games, wins).mapToObj(x -> Integer.toString(x)).forEachOrdered(s -> sj.add(s));
+            fos.write(sj.toString().getBytes());
         } catch (IOException e) {
-        }
-    }
-
-    @Override
-    public void requestChange(String type, String data) {
-        switch (type) {
-            case "nick":
-                PlayerData.setNick(data);
-                break;
-            case "icon":
-                PlayerData.setIcon(data);
-                break;
         }
     }
 }

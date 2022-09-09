@@ -13,15 +13,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
-import model.gameLogic.Loop;
-
 import prefabs.Card;
 import prefabs.Player;
 import prefabs.Suit;
 
 public class Chronology extends StackPane implements EventListener {
-    /* SINGLETON */
-    /* --------- */
     private static Chronology instance;
 
     public static Chronology getInstance() {
@@ -31,7 +27,6 @@ public class Chronology extends StackPane implements EventListener {
     }
 
     private Chronology() {
-        Loop.events.subscribe(this, EventType.CARD_CHANGE, EventType.TURN_BLOCKED, EventType.PLAYER_DREW, EventType.PLAYER_PLAYED_CARD,EventType.RESET);
         ScrollPane sp = new ScrollPane(content);
         getChildren().add(sp);
         addStyle();
@@ -104,22 +99,22 @@ public class Chronology extends StackPane implements EventListener {
         switch (event) {
             case PLAYER_PLAYED_CARD:
                 Platform.runLater(() -> {
-                    addIcon(data.info().getIcon());
-                    addNick(data.info().getNick());
+                    addIcon(data.getIcon());
+                    addNick(data.getNick());
                 });
                 break;
             case TURN_BLOCKED:
                 Platform.runLater(() -> {
                     addCard(new Card(Suit.WILD, -2).getGuiContainer());
-                    addIcon(data.info().getIcon());
-                    addNick(data.info().getNick());
+                    addIcon(data.getIcon());
+                    addNick(data.getNick());
                 });
                 break;
             case PLAYER_DREW:
                 Platform.runLater(() -> {
                     addCard(new Card(Suit.WILD, -1).getGuiContainer());
-                    addIcon(data.info().getIcon());
-                    addNick(data.info().getNick());
+                    addIcon(data.getIcon());
+                    addNick(data.getNick());
                 });
                 break;
             default:

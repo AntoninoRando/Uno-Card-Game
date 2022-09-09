@@ -1,6 +1,5 @@
 package model.gameLogic;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.function.Consumer;
@@ -13,12 +12,8 @@ import events.InputListener;
 import prefabs.Card;
 import prefabs.Player;
 
+import model.data.Info;
 import model.data.PlayerData;
-
-
-
-
-import controller.controls.Controller;
 
 public class Loop implements InputListener {
     private static Loop instance;
@@ -30,87 +25,26 @@ public class Loop implements InputListener {
     }
 
     private Loop() {
-        choiceTypes = new HashMap<>();
-
-        choiceTypes.put("card", () -> {
-            Player player = g.getCurrentPlayer();
-            Card c = (Card) choice;
-            if (g.isPlayable(c)) {
-                Actions.changeCurrentCard(c);
-                player.getHand().remove(c);
-                c.getEffect().ifPresent(effect -> effect.cast(player, c));
-                events.notify(EventType.CARD_CHANGE, c);
-                events.notify(EventType.PLAYER_PLAYED_CARD, player);
-                events.notify(EventType.PLAYER_HAND_DECREASE, player);
-
-                if (!player.info().isHuman()) 
-                    return true;
-                
-                events.notify(EventType.USER_PLAYED_CARD, c);
-
-                if (player.getHand().size() == 1 && !unoDeclared)
-                    Actions.dealFromDeck(g.getCurrentPlayer(), 2);
-
-                return true;
-            } else {
-                events.notify(EventType.INVALID_CARD, c);
-                return false;
-            }
-        });
-        choiceTypes.put("draw", () -> {
-            Actions.dealFromDeck(g.getCurrentPlayer());
-            return true;
-        });
-        choiceTypes.put("unoDeclared", () -> {
-            startUnoTimer();
-            return false;
-        });
-        choiceTypes.put("cardPosition", () -> {
-            try {
-                choice = g.getCurrentPlayer().getHand().get((int) choice);
-                return choiceTypes.get("card").get();
-            } catch (IndexOutOfBoundsException e) {
-                events.notify(EventType.INVALID_CARD, choice);
-                return false;
-            }
-        });
     }
 
     public static EventManager events = new EventManager();
+    private Object choice;
+    private String choiceType;
+    private boolean unoDeclared;
+    private LinkedList<Supplier<Boolean>> phases;
+    private int currentPhase;
+    private long timeStart;
 
-    static HashMap<String, Supplier<Boolean>> choiceTypes;
-
-    private static Game g;
-    private static Player player;
-    static Object choice;
-    static String choiceType;
-
-    private static Controller[] users;
-
-    static boolean unoDeclared;
-
-    LinkedList<Phase> phases = new LinkedList<>();
-    static int currentPhase;
-
-    private static long timeStart;
-
-    public void setupGame(TreeMap<Integer, Player> players, Controller... users) {
+    public void setupGame(TreeMap<Integer, Player> players) {
+        phases = new LinkedList<>();
+        phases.add(() -> startTurn());
+        phases.add(() -> makeChoice());
+        phases.add(() -> parseChoice());
+        phases.add(() -> resolveChoice());
+        phases.add(() -> endTurn());
         Game.reset();
-        g = Game.getInstance();
-        g.setPlayers(players);
-
-        Loop.users = users;
-        for (Controller c : users) {
-            c.setInputListener(this);
-            c.start();
-        }
-
-        g.restoreTurnOrder();
-        phases.add(Phases.START_TURN);
-        phases.add(Phases.MAKE_CHOICE);
-        phases.add(Phases.PARSE_CHOICE);
-        phases.add(Phases.RESOLVE_CHOICE);
-        phases.add(Phases.END_TURN);
+        Game.getInstance().setPlayers(players);
+        Game.getInstance().restoreTurnOrder();
     }
 
     /* ------------------------------ */
@@ -119,15 +53,15 @@ public class Loop implements InputListener {
         setupFirstTurn();
         timeStart = System.currentTimeMillis();
         try {
-            while (!g.isOver()) {
-                boolean validChoice = phases.get(currentPhase).apply(this, Game.getInstance());
+            while (!Game.getInstance().isOver()) {
+                boolean validChoice = phases.get(currentPhase).get();
 
-                if (g.didPlayerWin(g.getCurrentPlayer())) {
+                if (Game.getInstance().didPlayerWin(Game.getInstance().getCurrentPlayer())) {
                     endGame(false);
                     return;
                 }
 
-                if (phases.get(currentPhase) == Phases.RESOLVE_CHOICE && !validChoice)
+                if (currentPhase == 3 && !validChoice)
                     currentPhase = 1;
                 else
                     currentPhase = (++currentPhase) % phases.size();
@@ -139,75 +73,164 @@ public class Loop implements InputListener {
     }
 
     private void setupFirstTurn() {
-        events.notify(EventType.GAME_READY, g.getPlayers().toArray(Player[]::new));
+        events.notify(EventType.GAME_READY, Game.getInstance().getPlayers().toArray(Player[]::new));
 
         Actions.shuffleDeck();
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
         events.notify(EventType.CARD_CHANGE, firstCard);
 
-        for (Player p : g.getPlayers())
-            Actions.dealFromDeck(p, 7);
+        for (Player p : Game.getInstance().getPlayers())
+            Actions.dealFromDeck(p, Game.getInstance().getFirstHandSize());
 
-        player = g.getPlayerByTurn(0);
-
-        for (Controller c : users)
-            c.setupControls();
-
-        events.notify(EventType.GAME_START, g.getPlayers().toArray(Player[]::new));
+        events.notify(EventType.GAME_START, Game.getInstance().getPlayers().toArray(Player[]::new));
     }
 
     public void endGame(boolean interrupted) {
-        Player winner = g.getCurrentPlayer();
+        Player winner = Game.getInstance().getCurrentPlayer();
         int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F); // xpEarned = minutes elapsed from the
                                                                                   // start of the game.
         PlayerData.addXp(xpEarned);
 
         if (!interrupted) {
-            boolean humanWon = g.getCurrentPlayer().info().isHuman();
+            boolean humanWon = Game.getInstance().getCurrentPlayer().isHuman();
             if (humanWon) {
                 PlayerData.addXp(5);
                 xpEarned += 5;
             }
             PlayerData.addGamePlayed(humanWon);
             events.notify(EventType.PLAYER_WON, winner);
+            Info.events.notify(EventType.XP_EARNED, xpEarned);
         }
 
         Game.reset();
-
-        // TODO convertire i metodi statici in non, così che basta fare instance = null
-        // per resettare... per fare ciò però bisogna ripristinare tutti gli eventi ogni
-        // volta
         instance = null;
-        g = null;
-        player = null;
-        choice = null;
-        choiceType = null;
-        users = null;
-        unoDeclared = false;
-        currentPhase = 0;
-        timeStart = 0;
 
         events.notify(EventType.RESET);
     }
 
+    // Getters and Setters
+
+    void jumpToPhase(int phaseNumber) {
+        currentPhase = phaseNumber;
+    }
+
+    int getPhasesQuantity() {
+        return phases.size();
+    }
+
+    Object getChoice() {
+        return choice;
+    }
+
+    void setChoice(Object choice) {
+        this.choice = choice;
+    }
+
+    void setChoiceType(String choiceType) {
+        this.choiceType = choiceType;
+    }
+
+    String getChoiceType() {
+        return choiceType;
+    }
+
+    // Loop logic
+
+    private boolean startTurn() {
+        events.notify(EventType.TURN_START, Game.getInstance().getCurrentPlayer());
+        Game.getInstance().getCurrentPlayer().consumeConditions();
+        return true;
+    };
+
+    private boolean makeChoice() {
+        // User
+        if (Game.getInstance().getCurrentPlayer().isHuman())
+            synchronized (this) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                }
+            }
+        // Enemy
+        else
+        Game.getInstance().getCurrentPlayer().getHand().stream().filter(Game.getInstance()::isPlayable).findAny()
+                    .ifPresentOrElse(c -> setChoice(c), () -> setChoice("draw"));
+        return true;
+    };
+
+    private boolean parseChoice() {
+        if (getChoice() instanceof Card)
+            setChoiceType("card");
+        else if (getChoice() instanceof String)
+            setChoiceType((String) choice);
+        return true;
+    };
+
+    private boolean resolveChoice() {
+        switch (getChoiceType()) {
+            case "card":
+                Player player = Game.getInstance().getCurrentPlayer();
+                Card card = (Card) choice;
+                if (Game.getInstance().isPlayable(card)) {
+                    Actions.changeCurrentCard(card);
+                    player.getHand().remove(card);
+                    card.getEffect().ifPresent(effect -> effect.cast(player, card));
+                    events.notify(EventType.CARD_CHANGE, card);
+                    events.notify(EventType.PLAYER_PLAYED_CARD, player);
+                    events.notify(EventType.PLAYER_HAND_DECREASE, player);
+
+                    if (!player.isHuman())
+                        return true;
+
+                    events.notify(EventType.USER_PLAYED_CARD, card);
+
+                    if (player.getHand().size() == 1 && !unoDeclared)
+                        Actions.dealFromDeck(Game.getInstance().getCurrentPlayer(), 2);
+
+                    return true;
+                } else {
+                    events.notify(EventType.INVALID_CARD, card);
+                    return false;
+                }
+            case "draw":
+                Actions.dealFromDeck(Game.getInstance().getCurrentPlayer());
+                return true;
+            case "unoDeclared":
+                startUnoTimer();
+                return false;
+            default:
+                return false;
+        }
+    };
+
+    private boolean endTurn() {
+        events.notify(EventType.TURN_END, Game.getInstance().getCurrentPlayer());
+        Game.getInstance().setTurn(Game.getInstance().getNextPlayer());
+        setChoice(null);
+        setChoiceType(null);
+        return true;
+    };
+
+    // Interface methods
+
     @Override
-    public void accept(Object choice, Player source) {
+    public void acceptInput(Object choice) {
         synchronized (this) {
-            // We use == instead of equals because they have to be the same object
-            if (source != player) {
+            // Not user turn
+            if (!Game.getInstance().getCurrentPlayer().isHuman()) {
                 events.notify(EventType.INVALID_CARD, choice);
                 return;
             }
-            Loop.choice = choice;
+            this.choice = choice;
             notify();
         }
     }
-    
-    // 
+
+    //
 
     private Consumer<Card> selectionEvent;
-    
+
     public void setSeleciontEvent(Consumer<Card> selectionEvent) {
         this.selectionEvent = selectionEvent;
     }
@@ -220,7 +243,7 @@ public class Loop implements InputListener {
     //
 
     private void startUnoTimer() {
-        Player unoer = player;
+        Player unoer = Game.getInstance().getCurrentPlayer();
         events.notify(EventType.UNO_DECLARED);
         unoDeclared = true;
 
@@ -231,9 +254,7 @@ public class Loop implements InputListener {
                     sleep(5000);
                 } catch (InterruptedException e) {
                 }
-                // We use == because they have to be the same. We check if it is still the unoer
-                // turn because we don't want to modify the unoDeclared for others player.
-                if (unoer == player)
+                if (unoer == Game.getInstance().getCurrentPlayer())
                     unoDeclared = false;
             }
         }.start();

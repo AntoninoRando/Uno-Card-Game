@@ -1,9 +1,11 @@
 package model.gameLogic;
 
-import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import events.EventType;
+
 import model.data.CardsInfo;
+
 import prefabs.Card;
 import prefabs.Player;
 
@@ -42,8 +44,7 @@ public class EffectBuilder {
                     break;
                 case "select one of":
                     i++;
-                    String[] cardsNames = s[i].split("  ");
-                    selectOneCardOf(cardsNames);
+                    selectOneCardOf(s[i]);
                     break;
             }
             i++;
@@ -52,35 +53,35 @@ public class EffectBuilder {
     }
 
     public EffectBuilder directTarget(Player target) {
-        effect.steps.add(() -> effect.targetPlayer = target);
+        effect.addStep((() -> effect.setTargetPlayer(target)));
         return this;
     }
 
     public EffectBuilder directTargetToFollowing(int ahead) {
-        effect.steps.add(() -> {
+        effect.addStep(() -> {
             Game g = Game.getInstance();
-            effect.targetPlayer = g.getPlayerByTurn(g.getTurnOf(effect.sourcePlayer) + ahead);
+            effect.setTargetPlayer(g.getPlayerByTurn(g.getTurnOf(effect.getSourcePlayer()) + ahead));
         });
         return this;
     }
 
     public EffectBuilder skipCurrentTurn() {
-        effect.steps.add(() -> Actions.skipTurn());
+        effect.addStep(() -> Actions.skipTurn());
         return this;
     }
 
     public EffectBuilder skipTargetTurn() {
-        effect.steps.add(() -> effect.targetPlayer.addCondition(new EffectBuilder().skipCurrentTurn().build()));
+        effect.addStep(() -> effect.getTargetPlayer().addCondition(new EffectBuilder().skipCurrentTurn().build()));
         return this;
     }
 
     public EffectBuilder targetDraws(int quantity) {
-        effect.steps.add(() -> Actions.dealFromDeck(effect.targetPlayer, quantity));
+        effect.addStep(() -> Actions.dealFromDeck(effect.getTargetPlayer(), quantity));
         return this;
     }
 
     public EffectBuilder reverseTurnOrder() {
-        effect.steps.add(() -> {
+        effect.addStep(() -> {
             Game g = Game.getInstance();
             Player[] oldA = g.getTurnOrder();
             Player[] newA = new Player[oldA.length];
@@ -94,47 +95,28 @@ public class EffectBuilder {
     }
 
     public EffectBuilder transformInto(Card card) {
-        effect.steps.add(() -> {
-            Actions.transformCard(effect.sourceCard, card);
+        effect.addStep(() -> {
+            Actions.transformCard(effect.getSourceCard(), card);
         });
         return this;
     }
 
     public EffectBuilder transformIntoTarget() {
-        effect.steps.add(() -> Actions.transformCard(effect.sourceCard, effect.targetCard));
+        effect.addStep(() -> Actions.transformCard(effect.getSourceCard(), effect.getTargetCard()));
         return this;
     }
 
-    public EffectBuilder selectOneCardOf(Card... cards) {
-        effect.steps.add(() -> {
-            if (!effect.sourcePlayer.info().isHuman()) {
-                effect.targetCard = cards[(int) (Math.random() * cards.length)];
-                return;
-            }
+    public EffectBuilder selectOneCardOf(String cardsReprs) {
+        effect.addStep(() -> {
+            Card[] cards = Stream.of(cardsReprs.split("  ")).map(cn -> CardsInfo.allCards.get(cn).getCopy())
+            .toArray(Card[]::new);
 
-            Object[] data = new Object[cards.length + 1];
-            data[0] = (Consumer<Card>) card -> effect.targetCard = card;
-            for (int i = 0; i < cards.length; i++)
-                data[i + 1] = cards[i];
-            Loop.events.notify(EventType.USER_SELECTING_CARD, cards);
-        });
-        return this;
-    }
-
-    public EffectBuilder selectOneCardOf(String... cardsNames) {
-        effect.steps.add(() -> {
-            Card[] cards = new Card[cardsNames.length];
-            for (int i = 0; i < cards.length; i++) {
-                String fullName = cardsNames[i];
-                cards[i] = CardsInfo.allCards.get(fullName).getCopy();
-            }
-
-            if (!effect.sourcePlayer.info().isHuman()) {
-                effect.targetCard = cards[(int) (Math.random() * cards.length)];
+            if (!effect.getSourcePlayer().isHuman()) {
+                effect.setTargetCard(cards[(int) (Math.random() * cards.length)]);
                 return;
             }
             
-            Loop.getInstance().setSeleciontEvent(card -> effect.targetCard = card);
+            Loop.getInstance().setSeleciontEvent(card -> effect.setTargetCard(card));
             Loop.events.notify(EventType.USER_SELECTING_CARD, cards);
         });
         return this;

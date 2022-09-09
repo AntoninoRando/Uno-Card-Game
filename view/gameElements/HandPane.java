@@ -15,10 +15,6 @@ import prefabs.Card;
 import prefabs.Player;
 
 
-
-
-import model.gameLogic.Loop;
-
 public class HandPane extends HBox implements EventListener {
     private static HandPane instance;
 
@@ -29,7 +25,6 @@ public class HandPane extends HBox implements EventListener {
     }
 
     private HandPane() {
-        Loop.events.subscribe(this, EventType.GAME_READY, EventType.USER_PLAYED_CARD, EventType.USER_DREW);
         addStyle();
     }
 

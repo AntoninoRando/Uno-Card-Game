@@ -4,6 +4,7 @@ import java.util.concurrent.CountDownLatch;
 
 import events.EventListener;
 import events.EventType;
+
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
@@ -11,8 +12,6 @@ import model.gameLogic.Loop;
 import prefabs.Card;
 
 public class SelectionPane extends HBox implements EventListener {
-    /* SINGLETON */
-    /* --------- */
     private static SelectionPane instance;
 
     public static SelectionPane getInstance() {
@@ -26,8 +25,6 @@ public class SelectionPane extends HBox implements EventListener {
         setSpacing(20.0);
         setVisible(false);
         setAlignment(Pos.CENTER);
-
-        Loop.events.subscribe(this, EventType.USER_SELECTING_CARD);
     }
 
     //
@@ -40,7 +37,7 @@ public class SelectionPane extends HBox implements EventListener {
             cardContainers[i] = cards[i].getGuiContainer();
             int j = i;
             cardContainers[i].setOnMouseClicked(e -> {
-                Loop.getInstance().completeSelectionEvent(cards[j]);
+                Loop.getInstance().completeSelectionEvent(cards[j]); // TODO Non usare il Loop qui
                 completeSelection();
             });
         }

@@ -9,26 +9,33 @@ import model.gameLogic.Effect;
  * This class contains all the info about the player state.
  */
 public class Player {
-    private PlayerData playerData;
+    private String nick;
+    private String icon;
+    private boolean isHuman;
     private CardGroup hand;
     private TreeSet<Effect> conditions;
 
     public Player(String DataFilepath) {
-        playerData = PlayerData.getPlayerData(DataFilepath);
-        hand = new CardGroup();
-        conditions = new TreeSet<>();
-    }
-
-    public Player() {
-        playerData = PlayerData.getThisForStaticCalls();
+        PlayerData pd = PlayerData.getPlayerData(DataFilepath);
+        nick = pd.getNick();
+        icon = pd.getIcon();
+        isHuman = pd.isHuman();
         hand = new CardGroup();
         conditions = new TreeSet<>();
     }
 
     // Getters and Setters
 
-    public PlayerData info() {
-        return playerData;
+    public String getNick() {
+        return nick;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public boolean isHuman() {
+        return isHuman;
     }
 
     public CardGroup getHand() {

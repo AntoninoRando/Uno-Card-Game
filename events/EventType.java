@@ -16,11 +16,13 @@ public enum EventType {
     INVALID_CARD(EventCategory.PLAYER_ACTION),
 
     XP_EARNED(EventCategory.USER_INFO),
+    NEW_LEVEL_PROGRESS(EventCategory.USER_INFO),
     LEVELED_UP(EventCategory.USER_INFO),
     USER_WON(EventCategory.USER_INFO),
     USER_PLAYED_GAME(EventCategory.USER_INFO),
     USER_NEW_NICK(EventCategory.USER_INFO),
     USER_NEW_ICON(EventCategory.USER_INFO),
+    INFO_RESET(EventCategory.USER_INFO),
 
     PLAYER_WON(),
 
@@ -43,7 +45,7 @@ public enum EventType {
     public static byte getCombinedEvent(EventType... events) {
         byte combinedEvent = 0;
         for (EventType event : events)
-            combinedEvent &=  1 << event.ordinal();
+            combinedEvent &=  event.ordinal() << 1;
         return combinedEvent;
     }
 
