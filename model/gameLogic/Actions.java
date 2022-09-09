@@ -9,12 +9,21 @@ import prefabs.Player;
  * A class containing static methods that modify the current game state.
  */
 public abstract class Actions {
+    /**
+     * Replace the terrain card.
+     * 
+     * @param newCard The new terrain card.
+     */
     static void changeCurrentCard(Card newCard) {
         Game game = Game.getInstance();
         game.getDiscardPile().add(game.getTerrainCard());
         game.setTerrainCard(newCard);
     }
 
+    /**
+     * 
+     * @return The first card in the deck pile.
+     */
     static Card takeFromDeck() {
         Game game = Game.getInstance();
         if (game.getDeck().isEmpty())
@@ -22,6 +31,9 @@ public abstract class Actions {
         return game.getDeck().remove(0);
     }
 
+    /**
+     * Shuffles the deck.
+     */
     static void shuffleDeck() {
         Game game = Game.getInstance();
         game.getDeck().addAll(game.getDiscardPile());
@@ -29,6 +41,11 @@ public abstract class Actions {
         game.getDiscardPile().clear();
     }
 
+    /**
+     * Gives the first caard in the deck pile.
+     * 
+     * @param player The player that will receive the card.
+     */
     static void dealFromDeck(Player player) {
         Card card = takeFromDeck();
         player.getHand().add(card);
@@ -41,20 +58,40 @@ public abstract class Actions {
         Loop.events.notify(EventType.PLAYER_HAND_INCREASE, player);
     }
 
-    static void dealFromDeck(Player p, int times) {
+    /**
+     * Gives cards from deck.
+     * 
+     * @param player The player that will receive the cards.
+     * @param times  The amount of cards to give.
+     */
+    static void dealFromDeck(Player player, int times) {
         while (times-- > 0)
-            dealFromDeck(p);
+            dealFromDeck(player);
     }
 
+    /**
+     * Throws a card into the discard pile.
+     * 
+     * @param card The card to throw in the discard pile.
+     */
     static void discardCard(Card card) {
         Game.getInstance().getDiscardPile().add(0, card);
     }
 
+    /**
+     * Jumps the current turn.
+     */
     static void skipTurn() {
         Loop.getInstance().jumpToPhase(Loop.getInstance().getPhasesQuantity() - 2);
         Loop.events.notify(EventType.TURN_BLOCKED, Game.getInstance().getCurrentPlayer());
     }
 
+    /**
+     * Transforms a card into another.
+     * 
+     * @param source The card to transfrom.
+     * @param target The card to become.
+     */
     static void transformCard(Card source, Card target) {
         source.setSuit(target.getSuit());
         source.setValue(target.getValue());

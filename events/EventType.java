@@ -1,6 +1,8 @@
 package events;
 
-
+/**
+ * All notifiable events.
+ */
 public enum EventType {
     PLAYER_HAND_INCREASE(EventCategory.CHANGE),
     PLAYER_HAND_DECREASE(EventCategory.CHANGE),
@@ -26,7 +28,7 @@ public enum EventType {
 
     PLAYER_WON(),
 
-    TURN_START(EventCategory.TURN), 
+    TURN_START(EventCategory.TURN),
     TURN_END(EventCategory.TURN),
 
     GAME_READY(EventCategory.SETUP),
@@ -38,15 +40,13 @@ public enum EventType {
 
     EventCategory category;
 
+    /**
+     * Gets this event category.
+     * 
+     * @return The event category.
+     */
     public EventCategory getCategory() {
         return category;
-    }
-
-    public static byte getCombinedEvent(EventType... events) {
-        byte combinedEvent = 0;
-        for (EventType event : events)
-            combinedEvent &=  event.ordinal() << 1;
-        return combinedEvent;
     }
 
     private EventType(EventCategory category) {

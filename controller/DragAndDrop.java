@@ -14,10 +14,14 @@ import prefabs.Card;
 import view.gameElements.CardContainer;
 import view.gameElements.TerrainPane;
 
+/**
+ * Through this control a card can be dragged, and if it drops into a target,
+ * the <code>InputListener</code> will be notified.
+ */
 public class DragAndDrop extends Control {
-    private  double mouseAnchorX;
-    private  double mouseAnchorY;
-    private  Node target;
+    private double mouseAnchorX;
+    private double mouseAnchorY;
+    private Node target;
 
     private void dragStart(MouseEvent e, CardContainer source) {
         // When we drag we want the Node to be in its original size
@@ -77,6 +81,13 @@ public class DragAndDrop extends Control {
         zoom.play();
     }
 
+    /**
+     * Sets the node that will cause this to send the input to the
+     * <code>InputListener</code>.
+     * 
+     * @param target A node considered as the drop target for the drag and drop
+     *               gesture.
+     */
     public void setDropTarget(Node target) {
         this.target = target;
     }

@@ -3,7 +3,10 @@ package events;
 import prefabs.Card;
 import prefabs.Player;
 
-// [null, null, null, null, null, null, null]
+/**
+ * Any class implementing this interface is able to change its state when
+ * notified from outside.
+ */
 public interface EventListener {
     default void update(EventType event) {
     }
@@ -40,7 +43,8 @@ public interface EventListener {
     }
 
     default void throwUnsupportedError(EventType event, Object data) throws Error {
-        throw new Error(this + " was listening for " + event + " with " + data + " as data, but it does not support this event!");
+        throw new Error(this + " was listening for " + event + " with " + data
+                + " as data, but it does not support this event!");
     }
 
     default int compareTo(EventType event, EventListener otherListener) throws Error {
