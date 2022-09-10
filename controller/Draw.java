@@ -1,5 +1,8 @@
 package controller;
 
+/**
+ * Through this control the user can draw a card.
+ */
 public class Draw extends Control {
     private static Draw instance;
 

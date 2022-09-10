@@ -1,5 +1,8 @@
 package controller;
 
+/**
+ * Through this control the user will declare UNO!
+ */
 public class DeclareUno extends Control {
     private static DeclareUno instance;
 

@@ -15,6 +15,9 @@ import prefabs.Player;
 import model.data.Info;
 import model.data.PlayerData;
 
+/**
+ * A class that will modify the game state.
+ */
 public class Loop implements InputListener {
     private static Loop instance;
 
@@ -35,6 +38,11 @@ public class Loop implements InputListener {
     private int currentPhase;
     private long timeStart;
 
+    /**
+     * Sets the players of the games and resets the game state.
+     * 
+     * @param players The players.
+     */
     public void setupGame(TreeMap<Integer, Player> players) {
         phases = new LinkedList<>();
         phases.add(() -> startTurn());
@@ -47,8 +55,10 @@ public class Loop implements InputListener {
         Game.getInstance().restoreTurnOrder();
     }
 
-    /* ------------------------------ */
-
+    /**
+     * The main loop of the UNO game. Call this method to play the game on the
+     * current game state.
+     */
     public void play() {
         setupFirstTurn();
         timeStart = System.currentTimeMillis();
@@ -72,6 +82,9 @@ public class Loop implements InputListener {
         }
     }
 
+    /**
+     * Setup the first turn as explained in the UNO rules.
+     */
     private void setupFirstTurn() {
         events.notify(EventType.GAME_READY, Game.getInstance().getPlayers().toArray(Player[]::new));
 
@@ -86,6 +99,12 @@ public class Loop implements InputListener {
         events.notify(EventType.GAME_START, Game.getInstance().getPlayers().toArray(Player[]::new));
     }
 
+    /**
+     * Stops the game.
+     * 
+     * @param interrupted True if the game was interruped by the user, false if the
+     *                    game ended because one player won.
+     */
     public void endGame(boolean interrupted) {
         Player winner = Game.getInstance().getCurrentPlayer();
         int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F); // xpEarned = minutes elapsed from the
@@ -111,28 +130,46 @@ public class Loop implements InputListener {
 
     // Getters and Setters
 
+    /**
+     * Sets the next phase. The current phase will however end.
+     * 
+     * @param phaseNumber The number of phase.
+     */
     void jumpToPhase(int phaseNumber) {
         currentPhase = phaseNumber;
     }
 
+    /**
+     * Gets the amount of phases.
+     */
     int getPhasesQuantity() {
         return phases.size();
     }
 
+    /**
+     * Gets the choice that will determine the user action for this turn.
+     * 
+     * @return The user choice.
+     */
     Object getChoice() {
         return choice;
     }
 
+    /**
+     * Sets the enemy AI action of the turn.
+     * 
+     * @param choice The choice that describes the action that the AI will perform.
+     */
     void setChoice(Object choice) {
         this.choice = choice;
     }
 
-    void setChoiceType(String choiceType) {
-        this.choiceType = choiceType;
-    }
-
     String getChoiceType() {
         return choiceType;
+    }
+
+    void setChoiceType(String choiceType) {
+        this.choiceType = choiceType;
     }
 
     // Loop logic
@@ -154,7 +191,7 @@ public class Loop implements InputListener {
             }
         // Enemy
         else
-        Game.getInstance().getCurrentPlayer().getHand().stream().filter(Game.getInstance()::isPlayable).findAny()
+            Game.getInstance().getCurrentPlayer().getHand().stream().filter(Game.getInstance()::isPlayable).findAny()
                     .ifPresentOrElse(c -> setChoice(c), () -> setChoice("draw"));
         return true;
     };

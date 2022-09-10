@@ -233,10 +233,6 @@ public class PlayerData {
         return map;
     }
 
-    /**
-     * Writes the <b>user</b> info.
-     * @param filePathname The path to the file containing user info.
-     */
     private void writeData(String filePathname) {
         try (FileOutputStream fos = new FileOutputStream(filePathname)) {
             StringJoiner sj = new StringJoiner("\n");

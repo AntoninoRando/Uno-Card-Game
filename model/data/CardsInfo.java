@@ -12,10 +12,14 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import model.gameLogic.EffectBuilder;
+
 import prefabs.Card;
 import prefabs.CardGroup;
 import prefabs.Suit;
 
+/**
+ * Loads and stores all cards.
+ */
 public abstract class CardsInfo {
     public static HashMap<String, Card> allCards = new HashMap<>();
 
