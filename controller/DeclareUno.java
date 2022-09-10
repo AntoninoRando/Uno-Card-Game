@@ -1,5 +1,7 @@
 package controller;
 
+import events.toModel.InputType;
+
 /**
  * Through this control the user will declare UNO!
  */
@@ -13,6 +15,6 @@ public class DeclareUno extends Control {
     }
 
     private DeclareUno() {
-        setAction(listener -> listener.acceptInput("unoDeclared"));
+        setAction(listener -> listener.acceptInput(InputType.TURN_DECISION, "unoDeclared"));
     }
 }

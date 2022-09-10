@@ -5,9 +5,10 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import events.EventManager;
-import events.EventType;
-import events.InputListener;
+import events.toModel.InputListener;
+import events.toModel.InputType;
+import events.toView.EventManager;
+import events.toView.EventType;
 
 import prefabs.Card;
 import prefabs.Player;
@@ -252,29 +253,55 @@ public class Loop implements InputListener {
     // Interface methods
 
     @Override
-    public void acceptInput(Object choice) {
-        synchronized (this) {
-            // Not user turn
-            if (!Game.getInstance().getCurrentPlayer().isHuman()) {
-                events.notify(EventType.INVALID_CARD, choice);
-                return;
-            }
-            this.choice = choice;
-            notify();
+    public void acceptInput(InputType inputType, Object choice) {
+        switch (inputType) {
+            case TURN_DECISION:
+                synchronized (this) {
+                    // Not user turn
+                    if (!Game.getInstance().getCurrentPlayer().isHuman()) {
+                        events.notify(EventType.INVALID_CARD, choice);
+                        return;
+                    }
+                    this.choice = choice;
+                    notify();
+                }
+                break;
+            case SELECTION:
+                runDecontexPhase(choice);
+                break;
+            default:
+                // TODO
+                break;
         }
     }
 
-    //
+    // Additional Loop logic
 
-    private Consumer<Card> selectionEvent;
+    /**
+     * A phase that can be executed and changed any time. This phase takes an object
+     * as input and performs an action with it.
+     */
+    private Consumer<Object> decontexPhase;
 
-    public void setSeleciontEvent(Consumer<Card> selectionEvent) {
-        this.selectionEvent = selectionEvent;
+    /**
+     * Sets an additional phase that can be executed and changed at any time.
+     * 
+     * @param decontexPhase The phase to run later, with the
+     *                      <code>executeDecontexPhase</code> method.
+     */
+    public void setDecontexPhase(Consumer<Object> decontexPhase) {
+        this.decontexPhase = decontexPhase;
     }
 
-    public void completeSelectionEvent(Card card) {
-        selectionEvent.accept(card);
-        selectionEvent = null;
+    /**
+     * Executes the additional phase, setted with the <code>setDecontexPhase</code>
+     * method. After the new phase ends, it will be deleted.
+     * 
+     * @param data The data that the phase may use to execute.
+     */
+    public void runDecontexPhase(Object data) {
+        decontexPhase.accept(data);
+        decontexPhase = null;
     }
 
     //

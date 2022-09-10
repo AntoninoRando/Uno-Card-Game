@@ -1,4 +1,4 @@
-package events;
+package events.toModel;
 
 /**
  * Implemented by those model classes that wants to change the business
@@ -11,5 +11,5 @@ public interface InputListener {
      * 
      * @param choice The input given by the user.
      */
-    public void acceptInput(Object choice);
+    public void acceptInput(InputType inputType, Object choice);
 }

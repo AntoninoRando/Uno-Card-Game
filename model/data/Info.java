@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import events.EventManager;
+import events.toView.EventManager;
 
 /**
  * Stores general information about the user info and the data.

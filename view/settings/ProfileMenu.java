@@ -2,9 +2,8 @@ package view.settings;
 
 import java.util.function.Consumer;
 
-import events.EventListener;
-import events.EventType;
-
+import events.toView.EventListener;
+import events.toView.EventType;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

@@ -1,5 +1,7 @@
 package controller;
 
+import events.toModel.InputType;
+
 /**
  * Through this control the user can draw a card.
  */
@@ -13,6 +15,6 @@ public class Draw extends Control {
     }
 
     private Draw() {
-        setAction(listener -> listener.acceptInput("draw"));
+        setAction(listener -> listener.acceptInput(InputType.TURN_DECISION, "draw"));
     }
 }

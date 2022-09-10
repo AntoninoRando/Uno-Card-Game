@@ -1,5 +1,6 @@
 package controller;
 
+import events.toModel.InputType;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
@@ -44,7 +45,7 @@ public class DragAndDrop extends Control {
             return;
 
         if (e.getPickResult().getIntersectedNode() == target)
-            animatePlaying(source, __ -> listener.acceptInput(inputToSend));
+            animatePlaying(source, __ -> listener.acceptInput(InputType.TURN_DECISION, inputToSend));
         else {
             TranslateTransition reset = new TranslateTransition(Duration.millis(300.0), source);
             reset.setByX(mouseAnchorX - e.getSceneX()); // correspond to setTranslateX(0);

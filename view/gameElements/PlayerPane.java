@@ -3,9 +3,8 @@ package view.gameElements;
 import java.util.HashMap;
 import java.util.Map;
 
-import events.EventType;
-import events.EventListener;
-
+import events.toView.EventListener;
+import events.toView.EventType;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;

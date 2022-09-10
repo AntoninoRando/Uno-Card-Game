@@ -8,10 +8,10 @@ import java.util.TreeMap;
 import controller.DragAndDrop;
 import controller.DeclareUno;
 import controller.Draw;
-import events.EventListener;
-import events.EventManager;
-import events.EventType;
-
+import controller.Select;
+import events.toView.EventListener;
+import events.toView.EventManager;
+import events.toView.EventType;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -340,6 +340,7 @@ public class JUno extends Application implements EventListener {
         handCardsDragControl.setListener(Loop.getInstance());
         DeclareUno.getInstance().setListener(Loop.getInstance());
         Draw.getInstance().setListener(Loop.getInstance());
+        Select.setGlobalListener(Loop.getInstance());
     }
 
     @Override

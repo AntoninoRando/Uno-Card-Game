@@ -1,8 +1,7 @@
 package view.gameElements;
 
-import events.EventListener;
-import events.EventType;
-
+import events.toView.EventListener;
+import events.toView.EventType;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;

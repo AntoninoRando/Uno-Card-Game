@@ -1,9 +1,9 @@
 package view.settings;
 
-import events.EventListener;
-import events.EventType;
-
 import prefabs.Player;
+
+import events.toView.EventListener;
+import events.toView.EventType;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;

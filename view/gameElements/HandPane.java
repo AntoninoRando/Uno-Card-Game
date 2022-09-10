@@ -3,9 +3,8 @@ package view.gameElements;
 import java.util.HashSet;
 import java.util.Set;
 
-import events.EventType;
-import events.EventListener;
-
+import events.toView.EventListener;
+import events.toView.EventType;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;

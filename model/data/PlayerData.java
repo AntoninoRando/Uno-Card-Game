@@ -9,7 +9,7 @@ import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-import events.EventType;
+import events.toView.EventType;
 
 /**
  * A class containig player's info. It also contains static info about the user.

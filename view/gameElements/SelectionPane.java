@@ -1,14 +1,17 @@
 package view.gameElements;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Stream;
 
-import events.EventListener;
-import events.EventType;
+import controller.Select;
+
+import events.toView.EventListener;
+import events.toView.EventType;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
-import model.gameLogic.Loop;
+
 import prefabs.Card;
 
 public class SelectionPane extends HBox implements EventListener {
@@ -32,16 +35,13 @@ public class SelectionPane extends HBox implements EventListener {
     private CountDownLatch latch = new CountDownLatch(1);
 
     public void newSelection(Card[] cards) {
-        CardContainer[] cardContainers = new CardContainer[cards.length];
         for (int i = 0; i < cards.length; i++) {
-            cardContainers[i] = cards[i].getGuiContainer();
-            int j = i;
-            cardContainers[i].setOnMouseClicked(e -> {
-                Loop.getInstance().completeSelectionEvent(cards[j]); // TODO Non usare il Loop qui
-                completeSelection();
-            });
+            Card data = cards[i];
+            Select control= new Select();
+            control.setAction(__ -> completeSelection());
+            control.setControls(data);
         }
-        getChildren().addAll(cardContainers);
+        getChildren().addAll(Stream.of(cards).map(c -> c.getGuiContainer()).toArray(CardContainer[]::new));
         setVisible(true);
     }
 

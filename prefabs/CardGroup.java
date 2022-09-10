@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import events.EventManager;
-import events.EventType;
+import events.toView.EventManager;
+import events.toView.EventType;
 
 // !Visto che le carte nel gruppo potrebbero cambiare per via di molti effetti, 
 // potrei aggiungere un metodo che permette di iterare anche se viene modificato 

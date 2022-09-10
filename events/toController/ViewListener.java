@@ -1,4 +1,4 @@
-package events;
+package events.toController;
 
 import javafx.scene.Node;
 import prefabs.Card;

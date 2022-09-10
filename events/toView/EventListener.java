@@ -1,4 +1,4 @@
-package events;
+package events.toView;
 
 import prefabs.Card;
 import prefabs.Player;

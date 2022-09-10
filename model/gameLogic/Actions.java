@@ -1,7 +1,6 @@
 package model.gameLogic;
 
-import events.EventType;
-
+import events.toView.EventType;
 import prefabs.Card;
 import prefabs.Player;
 

@@ -2,8 +2,7 @@ package model.gameLogic;
 
 import java.util.stream.Stream;
 
-import events.EventType;
-
+import events.toView.EventType;
 import model.data.CardsInfo;
 
 import prefabs.Card;
@@ -181,7 +180,7 @@ public class EffectBuilder {
                 return;
             }
 
-            Loop.getInstance().setSeleciontEvent(card -> effect.setTargetCard(card));
+            Loop.getInstance().setDecontexPhase(card -> effect.setTargetCard((Card) card));
             Loop.events.notify(EventType.USER_SELECTING_CARD, cards);
         });
         return this;
