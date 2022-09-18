@@ -3,10 +3,7 @@ package model.gameLogic;
 import java.io.IOException;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.TreeMap;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import org.json.simple.parser.ParseException;
 
@@ -37,7 +34,7 @@ public class Game {
 
     //
 
-    private TreeMap<Integer, Player> players;
+    private Player[] players;
     private Card terrainCard;
     private final int firstHandSize = 7;
     private CardGroup deck = standardDeck();
@@ -62,7 +59,7 @@ public class Game {
         return firstHandSize;
     }
 
-    void setPlayers(TreeMap<Integer, Player> players) {
+    void setPlayers(Player[] players) {
         this.players = players;
     }
 
@@ -108,8 +105,8 @@ public class Game {
     
     /* USEFUL METHODS */
     
-    Collection<Player> getPlayers() {
-        return players.values();
+    Player[] getPlayers() {
+        return players;
     }
 
     Player getCurrentPlayer() {
@@ -121,7 +118,7 @@ public class Game {
     }
 
     int countPlayers() {
-        return players.size();
+        return players.length;
     }
 
     int getTurnOf(Player player) {
@@ -166,7 +163,7 @@ public class Game {
     // Default values of fields
 
     private Player[] defaultTurnOrder() {
-        return IntStream.range(0, countPlayers()).mapToObj(i -> players.get(i)).toArray(Player[]::new);
+        return players;
     }
 
     private Predicate<Player> defaultWinCondition() {

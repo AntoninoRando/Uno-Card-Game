@@ -1,7 +1,6 @@
 package model.gameLogic;
 
 import java.util.LinkedList;
-import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -28,9 +27,6 @@ public class Loop implements InputListener {
         return instance;
     }
 
-    private Loop() {
-    }
-
     public static EventManager events = new EventManager();
     private Object choice;
     private String choiceType;
@@ -44,7 +40,7 @@ public class Loop implements InputListener {
      * 
      * @param players The players.
      */
-    public void setupGame(TreeMap<Integer, Player> players) {
+    public void setupGame(Player[] players) {
         phases = new LinkedList<>();
         phases.add(() -> startTurn());
         phases.add(() -> makeChoice());
@@ -87,7 +83,7 @@ public class Loop implements InputListener {
      * Setup the first turn as explained in the UNO rules.
      */
     private void setupFirstTurn() {
-        events.notify(EventType.GAME_READY, Game.getInstance().getPlayers().toArray(Player[]::new));
+        events.notify(EventType.GAME_READY, Game.getInstance().getPlayers());
 
         Actions.shuffleDeck();
         Card firstCard = Actions.takeFromDeck();
@@ -97,7 +93,7 @@ public class Loop implements InputListener {
         for (Player p : Game.getInstance().getPlayers())
             Actions.dealFromDeck(p, Game.getInstance().getFirstHandSize());
 
-        events.notify(EventType.GAME_START, Game.getInstance().getPlayers().toArray(Player[]::new));
+        events.notify(EventType.GAME_START, Game.getInstance().getPlayers());
     }
 
     /**

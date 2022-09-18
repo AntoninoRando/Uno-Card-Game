@@ -1,9 +1,10 @@
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import controller.DragAndDrop;
 import controller.DeclareUno;
@@ -35,6 +36,7 @@ import prefabs.Card;
 import prefabs.Player;
 
 import model.gameLogic.Loop;
+import model.GameThread;
 import model.data.Info;
 import model.data.PlayerData;
 
@@ -59,7 +61,6 @@ public class JUno extends Application implements EventListener {
     private StackPane rootContainer = new StackPane();
     private StackPane homeRoot;
     private StackPane gameRoot;
-    private Thread gameThread;
     private StackPane endGameRoot;
 
     public JUno() {
@@ -131,11 +132,13 @@ public class JUno extends Application implements EventListener {
 
         BorderPane gameElements = new BorderPane();
         gameElements.setLeft(PlayerPane.getInstance());
-        gameElements.setBottom(HandPane.getInstance());
 
         StackPane center = new StackPane(TerrainPane.getInstance(), Chronology.getInstance());
         Chronology.getInstance().setVisible(false);
         gameElements.setCenter(center);
+
+        gameElements.setBottom(HandPane.getInstance()); // Added after the terrain card, so that the hand's cards are
+                                                        // displayed on top
 
         Region padderRegionRight = new Region();
         padderRegionRight.prefWidthProperty().bind(PlayerPane.getInstance().widthProperty());
@@ -210,13 +213,13 @@ public class JUno extends Application implements EventListener {
         restartB.setOnMouseClicked(e -> {
             Sounds.BUTTON_CLICK.play();
             sm.setVisible(false);
-            endGame();
+            quitGame();
             newGame();
         });
         quitB.setOnMouseClicked(e -> {
             Sounds.BUTTON_CLICK.play();
             sm.setVisible(false);
-            endGame();
+            quitGame();
             changeRoot(homeRoot);
         });
         sm.inGameMenu(restartB, quitB);
@@ -268,8 +271,7 @@ public class JUno extends Application implements EventListener {
         a1.setStopFrame(5);
         a1.setWillStay(true);
         a1.setOnFinishAction(e -> {
-            gameThread = new Thread(() -> Loop.getInstance().play());
-            gameThread.start();
+            GameThread.play();
 
             rootContainer.getChildren().remove(0);
             rootContainer.getChildren().add(0, gameRoot);
@@ -280,18 +282,13 @@ public class JUno extends Application implements EventListener {
         Sounds.loadAll();
     }
 
-    /* GAME INITIALIZATION */
-    private void newGame() {
-        Player p1 = new Player("resources/Data/userInfo.txt");
-        Player p2 = new Player("resources/Data/BotTopPrincessess.txt");
-        Player p3 = new Player("resources/Data/BotLuca.txt");
-        Player p4 = new Player("resources/Data/BotGiorgio.txt");
+    // Start and end a new game
 
-        TreeMap<Integer, Player> players = new TreeMap<>();
-        players.put(0, p1);
-        players.put(1, p2);
-        players.put(2, p3);
-        players.put(3, p4);
+    private void newGame() {
+        Player[] players = Stream.of("userInfo", "BotTopPrincessess", "BotLuca", "BotGiorgio")
+                .map(s -> new Player("resources\\Data\\" + s + ".txt"))
+                .sorted((a, b) -> new Random().nextBoolean() ? 1 : -1)
+                .toArray(Player[]::new);
 
         Loop.getInstance().setupGame(players);
 
@@ -302,20 +299,21 @@ public class JUno extends Application implements EventListener {
     }
 
     private void endGame() {
+        GameThread.stop(false);
         Sounds.IN_GAME_SOUNDTRACK.stop();
-        Loop.getInstance().endGame(true);
-        gameThread.interrupt();
-        try {
-            gameThread.join(); // Waiting for this thread to die before resuming
-        } catch (InterruptedException e) {
-        }
+        changeRoot(endGameRoot);
+    }
+
+    private void quitGame() {
+        GameThread.stop(true);
+        Sounds.IN_GAME_SOUNDTRACK.stop();
     }
 
     /* EVENT LISTENER METHODS */
 
     // TODO le animazioni le gioca toppo on the top: stanno sopra al menù di pausa
 
-    private void subscribeListeners() {
+    private void subscribeEventListeners() {
         EventManager em = Loop.events;
         em.subscribe(this, EventType.GAME_READY, EventType.GAME_START, EventType.CARD_CHANGE, EventType.UNO_DECLARED,
                 EventType.TURN_BLOCKED, EventType.USER_DREW,
@@ -332,15 +330,17 @@ public class JUno extends Application implements EventListener {
         em.subscribe(TerrainPane.getInstance(), EventType.GAME_READY, EventType.CARD_CHANGE);
     }
 
-    DragAndDrop handCardsDragControl;
+    private void subscribeInputListeners() {
+        Loop il = Loop.getInstance();
+        DragAndDrop.getInstance().setDropTarget(PlayzonePane.getInstance());
+        DragAndDrop.getInstance().setListener(il);
+        DeclareUno.getInstance().setListener(il);
+        Draw.getInstance().setListener(il);
+        Select.setGlobalListener(il);
+    }
 
-    private void addControls() {
-        handCardsDragControl = new DragAndDrop();
-        handCardsDragControl.setDropTarget(PlayzonePane.getInstance());
-        handCardsDragControl.setListener(Loop.getInstance());
-        DeclareUno.getInstance().setListener(Loop.getInstance());
-        Draw.getInstance().setListener(Loop.getInstance());
-        Select.setGlobalListener(Loop.getInstance());
+    private void subscribeViewListeners() {
+        // TODO
     }
 
     @Override
@@ -361,6 +361,7 @@ public class JUno extends Application implements EventListener {
     public void update(EventType event, Player[] data) {
         switch (event) {
             case GAME_READY:
+                subscribeInputListeners();
                 Platform.runLater(() -> {
                     int i = 0;
                     while (i < gameRoot.getChildren().size()) {
@@ -373,7 +374,6 @@ public class JUno extends Application implements EventListener {
                 break;
             case GAME_START:
                 Platform.runLater(() -> {
-                    addControls();
                     Sounds.IN_GAME_SOUNDTRACK.play();
                     a2.play(rootContainer);
                 });
@@ -401,7 +401,7 @@ public class JUno extends Application implements EventListener {
                 Platform.runLater(() -> ResetTranslate.resetTranslate(data.getGuiContainer()));
                 break;
             case USER_DREW:
-                handCardsDragControl.setControls(data);
+                DragAndDrop.getInstance().setControls(data);
                 break;
             default:
                 throwUnsupportedError(event, data);
@@ -445,9 +445,7 @@ public class JUno extends Application implements EventListener {
                 break;
             case PLAYER_WON:
                 Platform.runLater(() -> {
-                    Sounds.IN_GAME_SOUNDTRACK.stop();
-                    gameThread.interrupt();
-                    changeRoot(endGameRoot);
+                    endGame();
                 });
                 break;
             default:
@@ -473,13 +471,13 @@ public class JUno extends Application implements EventListener {
         stage.setOnCloseRequest(e -> System.exit(0));
         stage.setScene(scene);
         loadMedia();
-        subscribeListeners();
-        addControls();
+        subscribeEventListeners();
+        subscribeInputListeners();
         stage.show();
     }
 
     public static void main(String[] args) {
-        PlayerData.getPlayerData("resources/Data/userInfo.txt"); // Used to load the user info
+        PlayerData.getPlayerData("resources\\Data\\userInfo.txt"); // Used to load the user info
         launch(args);
     }
 

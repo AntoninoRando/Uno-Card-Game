@@ -1,6 +1,7 @@
 package controller;
 
 import events.toModel.InputType;
+import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
@@ -12,19 +13,24 @@ import javafx.util.Duration;
 
 import prefabs.Card;
 
-import view.gameElements.CardContainer;
-import view.gameElements.TerrainPane;
-
 /**
  * Through this control a card can be dragged, and if it drops into a target,
  * the <code>InputListener</code> will be notified.
  */
 public class DragAndDrop extends Control {
+    private static DragAndDrop instance;
+
+    public static DragAndDrop getInstance() {
+        if (instance == null)
+            instance = new DragAndDrop();
+        return instance;
+    }
+
     private double mouseAnchorX;
     private double mouseAnchorY;
     private Node target;
 
-    private void dragStart(MouseEvent e, CardContainer source) {
+    private void dragStart(MouseEvent e, Node source) {
         // When we drag we want the Node to be in its original size
         if (source.getScaleX() != 1.0 || source.getScaleY() != 1.0) {
             source.setScaleX(1.0);
@@ -35,12 +41,12 @@ public class DragAndDrop extends Control {
         mouseAnchorY = e.getSceneY() - source.getTranslateY();
     }
 
-    private void dragRunning(MouseEvent e, CardContainer source) {
+    private void dragRunning(MouseEvent e, Node source) {
         source.setTranslateX(e.getSceneX() - mouseAnchorX);
         source.setTranslateY(e.getSceneY() - mouseAnchorY);
     }
 
-    private void dragEnd(MouseEvent e, CardContainer source, Card inputToSend) {
+    private void dragEnd(MouseEvent e, Node source, Card inputToSend) {
         if (e.getButton().equals(MouseButton.SECONDARY))
             return;
 
@@ -54,23 +60,18 @@ public class DragAndDrop extends Control {
         }
     }
 
-    private void animatePlaying(CardContainer source, EventHandler<ActionEvent> onFinish) {
-        TranslateTransition moveToCenter = new TranslateTransition(Duration.millis(100.0), source);
-
-        double xSource = source.localToScene(source.getBoundsInLocal()).getCenterX();
-        double ySource = source.localToScene(source.getBoundsInLocal()).getCenterY();
-        TerrainPane terrainCard = TerrainPane.getInstance();
-        double xTc = terrainCard.localToScene(terrainCard.getBoundsInLocal()).getCenterX();
-        double yTc = terrainCard.localToScene(terrainCard.getBoundsInLocal()).getCenterY();
-
-        moveToCenter.setByX(xTc - xSource); // xSource + translate = xPz -> translate = xPz-xSource
-        moveToCenter.setByY(yTc - ySource);
-        moveToCenter.play();
-
+    /**
+     * Plays an animation when the drag source is dropped on the target. After that
+     * animation, an action is performed.
+     * 
+     * @param source   The drag source.
+     * @param onFinish The action to perform after the animation.
+     */
+    private void animatePlaying(Node source, EventHandler<ActionEvent> onFinish) {
         ScaleTransition zoom = new ScaleTransition(Duration.millis(150.0), source);
         zoom.setByX(0.3);
         zoom.setByY(0.3);
-        ScaleTransition zoomOut = new ScaleTransition(Duration.millis(100.0), source);
+        ScaleTransition zoomOut = new ScaleTransition(Duration.millis(150.0), source);
         zoomOut.setByX(-0.3);
         zoomOut.setByY(-0.3);
         zoomOut.setDelay(Duration.millis(100.0));
@@ -79,7 +80,22 @@ public class DragAndDrop extends Control {
             zoomOut.play();
             onFinish.handle(e);
         });
-        zoom.play();
+
+        RotateTransition alignToTarget = new RotateTransition(Duration.millis(300.0), source);
+        alignToTarget.setByAngle(target.getRotate() - source.getRotate());
+
+        TranslateTransition moveToCenter = new TranslateTransition(Duration.millis(100.0), source);
+        double xSource = source.localToScene(source.getBoundsInLocal()).getCenterX();
+        double ySource = source.localToScene(source.getBoundsInLocal()).getCenterY();
+        double xTarget = target.localToScene(target.getBoundsInLocal()).getCenterX();
+        double yTarget = target.localToScene(target.getBoundsInLocal()).getCenterY();
+        moveToCenter.setByX(xTarget - xSource); // xSource + translate = xPz -> translate = xPz-xSource
+        moveToCenter.setByY(yTarget - ySource);
+        moveToCenter.setOnFinished(e -> {
+            alignToTarget.play();
+            zoom.play();
+        });
+        moveToCenter.play();
     }
 
     /**
@@ -95,7 +111,7 @@ public class DragAndDrop extends Control {
 
     @Override
     public void setControls(Card card) {
-        CardContainer dragSource = card.getGuiContainer();
+        Node dragSource = card.getGuiContainer();
         dragSource.setOnMousePressed(e -> dragStart(e, dragSource));
         dragSource.setOnMouseDragged(e -> dragRunning(e, dragSource));
         dragSource.setOnMouseReleased(e -> dragEnd(e, dragSource, card));
