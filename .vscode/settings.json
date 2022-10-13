@@ -1,7 +1,5 @@
 {
     "audioCues.onDebugBreak": "on",
-    "audioCues.lineHasError": "on",
-    "audioCues.lineHasWarning": "on",
     "java.project.sourcePaths": [
         ""
     ],

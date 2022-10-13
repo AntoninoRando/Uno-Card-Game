@@ -34,6 +34,7 @@ public class Loop implements InputListener {
     private LinkedList<Supplier<Boolean>> phases;
     private int currentPhase;
     private long timeStart;
+    private boolean isPaused;
 
     /**
      * Sets the players of the games and resets the game state.
@@ -60,7 +61,7 @@ public class Loop implements InputListener {
         setupFirstTurn();
         timeStart = System.currentTimeMillis();
         try {
-            while (!Game.getInstance().isOver()) {
+            while (!Game.getInstance().isOver() && !isPaused) {
                 boolean validChoice = phases.get(currentPhase).get();
 
                 if (Game.getInstance().didPlayerWin(Game.getInstance().getCurrentPlayer())) {
@@ -68,10 +69,7 @@ public class Loop implements InputListener {
                     return;
                 }
 
-                if (currentPhase == 3 && !validChoice)
-                    currentPhase = 1;
-                else
-                    currentPhase = (++currentPhase) % phases.size();
+                currentPhase = (currentPhase == 3 && !validChoice) ? 1 : (++currentPhase) % phases.size();
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -298,6 +296,14 @@ public class Loop implements InputListener {
     public void runDecontexPhase(Object data) {
         decontexPhase.accept(data);
         decontexPhase = null;
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    public void setPause(boolean arrivalState) {
+        isPaused = arrivalState;
     }
 
     //
