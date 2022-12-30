@@ -1,6 +1,6 @@
 true
 User
-resources\icons\blood.png
+resources\icons\night.png
 0
 0
 0
