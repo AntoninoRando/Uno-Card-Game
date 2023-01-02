@@ -3,18 +3,22 @@ package view.gameElements;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 
+import javafx.application.Platform;
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
+
+/* --- Mine ------------------------------- */
+
 import controller.Select;
 
 import events.toView.EventListener;
 import events.toView.EventType;
 
-import javafx.application.Platform;
-import javafx.geometry.Pos;
-import javafx.scene.layout.HBox;
-
 import prefabs.Card;
 
 public class SelectionPane extends HBox implements EventListener {
+    /* --- Singleton -------------------------- */
+
     private static SelectionPane instance;
 
     public static SelectionPane getInstance() {
@@ -30,9 +34,11 @@ public class SelectionPane extends HBox implements EventListener {
         setAlignment(Pos.CENTER);
     }
 
-    //
+    /* --- Fields ----------------------------- */
 
     private CountDownLatch latch = new CountDownLatch(1);
+
+    /* --- Body ------------------------------- */
 
     public void newSelection(Card[] cards) {
         for (int i = 0; i < cards.length; i++) {
@@ -51,6 +57,8 @@ public class SelectionPane extends HBox implements EventListener {
         latch.countDown();
         latch = new CountDownLatch(1);
     }
+
+    /* --- Observer --------------------------- */
 
     @Override
     public void update(EventType event, Card[] data) {

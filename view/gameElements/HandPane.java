@@ -3,18 +3,25 @@ package view.gameElements;
 import java.util.HashSet;
 import java.util.Set;
 
-import events.toView.EventListener;
-import events.toView.EventType;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+/* --- Mine ------------------------------- */
+
+import events.toView.EventListener;
+import events.toView.EventType;
+
 import prefabs.Card;
 import prefabs.Player;
 
-
+/*
+ * The section visible to the user where all their cards are gathered.
+ */
 public class HandPane extends HBox implements EventListener {
+    /* --- Singleton -------------------------- */
+    
     private static HandPane instance;
 
     public static HandPane getInstance() {
@@ -27,9 +34,11 @@ public class HandPane extends HBox implements EventListener {
         addStyle();
     }
 
-    /* ---------------------------------------- */
+    /* --- Fields ----------------------------- */
 
     private Set<CardContainer> cardsStored;
+
+    /* --- Body ------------------------------- */
 
     public void addCard(Card card) {
         getChildren().add(card.getGuiContainer());
@@ -38,9 +47,9 @@ public class HandPane extends HBox implements EventListener {
 
     }
 
-    public void removeCard(CardContainer cardGuContainer) {
-        getChildren().remove(cardGuContainer);
-        cardsStored.remove(cardGuContainer);
+    public void removeCard(CardContainer card) {
+        getChildren().remove(card);
+        cardsStored.remove(card);
         adjustCards();
     }
 
@@ -56,7 +65,11 @@ public class HandPane extends HBox implements EventListener {
         assignCenter(1500.0);
     }
 
-    /* ----------------------------------------- */
+    /* ------ Gather cards in an arc way ------- */
+
+    // TODO fare che non calcola ogni volta le coordinate ma le calcola solo quando
+    // dal menu dell'app scegli la risoluzione; a quel punto salva la lista di
+    // coordinate e sfrutta quella.
 
     private double cardsGap, handW;
     private double cardWidth = 150.0;
@@ -121,7 +134,7 @@ public class HandPane extends HBox implements EventListener {
         }
     }
 
-    /* ----------------------------------------- */
+    /* --- Observer --------------------------- */
 
     @Override
     public void update(EventType event, Player[] data) {

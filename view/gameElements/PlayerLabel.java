@@ -8,9 +8,13 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
 public class PlayerLabel extends HBox {
+    /* --- Fields ----------------------------- */
+
     private Circle icon;
     private Label nick;
     private Label cards;
+
+    /* --- Constructors ----------------------- */
 
     public PlayerLabel(String imagePathname, String nickname, int cardsQuantity) {
         icon = createIcon(new Image(imagePathname));
@@ -22,6 +26,8 @@ public class PlayerLabel extends HBox {
         getStyleClass().add("player-label");
     }
 
+    /* --- Body ------------------------------- */
+    
     private Circle createIcon(Image img) {
         Circle icon = new Circle(20, 20, 20);
         icon.setFill(new ImagePattern(img));

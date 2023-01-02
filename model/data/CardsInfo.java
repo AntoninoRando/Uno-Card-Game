@@ -11,6 +11,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+/* --- Mine ------------------------------- */
+
 import model.gameLogic.EffectBuilder;
 
 import prefabs.Card;
@@ -18,10 +20,15 @@ import prefabs.CardGroup;
 import prefabs.Suit;
 
 /**
- * Loads and stores all cards.
+ * Loads all cards of a set through the <code>load</code> method. Those cards
+ * are grouped by their set-name in the <code>allCards</code> field.
  */
 public abstract class CardsInfo {
+    /* --- Fields ----------------------------- */
+
     public static HashMap<String, Card> allCards = new HashMap<>();
+
+    /* --- Body ------------------------------- */
 
     public static CardGroup load(String setName) throws IOException, ParseException {
         JSONObject jsonObject = (JSONObject) new JSONParser().parse(new FileReader(Info.getCardsPath(setName)));

@@ -3,15 +3,20 @@ package view.gameElements;
 import java.util.HashMap;
 import java.util.Map;
 
-import events.toView.EventListener;
-import events.toView.EventType;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+/* --- Mine ------------------------------- */
+
+import events.toView.EventListener;
+import events.toView.EventType;
+
 import prefabs.Player;
 
 public class PlayerPane extends VBox implements EventListener {
+    /* --- Singleton -------------------------- */
+    
     private static PlayerPane instance;
 
     public static PlayerPane getInstance() {
@@ -24,9 +29,11 @@ public class PlayerPane extends VBox implements EventListener {
         addStyle();
     }
 
-    /* ---------------------------------------- */
+    /* --- Fields ----------------------------- */
 
     private Map<Player, PlayerLabel> labels;
+
+    /* --- Body ------------------------------- */
 
     private void addStyle() {
         getStyleClass().add("players");
@@ -47,11 +54,11 @@ public class PlayerPane extends VBox implements EventListener {
         labels.put(player, label);
     }
 
-    /* ------------------------------- */
-
     public PlayerLabel getPlayerLabel(Player player) {
         return labels.get(player);
     }
+
+    /* --- Observer --------------------------- */
 
     @Override
     public void update(EventType event, Player[] data) {

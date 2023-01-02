@@ -2,6 +2,8 @@ package model.gameLogic;
 
 import java.util.LinkedList;
 
+/* --- Mine ------------------------------- */
+
 import prefabs.Card;
 import prefabs.Player;
 
@@ -10,6 +12,8 @@ import prefabs.Player;
  * state could change.
  */
 public class Effect implements Comparable<Effect> {
+    /* --- Fields ----------------------------- */
+
     private Player sourcePlayer;
     private Card sourceCard;
     private Player targetPlayer;
@@ -86,6 +90,8 @@ public class Effect implements Comparable<Effect> {
     void setTargetCard(Card card) {
         targetCard = card;
     }
+
+    /* --- Body ------------------------------- */
 
     /**
      * Adds a sub action to perform after all the previous.

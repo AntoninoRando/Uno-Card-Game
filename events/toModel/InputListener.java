@@ -7,9 +7,8 @@ package events.toModel;
 @FunctionalInterface
 public interface InputListener {
     /**
-     * Change this state based on the input given.
-     * 
+     * Change this state based on the input given.  
      * @param choice The input given by the user.
      */
-    public void acceptInput(InputType inputType, Object choice);
+    public void acceptInput(InputType type, Object choice);
 }

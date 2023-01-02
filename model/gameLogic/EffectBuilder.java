@@ -2,7 +2,10 @@ package model.gameLogic;
 
 import java.util.stream.Stream;
 
+/* --- Mine ------------------------------- */
+
 import events.toView.EventType;
+
 import model.data.CardsInfo;
 
 import prefabs.Card;
@@ -13,11 +16,17 @@ import prefabs.Player;
  * The possible actions are contained in this class.
  */
 public class EffectBuilder {
+    /* --- Fields ----------------------------- */
+
     private Effect effect;
+
+    /* --- Constructors ----------------------- */
 
     public EffectBuilder() {
         effect = new Effect();
     }
+
+    /* --- Body ------------------------------- */
 
     /**
      * 

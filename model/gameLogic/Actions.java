@@ -1,5 +1,7 @@
 package model.gameLogic;
 
+/* --- Mine ------------------------------- */
+
 import events.toView.EventType;
 import prefabs.Card;
 import prefabs.Player;
@@ -8,15 +10,17 @@ import prefabs.Player;
  * A class containing static methods that modify the current game state.
  */
 public abstract class Actions {
+    /* --- Body ------------------------------- */
+    
     /**
-     * Replace the terrain card.
+     * Replace the current terrain card with the given card.
      * 
-     * @param newCard The new terrain card.
+     * @param card The new terrain card.
      */
-    static void changeCurrentCard(Card newCard) {
+    static void changeCurrentCard(Card card) {
         Game game = Game.getInstance();
         game.getDiscardPile().add(game.getTerrainCard());
-        game.setTerrainCard(newCard);
+        game.setTerrainCard(card);
     }
 
     /**

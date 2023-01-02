@@ -1,9 +1,18 @@
 package model;
 
+/* --- Mine ------------------------------- */
+
 import model.gameLogic.Loop;
 
+/**
+ * This class is a thread that runs the UNO game logic.
+ */
 public abstract class GameThread {
+    /* --- Fields ----------------------------- */
+
     private static Thread thread;
+
+    /* --- Body ------------------------------- */
 
     public static void play() {
         thread = new Thread(() -> Loop.getInstance().play());

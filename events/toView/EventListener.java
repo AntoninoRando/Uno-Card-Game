@@ -42,6 +42,9 @@ public interface EventListener {
         return 1;
     }
 
+    // Non dovrebbe fare questo metodo dentro ogni metodo di default sopra? Così che
+    // se non reimplementi il metodo e inoltre stavi ascoltando quell'evento da
+    // errore...
     default void throwUnsupportedError(EventType event, Object data) throws Error {
         throw new Error(this + " was listening for " + event + " with " + data
                 + " as data, but it does not support this event!");

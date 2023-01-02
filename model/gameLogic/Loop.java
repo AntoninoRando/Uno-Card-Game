@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/* --- Mine ------------------------------- */
+
 import events.toModel.InputListener;
 import events.toModel.InputType;
 import events.toView.EventManager;
@@ -19,6 +21,8 @@ import model.data.PlayerData;
  * A class that will modify the game state.
  */
 public class Loop implements InputListener {
+    /* --- Singleton -------------------------- */
+
     private static Loop instance;
 
     public static Loop getInstance() {
@@ -26,6 +30,8 @@ public class Loop implements InputListener {
             instance = new Loop();
         return instance;
     }
+
+    /* --- Fields ----------------------------- */
 
     public static EventManager events = new EventManager();
     private Object choice;
@@ -35,6 +41,60 @@ public class Loop implements InputListener {
     private int currentPhase;
     private long timeStart;
     private boolean isPaused;
+
+    /**
+     * A phase that can be executed and changed any time. This phase takes an object
+     * as input and performs an action with it.
+     */
+    private Consumer<Object> decontexPhase;
+
+    /* ---.--- Getters and Setters ------------ */
+
+    /**
+     * Gets the choice that will determine the user action for this turn.
+     * 
+     * @return The user choice.
+     */
+    public Object getChoice() {
+        return choice;
+    }
+
+    /**
+     * Sets the enemy AI action of the turn.
+     * 
+     * @param choice The choice that describes the action that the AI will perform.
+     */
+    public void setChoice(Object choice) {
+        this.choice = choice;
+    }
+
+    public String getChoiceType() {
+        return choiceType;
+    }
+
+    public void setChoiceType(String choiceType) {
+        this.choiceType = choiceType;
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    public void setPause(boolean arrivalState) {
+        isPaused = arrivalState;
+    }
+
+    /**
+     * Sets an additional phase that can be executed and changed at any time.
+     * 
+     * @param decontexPhase The phase to run later, with the
+     *                      <code>executeDecontexPhase</code> method.
+     */
+    public void setDecontexPhase(Consumer<Object> decontexPhase) {
+        this.decontexPhase = decontexPhase;
+    }
+
+    /* --- Body ------------------------------- */
 
     /**
      * Sets the players of the games and resets the game state.
@@ -123,8 +183,6 @@ public class Loop implements InputListener {
         events.notify(EventType.RESET);
     }
 
-    // Getters and Setters
-
     /**
      * Sets the next phase. The current phase will however end.
      * 
@@ -141,33 +199,7 @@ public class Loop implements InputListener {
         return phases.size();
     }
 
-    /**
-     * Gets the choice that will determine the user action for this turn.
-     * 
-     * @return The user choice.
-     */
-    Object getChoice() {
-        return choice;
-    }
-
-    /**
-     * Sets the enemy AI action of the turn.
-     * 
-     * @param choice The choice that describes the action that the AI will perform.
-     */
-    void setChoice(Object choice) {
-        this.choice = choice;
-    }
-
-    String getChoiceType() {
-        return choiceType;
-    }
-
-    void setChoiceType(String choiceType) {
-        this.choiceType = choiceType;
-    }
-
-    // Loop logic
+    /* ---.--- Phases ------------------------- */
 
     private boolean startTurn() {
         events.notify(EventType.TURN_START, Game.getInstance().getCurrentPlayer());
@@ -244,7 +276,36 @@ public class Loop implements InputListener {
         return true;
     };
 
-    // Interface methods
+    /**
+     * Executes the additional phase, setted with the <code>setDecontexPhase</code>
+     * method. After the new phase ends, it will be deleted.
+     * 
+     * @param data The data that the phase may use to execute.
+     */
+    public void runDecontexPhase(Object data) {
+        decontexPhase.accept(data);
+        decontexPhase = null;
+    }
+
+    private void startUnoTimer() {
+        Player unoer = Game.getInstance().getCurrentPlayer();
+        events.notify(EventType.UNO_DECLARED);
+        unoDeclared = true;
+
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e) {
+                }
+                if (unoer == Game.getInstance().getCurrentPlayer())
+                    unoDeclared = false;
+            }
+        }.start();
+    }
+
+    /* --- Observer --------------------------- */
 
     @Override
     public void acceptInput(InputType inputType, Object choice) {
@@ -267,62 +328,5 @@ public class Loop implements InputListener {
                 // TODO
                 break;
         }
-    }
-
-    // Additional Loop logic
-
-    /**
-     * A phase that can be executed and changed any time. This phase takes an object
-     * as input and performs an action with it.
-     */
-    private Consumer<Object> decontexPhase;
-
-    /**
-     * Sets an additional phase that can be executed and changed at any time.
-     * 
-     * @param decontexPhase The phase to run later, with the
-     *                      <code>executeDecontexPhase</code> method.
-     */
-    public void setDecontexPhase(Consumer<Object> decontexPhase) {
-        this.decontexPhase = decontexPhase;
-    }
-
-    /**
-     * Executes the additional phase, setted with the <code>setDecontexPhase</code>
-     * method. After the new phase ends, it will be deleted.
-     * 
-     * @param data The data that the phase may use to execute.
-     */
-    public void runDecontexPhase(Object data) {
-        decontexPhase.accept(data);
-        decontexPhase = null;
-    }
-
-    public boolean isPaused() {
-        return isPaused;
-    }
-
-    public void setPause(boolean arrivalState) {
-        isPaused = arrivalState;
-    }
-
-    //
-
-    private void startUnoTimer() {
-        Player unoer = Game.getInstance().getCurrentPlayer();
-        events.notify(EventType.UNO_DECLARED);
-        unoDeclared = true;
-
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    sleep(5000);
-                } catch (InterruptedException e) {
-                }
-                if (unoer == Game.getInstance().getCurrentPlayer())
-                    unoDeclared = false;
-            }
-        }.start();
     }
 }

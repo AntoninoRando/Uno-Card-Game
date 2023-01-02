@@ -8,12 +8,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/* --- Mine ------------------------------- */
+
 import events.toView.EventManager;
 
 /**
  * Stores general information about the user info and the data.
  */
 public abstract class Info {
+    /* --- Fields ----------------------------- */
+
     private static final int[] xpGaps = { 5, 8, 15, 21, 24, 28, 31, 35, 39, 50 };
     private static final int nickMaxLength = 22;
     private static final String defaultIcon = "resources\\icons\\night.png";
@@ -22,6 +26,9 @@ public abstract class Info {
     private static final String cardsPath = "resources\\Cards";
 
     public static EventManager events = new EventManager();
+
+    
+    /* ---.--- Getters and Setters ------------ */
 
     /**
      * 
@@ -47,7 +54,11 @@ public abstract class Info {
         return defaultNick;
     }
 
+    /* --- Body ------------------------------- */
+
     /**
+     * This method returns the xp needed to reach the level ahead of the input based
+     * on an algorithm.
      * 
      * @param level The level from which to level up.
      * @return The amount of XP need to level up.
@@ -64,9 +75,9 @@ public abstract class Info {
         return ((double) PlayerData.getXp()) / ((double) getXpGap(PlayerData.getLevel())) * 100.0;
     }
 
-    /**
+    /*
      * 
-     * @return A set of the paths of all icons.
+     * @return All icons paths grouped as a set.
      * @throws IOException
      */
     public static Set<String> allIcons() throws IOException {

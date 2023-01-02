@@ -9,13 +9,17 @@ import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
+/* --- Mine ------------------------------- */
+
 import events.toView.EventType;
 
 /**
  * A class containig player's info. It also contains static info about the user.
  */
 public class PlayerData {
-    // Used by bots and user
+    /* --- Fields ----------------------------- */
+    
+    // Used by both AI and user
     private String nick;
     private String icon;
     private boolean isHuman;
@@ -28,17 +32,10 @@ public class PlayerData {
     private static int wins;
     // Data already Loaded
     private static HashMap<String, PlayerData> dataLoaded = new HashMap<>();
+    
+    private HashMap<Integer, Consumer<String>> ReadMap = fillReadMap();
 
-    private PlayerData(String filePathname) {
-        loadData(filePathname);
-        if (isHuman)
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> writeData(filePathname)));
-    }
-
-    private PlayerData() {
-    }
-
-    // Getters and Setters
+    /* ---.--- Getters and Setters ------------ */
 
     /**
      * Get the <code>PlayerData</code> object associated with the given info file path.
@@ -141,7 +138,18 @@ public class PlayerData {
         return wins;
     }
 
-    //
+    /* --- Constructors ----------------------- */
+
+    private PlayerData(String filePathname) {
+        loadData(filePathname);
+        if (isHuman)
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> writeData(filePathname)));
+    }
+
+    private PlayerData() {
+    }
+
+    /* --- Body ------------------------------- */
 
     /**
      * Add the <code>quantity</code> number of xp to the <b>user</b>.
@@ -191,10 +199,6 @@ public class PlayerData {
 
         Info.events.notify(EventType.INFO_RESET, new Object[] { PlayerData.userNick, PlayerData.userIcon });
     }
-
-    //
-
-    private HashMap<Integer, Consumer<String>> ReadMap = fillReadMap();
 
     private void loadData(String filePathname) {
         try (Scanner sc = new Scanner(new FileInputStream(filePathname))) {

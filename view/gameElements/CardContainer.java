@@ -10,18 +10,40 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
+/* --- Mine ------------------------------- */
+
 import prefabs.Card;
 
+/**
+ * The GUI representation of a UNO card: it has an image and it is zoombale, but
+ * it does not store card informations.
+ */
 public class CardContainer extends ImageView {
+    /* --- Fields ----------------------------- */
+
     private static Path imgFolder = Paths.get("resources/AllUnoCards");
 
+    private final ScaleTransition zoomIn = new ScaleTransition(Duration.millis(100.0), this);
+    private final ScaleTransition zoomOut = new ScaleTransition(Duration.millis(100.0), this);
+
+    /* --- Constructors ----------------------- */
+
+    /**
+     * Create a blank card with no image.
+     */
     public CardContainer() {
         getStyleClass().add("card");
         setPreserveRatio(true);
         setFitWidth(150);
         makeZommable(0.5);
     }
-    
+
+    /**
+     * Create a UNO card with the image associated to the given input card.
+     * 
+     * @param card The card info; used to detect which image to load, not to stores
+     *             information about the card.
+     */
     public CardContainer(Card card) {
         getStyleClass().add("card");
         loadImage(card);
@@ -30,6 +52,13 @@ public class CardContainer extends ImageView {
         makeZommable(0.5);
     }
 
+    /* --- Body ------------------------------- */
+
+    /**
+     * Loads the image of the given input card from memory.
+     * 
+     * @param card The card info; used to detect which image to load.
+     */
     private void loadImage(Card card) {
         Path imgPath = imgFolder.resolve(card.toString().concat(".png"));
         if (Files.notExists(imgPath))
@@ -42,18 +71,24 @@ public class CardContainer extends ImageView {
         }
     }
 
+    /**
+     * Change the image according to the new input card.
+     * 
+     * @param card The card info; used to detect which image to load.
+     */
     public void update(Card card) {
         loadImage(card);
     }
 
+    /**
+     * Change all properties of this object to the properties of the given object.
+     * 
+     * @param card The card GUI object to copy.
+     */
     public void update(CardContainer card) {
         // TODO finire di copiare anche gli altri campi
         setImage(card.getImage());
     }
-
-    /* -------------------------------- */
-    private final ScaleTransition zoomIn = new ScaleTransition(Duration.millis(100.0), this);
-    private final ScaleTransition zoomOut = new ScaleTransition(Duration.millis(100.0), this);
 
     // TODO migliorare perche' e' un po' lagghi e ogni tanto si bugga
     private void makeZommable(Double scalingFactor) {

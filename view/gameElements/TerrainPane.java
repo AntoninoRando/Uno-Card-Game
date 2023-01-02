@@ -1,9 +1,12 @@
 package view.gameElements;
 
-import events.toView.EventListener;
-import events.toView.EventType;
 import javafx.application.Platform;
 import javafx.scene.layout.StackPane;
+
+/* --- Mine ------------------------------- */
+
+import events.toView.EventListener;
+import events.toView.EventType;
 
 import prefabs.Card;
 import prefabs.Player;
@@ -12,6 +15,8 @@ import prefabs.Player;
  * A GUI element representing the current card on the ground.
  */
 public class TerrainPane extends StackPane implements EventListener {
+    /* --- Singleton -------------------------- */
+
     private static TerrainPane instance;
 
     public static TerrainPane getInstance() {
@@ -25,17 +30,23 @@ public class TerrainPane extends StackPane implements EventListener {
         setMaxHeight(400);
         setMaxWidth(400);
     }
+    
+    /* --- Fields ----------------------------- */
 
-    private CardContainer terrainCard;
+     private CardContainer terrainCard;
+
+    /* --- Body ------------------------------- */
 
     private void initialize() {
         terrainCard = new CardContainer();
         getChildren().setAll(terrainCard);
     }
 
-    private void updateTerrainCard(Card c) {
-        terrainCard.update(c.getGuiContainer());
+    private void updateTerrainCard(Card card) {
+        terrainCard.update(card.getGuiContainer());
     }
+
+    /* --- Observer --------------------------- */
 
     @Override
     public void update(EventType event, Card data) {

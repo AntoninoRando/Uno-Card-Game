@@ -9,10 +9,14 @@ import events.toModel.InputListener;
  * A class representing a performable-by-the-user action in the GUI.
  */
 public abstract class Control implements ViewListener {
+    /* --- Fields ----------------------------- */
+    
     protected InputListener listener;
     protected static InputListener globalListener;
     protected Consumer<InputListener> action; // TODO fare che questo è un action wrapper per l'action passata come
                                               // argomento (con Decorator Patter)
+    
+    /* ---.--- Getters and Setters ------------ */
 
     /**
      * Sets the InputListener that will react to inputs.
@@ -36,6 +40,8 @@ public abstract class Control implements ViewListener {
     public void setAction(Consumer<InputListener> action) {
         this.action = action;
     }
+
+    /* --- Body ------------------------------- */
 
     /**
      * Applies the action related to this control.

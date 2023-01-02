@@ -6,23 +6,14 @@ import model.gameLogic.Effect;
 import view.gameElements.CardContainer;
 
 public class Card implements Comparable<Card> {
+    /* --- Fields ----------------------------- */
+
     private Suit suit;
     private int value;
     private Optional<Effect> effect;
+    private CardContainer guiContainer;
 
-    public Card(Suit suit, int value) {
-        this.suit = suit;
-        this.value = value;
-        effect = Optional.empty();
-    }
-
-    public Card(Suit suit, int value, Effect effect) {
-        this.suit = suit;
-        this.value = value;
-        setEffect(Optional.of(effect));
-    }
-
-    // Getters and Setters
+    /* ---.--- Getters and Setters ------------ */
 
     public Suit getSuit() {
         return suit;
@@ -48,6 +39,28 @@ public class Card implements Comparable<Card> {
         effect = e;
     }
 
+    public CardContainer getGuiContainer() {
+        if (guiContainer == null)
+            guiContainer = new CardContainer(this);
+        return guiContainer;
+    }
+
+    /* --- Constructors ----------------------- */
+
+    public Card(Suit suit, int value) {
+        this.suit = suit;
+        this.value = value;
+        effect = Optional.empty();
+    }
+
+    public Card(Suit suit, int value, Effect effect) {
+        this.suit = suit;
+        this.value = value;
+        setEffect(Optional.of(effect));
+    }
+
+    /* --- Body ------------------------------- */
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(suit).append(" ").append(value);
@@ -58,13 +71,7 @@ public class Card implements Comparable<Card> {
         return effect.isPresent() ? new Card(suit, value, effect.get()) : new Card(suit, value);
     }
 
-    private CardContainer guiContainer;
-
-    public CardContainer getGuiContainer() {
-        if (guiContainer == null)
-            guiContainer = new CardContainer(this);
-        return guiContainer;
-    }
+    /* --- Comparable ------------------------- */
 
     @Override
     public int compareTo(Card o) {

@@ -15,11 +15,13 @@ import events.toView.EventType;
 // potrei aggiungere un metodo che permette di iterare anche se viene modificato 
 // il cardGroup
 public class CardGroup implements Collection<Card> {
-    // VARIABLES
+    /* --- Fields ----------------------------- */
+    
     protected List<Card> cards = new LinkedList<Card>();
     public EventManager observers = new EventManager();
 
-    // CONSTRUCTORS
+    /* --- Constructors ----------------------- */
+
     public CardGroup(Card... cards) {
         Collections.addAll(this.cards, cards);
     }
@@ -28,7 +30,8 @@ public class CardGroup implements Collection<Card> {
         this.cards.addAll(cards);
     }
 
-    // METHODS
+    /* --- Body ------------------------------- */
+
     public void shuffle() {
         Collections.shuffle(cards);
     }
@@ -42,8 +45,8 @@ public class CardGroup implements Collection<Card> {
         observers.notify(EventType.ADD, card);
     }
 
-    public int indexOf(Card c) {
-        return cards.indexOf(c);
+    public int indexOf(Card card) {
+        return cards.indexOf(card);
     }
 
     // Overload that support a BiConsumer: index, card
@@ -55,7 +58,6 @@ public class CardGroup implements Collection<Card> {
         }
     }
 
-    // GETTERS AND SETTERS
     public Card get(int index) {
         return cards.get(index);
     }
@@ -68,18 +70,8 @@ public class CardGroup implements Collection<Card> {
         return cards.get(cards.size()-1);
     }
 
-    // CONVERTERS
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
+    /* --- Collection ------------------------- */
 
-        sb.append("[ ");
-        this.forEach((i, card) -> sb.append("(").append(i + 1).append(")").append(card).append(" "));
-        sb.append("]");
-
-        return sb.toString();
-    }
-
-    // COLLECTION METHODS
     @Override
     public boolean contains(Object o) {
         return cards.contains(o);

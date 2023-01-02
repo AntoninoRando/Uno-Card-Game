@@ -6,17 +6,52 @@ import model.data.PlayerData;
 import model.gameLogic.Effect;
 
 /**
- * This class contains all the info about the player state.
+ * This class contains all the info about the player (user or AI) state.
  */
 public class Player {
+    /* --- Fields ----------------------------- */
+
     private String nick;
     private String icon;
     private boolean isHuman;
     private CardGroup hand;
     private TreeSet<Effect> conditions;
 
-    public Player(String DataFilepath) {
-        PlayerData pd = PlayerData.getPlayerData(DataFilepath);
+    /**
+     * @return Player nickname.
+     */
+    public String getNick() {
+        return nick;
+    }
+
+    /**
+     * @return The path to the image used as player icon.
+     */
+    public String getIcon() {
+        return icon;
+    }
+
+    /**
+     * @return Whether the player is the user or the AI.
+     */
+    public boolean isHuman() {
+        return isHuman;
+    }
+
+    /** 
+     * @return The group of cards held by the player.
+     */
+    public CardGroup getHand() {
+        return hand;
+    }
+
+    /* --- Constructors ----------------------- */
+
+    /**
+     * @param data The path to the file containing player's info.
+     */
+    public Player(String data) {
+        PlayerData pd = PlayerData.getPlayerData(data);
         nick = pd.getNick();
         icon = pd.getIcon();
         isHuman = pd.isHuman();
@@ -24,25 +59,7 @@ public class Player {
         conditions = new TreeSet<>();
     }
 
-    // Getters and Setters
-
-    public String getNick() {
-        return nick;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public boolean isHuman() {
-        return isHuman;
-    }
-
-    public CardGroup getHand() {
-        return hand;
-    }
-
-    /* OTHERS */
+    /* --- Body ------------------------------- */
 
     public void addCondition(Effect condition) {
         conditions.add(condition);
