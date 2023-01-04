@@ -1,9 +1,11 @@
-package prefabs;
+package model.gameObjects;
 
+import java.util.HashMap;
 import java.util.Optional;
 
+/* --- Mine ------------------------------- */
+
 import model.gameLogic.Effect;
-import view.gameElements.CardContainer;
 
 public class Card implements Comparable<Card> {
     /* --- Fields ----------------------------- */
@@ -11,7 +13,8 @@ public class Card implements Comparable<Card> {
     private Suit suit;
     private int value;
     private Optional<Effect> effect;
-    private CardContainer guiContainer;
+    private int tag;
+    private static int tagCounter = 24;
 
     /* ---.--- Getters and Setters ------------ */
 
@@ -39,10 +42,8 @@ public class Card implements Comparable<Card> {
         effect = e;
     }
 
-    public CardContainer getGuiContainer() {
-        if (guiContainer == null)
-            guiContainer = new CardContainer(this);
-        return guiContainer;
+    public int getTag() {
+        return tag;
     }
 
     /* --- Constructors ----------------------- */
@@ -51,12 +52,14 @@ public class Card implements Comparable<Card> {
         this.suit = suit;
         this.value = value;
         effect = Optional.empty();
+        this.tag = ++Card.tagCounter;
     }
 
     public Card(Suit suit, int value, Effect effect) {
         this.suit = suit;
         this.value = value;
         setEffect(Optional.of(effect));
+        this.tag = ++Card.tagCounter;
     }
 
     /* --- Body ------------------------------- */
@@ -69,6 +72,13 @@ public class Card implements Comparable<Card> {
 
     public Card getCopy() {
         return effect.isPresent() ? new Card(suit, value, effect.get()) : new Card(suit, value);
+    }
+
+    public HashMap<String, Object> getData() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("tag", getTag());
+        data.put("representation", toString());
+        return data;
     }
 
     /* --- Comparable ------------------------- */

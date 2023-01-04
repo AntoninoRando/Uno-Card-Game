@@ -1,4 +1,4 @@
-package prefabs;
+package model.gameObjects;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public class CardGroup implements Collection<Card> {
 
     public void add(int index, Card card) {
         cards.add(index, card);
-        observers.notify(EventType.ADD, card);
+        observers.notify(EventType.ADD, card.getTag());
     }
 
     public int indexOf(Card card) {
@@ -114,14 +114,15 @@ public class CardGroup implements Collection<Card> {
     @Override
     public boolean add(Card e) {
         cards.add(e);
-        observers.notify(EventType.ADD, e);
+        observers.notify(EventType.ADD, e.getTag());
         return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends Card> c) {
         if(cards.addAll(c)) {
-            observers.notify(EventType.ADD, c);
+            for (Card card : c)
+                observers.notify(EventType.ADD, card.getTag());
             return true;
         }
         return false;

@@ -7,9 +7,7 @@ import java.util.stream.Stream;
 import events.toView.EventType;
 
 import model.data.CardsInfo;
-
-import prefabs.Card;
-import prefabs.Player;
+import model.gameObjects.*;
 
 /**
  * A class able to build an effect specifying the order of actions to perform.
@@ -190,7 +188,10 @@ public class EffectBuilder {
             }
 
             Loop.getInstance().setDecontexPhase(card -> effect.setTargetCard((Card) card));
-            Loop.events.notify(EventType.USER_SELECTING_CARD, cards);
+            
+            // Notify
+            int[] data = Stream.of(cards).mapToInt(card -> card.getTag()).toArray();
+            Loop.events.notify(EventType.USER_SELECTING_CARD, data);
         });
         return this;
     }

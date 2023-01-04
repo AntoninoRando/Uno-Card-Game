@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,10 +33,8 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import prefabs.Card;
-import prefabs.Player;
-
 import model.gameLogic.Loop;
+import model.gameObjects.Player;
 import model.GameThread;
 import model.data.Info;
 import model.data.PlayerData;
@@ -46,6 +45,7 @@ import view.animations.Animation;
 import view.animations.Animations;
 import view.animations.ResetTranslate;
 import view.gameElements.PlayerPane;
+import view.gameElements.CardContainer;
 import view.gameElements.Chronology;
 import view.gameElements.HandPane;
 import view.gameElements.PlayerLabel;
@@ -328,6 +328,7 @@ public class JUno extends Application implements EventListener {
                 EventType.PLAYER_HAND_INCREASE);
         em.subscribe(SelectionPane.getInstance(), EventType.USER_SELECTING_CARD);
         em.subscribe(TerrainPane.getInstance(), EventType.GAME_READY, EventType.CARD_CHANGE);
+        em.subscribe(new CardContainer(), EventType.NEW_CARD);
     }
 
     private void subscribeInputListeners() {
@@ -358,7 +359,7 @@ public class JUno extends Application implements EventListener {
     }
 
     @Override
-    public void update(EventType event, Player[] data) {
+    public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_READY:
                 subscribeInputListeners();
@@ -378,42 +379,11 @@ public class JUno extends Application implements EventListener {
                     a2.play(rootContainer);
                 });
                 break;
-            default:
-                throwUnsupportedError(event, null);
-        }
-    }
-
-    @Override
-    public void update(EventType event, Card data) {
-        switch (event) {
-            case CARD_CHANGE:
-                Platform.runLater(() -> {
-                    playingCardAnimation.setSceneCoordinates(scene.getWidth() / 2, scene.getHeight() / 2);
-                    playingCardAnimation.play(gameRoot, gameRoot.getChildren().size() - 2);
-                });
-                try {
-                    playingCardAnimation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                playingCardAnimation.resetLatch();
-                break;
-            case INVALID_CARD:
-                Platform.runLater(() -> ResetTranslate.resetTranslate(data.getGuiContainer()));
-                break;
-            case USER_DREW:
-                DragAndDrop.getInstance().setControls(data);
-                break;
-            default:
-                throwUnsupportedError(event, data);
-        }
-    }
-
-    @Override
-    public void update(EventType event, Player data) {
-        switch (event) {
+            // About players
             case TURN_START:
                 Platform.runLater(() -> {
-                    PlayerLabel pl = PlayerPane.getInstance().getPlayerLabel(data);
+                    String nick = (String) data.get("nickname");
+                    PlayerLabel pl = PlayerPane.getInstance().getPlayerLabel(nick);
                     ;
                     Bounds b = pl.localToScene(pl.getBoundsInLocal());
 
@@ -449,7 +419,32 @@ public class JUno extends Application implements EventListener {
                 });
                 break;
             default:
-                throwUnsupportedError(event, data);
+                throwUnsupportedError(event, null);
+        }
+    }
+
+    @Override
+    public void update(EventType event, int cardTag) {
+        switch (event) {
+            case CARD_CHANGE:
+                Platform.runLater(() -> {
+                    playingCardAnimation.setSceneCoordinates(scene.getWidth() / 2, scene.getHeight() / 2);
+                    playingCardAnimation.play(gameRoot, gameRoot.getChildren().size() - 2);
+                });
+                try {
+                    playingCardAnimation.latch.await();
+                } catch (InterruptedException e) {
+                }
+                playingCardAnimation.resetLatch();
+                break;
+            case INVALID_CARD:
+                Platform.runLater(() -> ResetTranslate.resetTranslate(CardContainer.cards.get(cardTag)));
+                break;
+            case USER_DREW:
+                DragAndDrop.getInstance().setControls(CardContainer.cards.get(cardTag), (Integer) cardTag);
+                break;
+            default:
+                throwUnsupportedError(event, cardTag);
         }
     }
 

@@ -1,8 +1,10 @@
 package model.gameLogic;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /* --- Mine ------------------------------- */
 
@@ -11,11 +13,10 @@ import events.toModel.InputType;
 import events.toView.EventManager;
 import events.toView.EventType;
 
-import prefabs.Card;
-import prefabs.Player;
-
 import model.data.Info;
 import model.data.PlayerData;
+
+import model.gameObjects.*;
 
 /**
  * A class that will modify the game state.
@@ -141,17 +142,26 @@ public class Loop implements InputListener {
      * Setup the first turn as explained in the UNO rules.
      */
     private void setupFirstTurn() {
-        events.notify(EventType.GAME_READY, Game.getInstance().getPlayers());
+        // Notify
+        Player[] players = Game.getInstance().getPlayers();
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("all-nicknames", Stream.of(players).map(Player::getNick).toArray(String[]::new));
+        data.put("all-icons", Stream.of(players).map(Player::getIcon).toArray(String[]::new));
+        data.put("all-hand-sizes", Stream.of(players).mapToInt(p -> p.getHand().size()).toArray());
+        events.notify(EventType.GAME_READY, data);
 
+        // First card
         Actions.shuffleDeck();
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
-        events.notify(EventType.CARD_CHANGE, firstCard);
+        // Notify
+        events.notify(EventType.CARD_CHANGE, firstCard.getTag());
 
+        // Give cards to players
         for (Player p : Game.getInstance().getPlayers())
             Actions.dealFromDeck(p, Game.getInstance().getFirstHandSize());
-
-        events.notify(EventType.GAME_START, Game.getInstance().getPlayers());
+        // Notify
+        events.notify(EventType.GAME_START, new HashMap<>());
     }
 
     /**
@@ -173,7 +183,8 @@ public class Loop implements InputListener {
                 xpEarned += 5;
             }
             PlayerData.addGamePlayed(humanWon);
-            events.notify(EventType.PLAYER_WON, winner);
+            // Notify
+            events.notify(EventType.PLAYER_WON, winner.getData());
             Info.events.notify(EventType.XP_EARNED, xpEarned);
         }
 
@@ -202,8 +213,11 @@ public class Loop implements InputListener {
     /* ---.--- Phases ------------------------- */
 
     private boolean startTurn() {
-        events.notify(EventType.TURN_START, Game.getInstance().getCurrentPlayer());
-        Game.getInstance().getCurrentPlayer().consumeConditions();
+        Player player = Game.getInstance().getCurrentPlayer();
+        // Notify
+        events.notify(EventType.TURN_START, player.getData());
+        // Activate player conditions
+        player.consumeConditions();
         return true;
     };
 
@@ -228,33 +242,38 @@ public class Loop implements InputListener {
             setChoiceType("card");
         else if (getChoice() instanceof String)
             setChoiceType((String) choice);
+        else if (getChoice() instanceof Integer)
+            setChoiceType("tag");
         return true;
     };
 
     private boolean resolveChoice() {
         switch (getChoiceType()) {
             case "card":
+            case "tag":
                 Player player = Game.getInstance().getCurrentPlayer();
-                Card card = (Card) choice;
+                Card card = getChoiceType() == "tag"
+                        ? player.getHand().stream().filter(c -> c.getTag() == (int) choice).findFirst().get()
+                        : (Card) choice;
                 if (Game.getInstance().isPlayable(card)) {
                     Actions.changeCurrentCard(card);
                     player.getHand().remove(card);
                     card.getEffect().ifPresent(effect -> effect.cast(player, card));
-                    events.notify(EventType.CARD_CHANGE, card);
-                    events.notify(EventType.PLAYER_PLAYED_CARD, player);
-                    events.notify(EventType.PLAYER_HAND_DECREASE, player);
+                    events.notify(EventType.CARD_CHANGE, card.getTag());
+                    events.notify(EventType.PLAYER_PLAYED_CARD, player.getData());
+                    events.notify(EventType.PLAYER_HAND_DECREASE, player.getData());
 
                     if (!player.isHuman())
                         return true;
 
-                    events.notify(EventType.USER_PLAYED_CARD, card);
+                    events.notify(EventType.USER_PLAYED_CARD, card.getTag());
 
                     if (player.getHand().size() == 1 && !unoDeclared)
                         Actions.dealFromDeck(Game.getInstance().getCurrentPlayer(), 2);
 
                     return true;
                 } else {
-                    events.notify(EventType.INVALID_CARD, card);
+                    events.notify(EventType.INVALID_CARD, card.getTag());
                     return false;
                 }
             case "draw":
@@ -269,7 +288,7 @@ public class Loop implements InputListener {
     };
 
     private boolean endTurn() {
-        events.notify(EventType.TURN_END, Game.getInstance().getCurrentPlayer());
+        events.notify(EventType.TURN_END, Game.getInstance().getCurrentPlayer().getData());
         Game.getInstance().setTurn(Game.getInstance().getNextPlayer());
         setChoice(null);
         setChoiceType(null);
@@ -312,9 +331,9 @@ public class Loop implements InputListener {
         switch (inputType) {
             case TURN_DECISION:
                 synchronized (this) {
-                    // Not user turn
+                    // When the user makes a choice in another turn
                     if (!Game.getInstance().getCurrentPlayer().isHuman()) {
-                        events.notify(EventType.INVALID_CARD, choice);
+                        events.notify(EventType.INVALID_CARD, 0); // TODO non va bene che passo 0
                         return;
                     }
                     this.choice = choice;

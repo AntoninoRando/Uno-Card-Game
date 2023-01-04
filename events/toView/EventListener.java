@@ -1,7 +1,6 @@
 package events.toView;
 
-import prefabs.Card;
-import prefabs.Player;
+import java.util.HashMap;
 
 /**
  * Any class implementing this interface is able to change its state when
@@ -9,45 +8,56 @@ import prefabs.Player;
  */
 public interface EventListener {
     default void update(EventType event) {
-    }
-
-    default void update(EventType event, Object[] data) {
+        throwUnimplementedError(event);
     }
 
     default void update(EventType event, String data) {
+        throwUnimplementedError(event);
     }
 
     default void update(EventType event, int data) {
+        throwUnimplementedError(event);
+    }
+
+    default void update(EventType event, int[] data) {
+        throwUnimplementedError(event);
     }
 
     default void update(EventType event, double data) {
+        throwUnimplementedError(event);
     }
 
-    default void update(EventType event, Card data) {
-    }
-
-    default void update(EventType event, Card[] data) {
-    }
-
-    default void update(EventType event, Player data) {
-    }
-
-    default void update(EventType event, Player[] data) {
-    }
-
-    default void update(byte combinedEvent, Object[] data) {
+    default void update(EventType event, HashMap<String, Object> data) {
+        throwUnimplementedError(event);
     }
 
     default int getEventPriority(EventType event) {
         return 1;
     }
 
-    // Non dovrebbe fare questo metodo dentro ogni metodo di default sopra? Così che
-    // se non reimplementi il metodo e inoltre stavi ascoltando quell'evento da
-    // errore...
+    /**
+     * Method to run inside the @overrited update method in case the EventListener
+     * didn't implemented the given eventType associated with the given Object data.
+     * 
+     * @param event
+     * @param data
+     * @throws Error
+     */
     default void throwUnsupportedError(EventType event, Object data) throws Error {
         throw new Error(this + " was listening for " + event + " with " + data
                 + " as data, but it does not support this event!");
+    }
+
+    /**
+     * Method to run inside the @overrited update method in case the EventListener
+     * didn't implemented the given eventType.
+     * 
+     * @param event
+     * @param data
+     * @throws Error
+     */
+    default void throwUnimplementedError(EventType event) throws Error {
+        throw new Error(this + " was notified about " + event + ", but it does not support this event!");
     }
 
     default int compareTo(EventType event, EventListener otherListener) throws Error {

@@ -196,8 +196,11 @@ public class PlayerData {
         PlayerData.xp = 0;
         PlayerData.games = 0;
         PlayerData.wins = 0;
-
-        Info.events.notify(EventType.INFO_RESET, new Object[] { PlayerData.userNick, PlayerData.userIcon });
+        // Notify
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("nickname", PlayerData.userNick);
+        data.put("icon", PlayerData.userIcon);
+        Info.events.notify(EventType.INFO_RESET, data);
     }
 
     private void loadData(String filePathname) {

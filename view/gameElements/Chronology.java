@@ -2,6 +2,7 @@ package view.gameElements;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -10,14 +11,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
+import java.util.HashMap;
+
 /* --- Mine ------------------------------- */
 
 import events.toView.EventListener;
 import events.toView.EventType;
-
-import prefabs.Card;
-import prefabs.Player;
-import prefabs.Suit;
 
 /*
  * A pane that gather all actions performed during the game, in order from the first to the most recent.
@@ -51,10 +50,10 @@ public class Chronology extends StackPane implements EventListener {
      * 
      * @param card The image of the card played, that is the GUI card.
      */
-    private void addCard(CardContainer card) {
-        GridPane.setRowIndex(card, 0);
-        GridPane.setColumnIndex(card, lastMem);
-        content.getChildren().add(card);
+    private void addCard(Node memory) {
+        GridPane.setRowIndex(memory, 0);
+        GridPane.setColumnIndex(memory, lastMem);
+        content.getChildren().add(memory);
         lastMem++;
     }
 
@@ -122,10 +121,10 @@ public class Chronology extends StackPane implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, Card data) {
+    public void update(EventType event, int data) {
         switch (event) {
             case CARD_CHANGE:
-                Platform.runLater(() -> addCard(data.getGuiContainer()));
+                Platform.runLater(() -> addCard(CardContainer.cards.get(data)));
                 break;
             default:
                 // TODO risolvere throwUnsupportedError(event, data);
@@ -134,26 +133,26 @@ public class Chronology extends StackPane implements EventListener {
     }
 
     @Override
-    public void update(EventType event, Player data) {
+    public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case PLAYER_PLAYED_CARD:
                 Platform.runLater(() -> {
-                    addIcon(data.getIcon());
-                    addNick(data.getNick());
+                    addIcon((String) data.get("icon"));
+                    addNick((String) data.get("nickname"));
                 });
                 break;
             case TURN_BLOCKED:
                 Platform.runLater(() -> {
-                    addCard(new Card(Suit.WILD, -2).getGuiContainer());
-                    addIcon(data.getIcon());
-                    addNick(data.getNick());
+                    // addCard(new Card(Suit.WILD, -2).getGuiContainer());
+                    addIcon((String) data.get("icon"));
+                    addNick((String) data.get("nickname"));
                 });
                 break;
             case PLAYER_DREW:
                 Platform.runLater(() -> {
-                    addCard(new Card(Suit.WILD, -1).getGuiContainer());
-                    addIcon(data.getIcon());
-                    addNick(data.getNick());
+                    // addCard(new Card(Suit.WILD, -1).getGuiContainer());
+                    addIcon((String) data.get("icon"));
+                    addNick((String) data.get("nickname"));
                 });
                 break;
             default:

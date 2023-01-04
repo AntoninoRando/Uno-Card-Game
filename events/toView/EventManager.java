@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import prefabs.Card;
-import prefabs.Player;
-
 /**
  * A class storing all the <code>EventListener</code>s to update in relation to
  * the event notified. This enables to update multiple classes at once.
@@ -55,12 +52,6 @@ public class EventManager {
         listeners.get(event).forEach(listener -> listener.update(event));
     }
 
-    public void notify(EventType event, Object... data) {
-        if (!listeners.containsKey(event))
-            return;
-        listeners.get(event).forEach(listener -> listener.update(event, data));
-    }
-
     public void notify(EventType event, String data) {
         if (!listeners.containsKey(event))
             return;
@@ -73,31 +64,19 @@ public class EventManager {
         listeners.get(event).forEach(listener -> listener.update(event, data));
     }
 
+    public void notify(EventType event, int[] data) {
+        if (!listeners.containsKey(event))
+            return;
+        listeners.get(event).forEach(listener -> listener.update(event, data));
+    }
+
     public void notify(EventType event, double data) {
         if (!listeners.containsKey(event))
             return;
         listeners.get(event).forEach(listener -> listener.update(event, data));
     }
 
-    public void notify(EventType event, Card data) {
-        if (!listeners.containsKey(event))
-            return;
-        listeners.get(event).forEach(listener -> listener.update(event, data));
-    }
-
-    public void notify(EventType event, Card[] data) {
-        if (!listeners.containsKey(event))
-            return;
-        listeners.get(event).forEach(listener -> listener.update(event, data));
-    }
-
-    public void notify(EventType event, Player data) {
-        if (!listeners.containsKey(event))
-            return;
-        listeners.get(event).forEach(listener -> listener.update(event, data));
-    }
-
-    public void notify(EventType event, Player[] data) {
+    public void notify(EventType event, HashMap<String, Object> data) {
         if (!listeners.containsKey(event))
             return;
         listeners.get(event).forEach(listener -> listener.update(event, data));

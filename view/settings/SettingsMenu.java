@@ -1,9 +1,6 @@
 package view.settings;
 
-import prefabs.Player;
-
-import events.toView.EventListener;
-import events.toView.EventType;
+import java.util.HashMap;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -13,6 +10,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+/* --- Mine ------------------------------- */
+
+import events.toView.EventListener;
+import events.toView.EventType;
 
 /**
  * A GUI element containing different settings about the applications that are changeable by the user.
@@ -96,7 +98,7 @@ public class SettingsMenu extends BorderPane implements EventListener {
     }
 
     @Override
-    public void update(EventType event, Player[] data) {
+    public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_START:
                 Platform.runLater(displayInGameMenu);

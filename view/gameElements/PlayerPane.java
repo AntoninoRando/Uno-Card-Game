@@ -12,8 +12,6 @@ import javafx.scene.layout.VBox;
 import events.toView.EventListener;
 import events.toView.EventType;
 
-import prefabs.Player;
-
 public class PlayerPane extends VBox implements EventListener {
     /* --- Singleton -------------------------- */
     
@@ -31,7 +29,7 @@ public class PlayerPane extends VBox implements EventListener {
 
     /* --- Fields ----------------------------- */
 
-    private Map<Player, PlayerLabel> labels;
+    private Map<String, PlayerLabel> labels;
 
     /* --- Body ------------------------------- */
 
@@ -47,42 +45,36 @@ public class PlayerPane extends VBox implements EventListener {
         getChildren().setAll(title);
     }
 
-    private void addPlayerLabel(Player player) {
-        PlayerLabel label = new PlayerLabel(player.getIcon(), player.getNick(),
-                player.getHand().size());
+    private void addPlayerLabel(String nickname, String icon, int handSize) {
+        PlayerLabel label = new PlayerLabel(icon, nickname, handSize);
         getChildren().add(label);
-        labels.put(player, label);
+        labels.put(nickname, label);
     }
 
-    public PlayerLabel getPlayerLabel(Player player) {
-        return labels.get(player);
+    public PlayerLabel getPlayerLabel(String nickname) {
+        return labels.get(nickname);
     }
 
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, Player[] data) {
+    public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_READY:
                 Platform.runLater(() -> {
                     initialize();
-                    for (Player player : data)
-                        addPlayerLabel(player);
+                    String[] nicknames = (String[]) data.get("all-nicknames");
+                    String[] icons = (String[]) data.get("all-icons");
+                    int[] hands = (int[]) data.get("all-hand-sizes");
+                    for (int i = 0; i < icons.length; i++)
+                        addPlayerLabel(nicknames[i], icons[i], hands[i]);
                 });
                 break;
-            default:
-                throwUnsupportedError(event, data);
-        }
-    }
-
-    @Override
-    public void update(EventType event, Player data) {
-        switch (event) {
             case PLAYER_HAND_INCREASE:
-                Platform.runLater(() -> labels.get(data).modifyHandSize(1));
+                Platform.runLater(() -> labels.get((String) data.get("nickname")).modifyHandSize(1));
                 break;
             case PLAYER_HAND_DECREASE:
-                Platform.runLater(() -> labels.get(data).modifyHandSize(-1));
+                Platform.runLater(() -> labels.get((String) data.get("nickname")).modifyHandSize(-1));
                 break;
             default:
                 throwUnsupportedError(event, data);

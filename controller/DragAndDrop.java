@@ -1,6 +1,5 @@
 package controller;
 
-import events.toModel.InputType;
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
@@ -11,7 +10,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 
-import prefabs.Card;
+import events.toModel.InputType;
 
 /**
  * Through this control a card can be dragged, and if it drops into a target,
@@ -46,7 +45,7 @@ public class DragAndDrop extends Control {
         source.setTranslateY(e.getSceneY() - mouseAnchorY);
     }
 
-    private void dragEnd(MouseEvent e, Node source, Card inputToSend) {
+    private void dragEnd(MouseEvent e, Node source, Object inputToSend) {
         if (e.getButton().equals(MouseButton.SECONDARY))
             return;
 
@@ -110,10 +109,9 @@ public class DragAndDrop extends Control {
     }
 
     @Override
-    public void setControls(Card card) {
-        Node dragSource = card.getGuiContainer();
+    public void setControls(Node dragSource, Object inputToSend) {
         dragSource.setOnMousePressed(e -> dragStart(e, dragSource));
         dragSource.setOnMouseDragged(e -> dragRunning(e, dragSource));
-        dragSource.setOnMouseReleased(e -> dragEnd(e, dragSource, card));
+        dragSource.setOnMouseReleased(e -> dragEnd(e, dragSource, inputToSend));
     }
 }

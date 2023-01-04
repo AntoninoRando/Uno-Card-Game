@@ -3,13 +3,13 @@ package view.gameElements;
 import javafx.application.Platform;
 import javafx.scene.layout.StackPane;
 
+import java.util.HashMap;
+
 /* --- Mine ------------------------------- */
 
 import events.toView.EventListener;
 import events.toView.EventType;
 
-import prefabs.Card;
-import prefabs.Player;
 
 /**
  * A GUI element representing the current card on the ground.
@@ -33,7 +33,7 @@ public class TerrainPane extends StackPane implements EventListener {
     
     /* --- Fields ----------------------------- */
 
-     private CardContainer terrainCard;
+    private CardContainer terrainCard;
 
     /* --- Body ------------------------------- */
 
@@ -42,31 +42,31 @@ public class TerrainPane extends StackPane implements EventListener {
         getChildren().setAll(terrainCard);
     }
 
-    private void updateTerrainCard(Card card) {
-        terrainCard.update(card.getGuiContainer());
+    private void updateTerrainCard(int cardTag) {
+        terrainCard.update(CardContainer.cards.get(cardTag));
     }
 
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, Card data) {
+    public void update(EventType event, int cardTag) {
         switch (event) {
             case CARD_CHANGE:
-                Platform.runLater(() -> updateTerrainCard(data));
+                Platform.runLater(() -> updateTerrainCard(cardTag));
                 break;
             default:
-                throwUnsupportedError(event, data);
+                throwUnsupportedError(event, cardTag);
         }
     }
 
     @Override
-    public void update(EventType event, Player[] data) {
+    public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_READY:
                 Platform.runLater(() -> initialize());
                 break;
             default:
-                throwUnsupportedError(event, null);
+                throwUnsupportedError(event, data);
         }
     }
 }

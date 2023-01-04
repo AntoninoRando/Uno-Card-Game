@@ -1,7 +1,6 @@
 package view.gameElements;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -13,8 +12,6 @@ import controller.Select;
 
 import events.toView.EventListener;
 import events.toView.EventType;
-
-import prefabs.Card;
 
 public class SelectionPane extends HBox implements EventListener {
     /* --- Singleton -------------------------- */
@@ -40,14 +37,17 @@ public class SelectionPane extends HBox implements EventListener {
 
     /* --- Body ------------------------------- */
 
-    public void newSelection(Card[] cards) {
-        for (int i = 0; i < cards.length; i++) {
-            Card data = cards[i];
+    public void newSelection(int[] cardTags) {
+        for (int i = 0; i < cardTags.length; i++) {
+            int tag = cardTags[i];
             Select control= new Select();
             control.setAction(__ -> completeSelection());
-            control.setControls(data);
+
+            CardContainer card = CardContainer.cards.get(tag);
+            control.setControls(card, tag);
+            getChildren().add(card);
         }
-        getChildren().addAll(Stream.of(cards).map(c -> c.getGuiContainer()).toArray(CardContainer[]::new));
+        // getChildren().addAll(Stream.of(cardTags).map(tag -> CardContainer.cards.get(tag)).toArray(CardContainer[]::new));
         setVisible(true);
     }
 
@@ -61,10 +61,10 @@ public class SelectionPane extends HBox implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, Card[] data) {
+    public void update(EventType event, int[] cardTags) {
         switch (event) {
             case USER_SELECTING_CARD:
-                Platform.runLater(() -> newSelection(data));
+                Platform.runLater(() -> newSelection(cardTags));
                 try {
                     latch.await();
                 } catch (InterruptedException e) {
@@ -72,7 +72,7 @@ public class SelectionPane extends HBox implements EventListener {
                 break;
             // TODO case "enemyTurn cardSelection":
             default:
-                throwUnsupportedError(event, data);
+                throwUnsupportedError(event, cardTags);
         }
     }
 }

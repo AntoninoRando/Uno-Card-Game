@@ -11,13 +11,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import events.toView.EventType;
+
 /* --- Mine ------------------------------- */
 
 import model.gameLogic.EffectBuilder;
-
-import prefabs.Card;
-import prefabs.CardGroup;
-import prefabs.Suit;
+import model.gameLogic.Loop;
+import model.gameObjects.*;
 
 /**
  * Loads all cards of a set through the <code>load</code> method. Those cards
@@ -56,8 +56,11 @@ public abstract class CardsInfo {
             }
 
             allCards.put(setName + " " + (String) cardKey, card);
-            for (int i = 0; i < quantity; i++)
-                standardSet.add(card.getCopy());
+            for (int i = 0; i < quantity; i++) {
+                Card copy = card.getCopy();
+                standardSet.add(copy);
+                Loop.events.notify(EventType.NEW_CARD, copy.getData());
+            }
         }
         return new CardGroup(standardSet);
 

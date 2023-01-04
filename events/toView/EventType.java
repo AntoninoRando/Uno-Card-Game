@@ -27,6 +27,7 @@ public enum EventType {
     INFO_RESET(EventCategory.USER_INFO),
 
     PLAYER_WON(),
+    NEW_CARD(),
 
     TURN_START(EventCategory.TURN),
     TURN_END(EventCategory.TURN),

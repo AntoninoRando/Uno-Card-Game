@@ -10,11 +10,7 @@ import org.json.simple.parser.ParseException;
 /* --- Mine ------------------------------- */
 
 import model.data.CardsInfo;
-
-import prefabs.Card;
-import prefabs.CardGroup;
-import prefabs.Player;
-import prefabs.Suit;
+import model.gameObjects.*;
 
 /**
  * A class representing the game state. This class does not modify itself,

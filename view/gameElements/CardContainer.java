@@ -4,27 +4,32 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 /* --- Mine ------------------------------- */
 
-import prefabs.Card;
+import events.toView.EventListener;
+import events.toView.EventType;
 
 /**
  * The GUI representation of a UNO card: it has an image and it is zoombale, but
  * it does not store card informations.
  */
-public class CardContainer extends ImageView {
+public class CardContainer extends ImageView implements EventListener {
     /* --- Fields ----------------------------- */
 
     private static Path imgFolder = Paths.get("resources/AllUnoCards");
 
     private final ScaleTransition zoomIn = new ScaleTransition(Duration.millis(100.0), this);
     private final ScaleTransition zoomOut = new ScaleTransition(Duration.millis(100.0), this);
+
+    public static HashMap<Integer, CardContainer> cards = new HashMap<>();
 
     /* --- Constructors ----------------------- */
 
@@ -44,12 +49,13 @@ public class CardContainer extends ImageView {
      * @param card The card info; used to detect which image to load, not to stores
      *             information about the card.
      */
-    public CardContainer(Card card) {
+    public CardContainer(int tag, String representation) {
         getStyleClass().add("card");
-        loadImage(card);
+        loadImage(representation);
         setPreserveRatio(true);
         setFitWidth(150);
         makeZommable(0.5);
+        cards.put(tag, this);
     }
 
     /* --- Body ------------------------------- */
@@ -59,8 +65,8 @@ public class CardContainer extends ImageView {
      * 
      * @param card The card info; used to detect which image to load.
      */
-    private void loadImage(Card card) {
-        Path imgPath = imgFolder.resolve(card.toString().concat(".png"));
+    private void loadImage(String representation) {
+        Path imgPath = imgFolder.resolve(representation.concat(".png"));
         if (Files.notExists(imgPath))
             imgPath = imgFolder.resolve("MISSING.png");
 
@@ -76,8 +82,8 @@ public class CardContainer extends ImageView {
      * 
      * @param card The card info; used to detect which image to load.
      */
-    public void update(Card card) {
-        loadImage(card);
+    public void update(String representation) {
+        loadImage(representation);
     }
 
     /**
@@ -109,5 +115,16 @@ public class CardContainer extends ImageView {
                 zoomOut.play();
             }
         });
+    }
+
+    @Override
+    public void update(EventType event, HashMap<String, Object> data) {
+        switch (event) {
+            case NEW_CARD:
+                Platform.runLater(() -> new CardContainer((int) data.get("tag"), (String) data.get("representation")));
+                break;
+            default:
+                throwUnsupportedError(event, data);
+        }
     }
 }

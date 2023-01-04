@@ -4,8 +4,7 @@ import java.util.LinkedList;
 
 /* --- Mine ------------------------------- */
 
-import prefabs.Card;
-import prefabs.Player;
+import model.gameObjects.*;
 
 /**
  * An effect that can be cast in relation to a card. On efect cast, the game

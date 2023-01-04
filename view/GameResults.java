@@ -1,7 +1,5 @@
 package view;
 
-import events.toView.EventListener;
-import events.toView.EventType;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -14,7 +12,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import prefabs.Player;
+
+import java.util.HashMap;
+
+/* --- Mine ------------------------------- */
+
+import events.toView.EventListener;
+import events.toView.EventType;
 
 public class GameResults extends VBox implements EventListener {
     private static GameResults instance;
@@ -89,12 +93,12 @@ public class GameResults extends VBox implements EventListener {
     }
 
     @Override
-    public void update(EventType event, Player data) {
+    public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case PLAYER_WON:
                 Platform.runLater(() -> {
-                    icon.setFill(new ImagePattern(new Image(data.getIcon())));
-                    nick.setText(data.getNick());
+                    icon.setFill(new ImagePattern(new Image((String) data.get("icon"))));
+                    nick.setText((String) data.get("nickname"));
                 });
                 break;
             default:

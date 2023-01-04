@@ -1,5 +1,6 @@
 package view.gameElements;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,10 +12,8 @@ import javafx.stage.Stage;
 /* --- Mine ------------------------------- */
 
 import events.toView.EventListener;
+import events.toView.EventManager;
 import events.toView.EventType;
-
-import prefabs.Card;
-import prefabs.Player;
 
 /*
  * The section visible to the user where all their cards are gathered.
@@ -36,13 +35,14 @@ public class HandPane extends HBox implements EventListener {
 
     /* --- Fields ----------------------------- */
 
-    private Set<CardContainer> cardsStored;
+    private Set<Node> cardsStored;
+    public EventManager controlsObservingMe = new EventManager();
 
     /* --- Body ------------------------------- */
 
-    public void addCard(Card card) {
-        getChildren().add(card.getGuiContainer());
-        cardsStored.add(card.getGuiContainer());
+    public void addCard(Node card) {
+        getChildren().add(card);
+        cardsStored.add(card);
         adjustCards();
 
     }
@@ -137,7 +137,7 @@ public class HandPane extends HBox implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, Player[] data) {
+    public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_READY:
                 Platform.runLater(() -> initialize());
@@ -148,16 +148,16 @@ public class HandPane extends HBox implements EventListener {
     }
 
     @Override
-    public void update(EventType event, Card data) {
+    public void update(EventType event, int cardTag) {
         switch (event) {
             case USER_DREW:
-                Platform.runLater(() -> addCard(data));
+                Platform.runLater(() -> addCard(CardContainer.cards.get(cardTag)));
                 break;
             case USER_PLAYED_CARD:
-                Platform.runLater(() -> removeCard(data.getGuiContainer()));
+                Platform.runLater(() -> removeCard(CardContainer.cards.get(cardTag)));
                 break;
             default:
-                throwUnsupportedError(event, data);
+                throwUnsupportedError(event, cardTag);
         }
     }
 }

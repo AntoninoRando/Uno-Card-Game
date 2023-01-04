@@ -1,9 +1,8 @@
 package view.settings;
 
+import java.util.HashMap;
 import java.util.function.Consumer;
 
-import events.toView.EventListener;
-import events.toView.EventType;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,6 +17,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+
+/* --- Mine ------------------------------- */
+
+import events.toView.EventListener;
+import events.toView.EventType;
 
 /**
  * A GUI element displaying user info, which provides ways of changing user info.
@@ -174,11 +178,11 @@ public class ProfileMenu extends StackPane implements EventListener {
     }
 
     @Override
-    public void update(EventType event, Object[] data) {
+    public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case INFO_RESET:
-                nickField.setPromptText((String) data[0]);
-                avatar.setFill(new ImagePattern(new Image((String) data[1])));
+                nickField.setPromptText((String) data.get("nickname"));
+                avatar.setFill(new ImagePattern(new Image((String) data.get("icon"))));
                 xpBar.setProgress(0);
                 progressLabel.setText("0%");
                 levelLabel.setText("Level 1");

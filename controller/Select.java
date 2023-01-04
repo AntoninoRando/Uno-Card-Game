@@ -1,13 +1,13 @@
 package controller;
 
 import events.toModel.InputType;
-import prefabs.Card;
+import javafx.scene.Node;
 
 public class Select extends Control {
     @Override
-    public void setControls(Card card) {
-        card.getGuiContainer().setOnMouseClicked(__ -> {
-            (listener != null ? listener : globalListener).acceptInput(InputType.SELECTION, card);
+    public void setControls(Node card, Object inputToSend) {
+        card.setOnMouseClicked(__ -> {
+            (listener != null ? listener : globalListener).acceptInput(InputType.SELECTION, inputToSend);
             if (action != null)
                 fire();
         });

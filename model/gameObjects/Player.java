@@ -1,5 +1,6 @@
-package prefabs;
+package model.gameObjects;
 
+import java.util.HashMap;
 import java.util.TreeSet;
 
 import model.data.PlayerData;
@@ -38,7 +39,7 @@ public class Player {
         return isHuman;
     }
 
-    /** 
+    /**
      * @return The group of cards held by the player.
      */
     public CardGroup getHand() {
@@ -68,5 +69,13 @@ public class Player {
     public void consumeConditions() {
         conditions.forEach(effect -> effect.cast(this, null));
         conditions.clear();
+    }
+
+    public HashMap<String, Object> getData() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("nickname", getNick());
+        data.put("icon", getIcon());
+        data.put("hand-size", getHand().size());
+        return data;
     }
 }

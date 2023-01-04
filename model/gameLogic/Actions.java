@@ -1,17 +1,18 @@
 package model.gameLogic;
 
+import java.util.HashMap;
+
 /* --- Mine ------------------------------- */
 
 import events.toView.EventType;
-import prefabs.Card;
-import prefabs.Player;
+import model.gameObjects.*;
 
 /**
  * A class containing static methods that modify the current game state.
  */
 public abstract class Actions {
     /* --- Body ------------------------------- */
-    
+
     /**
      * Replace the current terrain card with the given card.
      * 
@@ -19,7 +20,8 @@ public abstract class Actions {
      */
     static void changeCurrentCard(Card card) {
         Game game = Game.getInstance();
-        game.getDiscardPile().add(game.getTerrainCard());
+        if (game.getTerrainCard() != null)
+            game.getDiscardPile().add(game.getTerrainCard());
         game.setTerrainCard(card);
     }
 
@@ -50,15 +52,17 @@ public abstract class Actions {
      * @param player The player that will receive the card.
      */
     static void dealFromDeck(Player player) {
+        // Add card
         Card card = takeFromDeck();
         player.getHand().add(card);
+        // Notify
         if (player.isHuman())
-            Loop.events.notify(EventType.USER_DREW, card);
+            Loop.events.notify(EventType.USER_DREW, card.getTag());
         else {
-            Loop.events.notify(EventType.PLAYER_DREW, player);
-            Loop.events.notify(EventType.PLAYER_DREW, card);
+            Loop.events.notify(EventType.PLAYER_DREW, player.getData());
         }
-        Loop.events.notify(EventType.PLAYER_HAND_INCREASE, player);
+
+        Loop.events.notify(EventType.PLAYER_HAND_INCREASE, player.getData());
     }
 
     /**
@@ -85,8 +89,14 @@ public abstract class Actions {
      * Jumps the current turn.
      */
     static void skipTurn() {
+        // Jump phase
         Loop.getInstance().jumpToPhase(Loop.getInstance().getPhasesQuantity() - 2);
-        Loop.events.notify(EventType.TURN_BLOCKED, Game.getInstance().getCurrentPlayer());
+        // Notify
+        Player player = Game.getInstance().getCurrentPlayer();
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("nickname", player.getNick());
+        data.put("icon", player.getIcon());
+        Loop.events.notify(EventType.TURN_BLOCKED, data);
     }
 
     /**
@@ -99,6 +109,5 @@ public abstract class Actions {
         source.setSuit(target.getSuit());
         source.setValue(target.getValue());
         source.setEffect(target.getEffect());
-        source.getGuiContainer().update(source);
     }
 }
