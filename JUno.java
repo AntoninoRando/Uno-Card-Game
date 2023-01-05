@@ -7,6 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Stream;
 
+import controller.ClickToDraw;
 import controller.DropAndPlay;
 import events.EventListener;
 import events.EventManager;
@@ -330,7 +331,9 @@ public class JUno extends Application implements EventListener {
     }
 
     private void subscribeInputListeners() {
-        DropAndPlay.setPlayzone(PlayzonePane.getInstance());
+        PlayzonePane playzone = PlayzonePane.getInstance();
+        DropAndPlay.setPlayzone(playzone);
+        new ClickToDraw(playzone);
         // DeclareUno.getInstance().setListener(il);
         // Draw.getInstance().setListener(il);
         // Select.setGlobalListener(il);

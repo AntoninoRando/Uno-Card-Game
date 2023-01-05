@@ -59,16 +59,11 @@ public class CUModel extends EventManager implements EventListener {
 
     @Override
     public void update(EventType inputType, HashMap<String, Object> choice) {
-        HashMap<String, Object> decodedData = choice;
         switch (inputType) {
             case TURN_DECISION:
                 if (!Game.getInstance().getCurrentPlayer().isHuman())
                     break;
-                
-                int cardTag = (int) choice.get("card-tag");
-                decodedData.clear();
-                decodedData.put("choice", cardTag);
-                notify(inputType, decodedData);
+                notify(inputType, choice);
                 break;
             default:
                 break;

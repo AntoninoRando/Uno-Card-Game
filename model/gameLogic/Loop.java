@@ -105,7 +105,6 @@ public class Loop implements EventListener {
         phases = new LinkedList<>();
         phases.add(() -> startTurn());
         phases.add(() -> makeChoice());
-        phases.add(() -> parseChoice());
         phases.add(() -> resolveChoice());
         phases.add(() -> endTurn());
         Game.reset();
@@ -129,7 +128,7 @@ public class Loop implements EventListener {
                     return;
                 }
 
-                currentPhase = (currentPhase == 3 && !validChoice) ? 1 : (++currentPhase) % phases.size();
+                currentPhase = (currentPhase == 2 && !validChoice) ? 1 : (++currentPhase) % phases.size();
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -232,53 +231,47 @@ public class Loop implements EventListener {
         // Enemy
         else
             Game.getInstance().getCurrentPlayer().getHand().stream().filter(Game.getInstance()::isPlayable).findAny()
-                    .ifPresentOrElse(c -> setChoice(c), () -> setChoice("draw"));
-        return true;
-    };
-
-    private boolean parseChoice() {
-        if (getChoice() instanceof Card)
-            setChoiceType("card");
-        else if (getChoice() instanceof String)
-            setChoiceType((String) choice);
-        else if (getChoice() instanceof Integer)
-            setChoiceType("tag");
+                    .ifPresentOrElse(c -> {
+                        setChoiceType("card-play");
+                        setChoice(c);
+                    }, () -> setChoiceType("deck-draw"));
         return true;
     };
 
     private boolean resolveChoice() {
         switch (getChoiceType()) {
-            case "card":
-            case "tag":
+            case "card-play-by-tag":
+            case "card-play":
                 Player player = Game.getInstance().getCurrentPlayer();
-                Card card = getChoiceType() == "tag"
+                Card card = getChoiceType().equals("card-play-by-tag")
                         ? player.getHand().stream().filter(c -> c.getTag() == (int) choice).findFirst().get()
                         : (Card) choice;
-                if (Game.getInstance().isPlayable(card)) {
-                    Actions.changeCurrentCard(card);
-                    player.getHand().remove(card);
-                    card.getEffect().ifPresent(effect -> effect.cast(player, card));
-                    events.notify(EventType.CARD_CHANGE, card.getTag());
-                    HashMap<String, Object> data = player.getData();
-                    data.put("card-tag", card.getTag());
-                    events.notify(EventType.PLAYER_PLAYED_CARD, data);
-                    events.notify(EventType.PLAYER_HAND_DECREASE, player.getData());
-
-                    if (!player.isHuman())
-                        return true;
-
-                    events.notify(EventType.USER_PLAYED_CARD, card.getTag());
-
-                    if (player.getHand().size() == 1 && !unoDeclared)
-                        Actions.dealFromDeck(Game.getInstance().getCurrentPlayer(), 2);
-
-                    return true;
-                } else {
+                
+                if (!Game.getInstance().isPlayable(card)) {
                     events.notify(EventType.INVALID_CARD, card.getTag());
                     return false;
                 }
-            case "draw":
-                Actions.dealFromDeck(Game.getInstance().getCurrentPlayer());
+
+                Actions.changeCurrentCard(card);
+                player.getHand().remove(card);
+                card.getEffect().ifPresent(effect -> effect.cast(player, card));
+                events.notify(EventType.CARD_CHANGE, card.getTag());
+                HashMap<String, Object> data = player.getData();
+                data.put("card-tag", card.getTag());
+                events.notify(EventType.PLAYER_PLAYED_CARD, data);
+                events.notify(EventType.PLAYER_HAND_DECREASE, player.getData());
+
+                if (!player.isHuman())
+                    return true;
+
+                events.notify(EventType.USER_PLAYED_CARD, card.getTag());
+
+                if (player.getHand().size() == 1 && !unoDeclared)
+                    Actions.dealFromDeck(Game.getInstance().getCurrentPlayer(), 2);
+
+                return true;
+            case "deck-draw":
+                Actions.dealFromDeck(Game.getInstance().getCurrentPlayer(), (int) getChoice());
                 return true;
             case "unoDeclared":
                 startUnoTimer();
@@ -332,7 +325,8 @@ public class Loop implements EventListener {
         switch (inputType) {
             case TURN_DECISION:
                 synchronized (this) {
-                    this.choice = choice.get("choice");
+                    setChoiceType((String) choice.get("choice-type"));
+                    setChoice(choice.get("choice"));
                     notify();
                 }
                 break;
