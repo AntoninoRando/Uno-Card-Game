@@ -6,13 +6,12 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/* --- Mine ------------------------------- */
+
+import events.EventListener;
 import events.EventManager;
 import events.EventType;
 
-/* --- Mine ------------------------------- */
-
-import events.toModel.InputListener;
-import events.toModel.InputType;
 import model.data.Info;
 import model.data.PlayerData;
 
@@ -21,7 +20,7 @@ import model.gameObjects.*;
 /**
  * A class that will modify the game state.
  */
-public class Loop implements InputListener {
+public class Loop implements EventListener {
     /* --- Singleton -------------------------- */
 
     private static Loop instance;
@@ -329,16 +328,11 @@ public class Loop implements InputListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void acceptInput(InputType inputType, Object choice) {
+    public void update(EventType inputType, HashMap<String, Object> choice) {
         switch (inputType) {
             case TURN_DECISION:
                 synchronized (this) {
-                    // When the user makes a choice in another turn
-                    if (!Game.getInstance().getCurrentPlayer().isHuman()) {
-                        events.notify(EventType.INVALID_CARD, 0); // TODO non va bene che passo 0
-                        return;
-                    }
-                    this.choice = choice;
+                    this.choice = choice.get("choice");
                     notify();
                 }
                 break;

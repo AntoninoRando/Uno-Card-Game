@@ -1,13 +1,14 @@
-package view;
+package model;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import controller.CUController;
 import events.EventListener;
 import events.EventManager;
 import events.EventType;
-import view.gameElements.Card;
-import view.gameElements.CardChronology;
+import model.gameLogic.Game;
+import model.gameLogic.Loop;
 
 /**
  * <b>C</b>ontrol <b>U</b>nit <b>View</b>. This class implements the
@@ -31,57 +32,46 @@ import view.gameElements.CardChronology;
  * (e.g., a <code>Card</code>) will be this class, upon a notification from the
  * <code>CUModel</code> (<em>MVC</em> and <em>observer-observable</em>).
  */
-public class CUView extends EventManager implements EventListener {
+public class CUModel extends EventManager implements EventListener {
     /* --- Singleton -------------------------- */
 
-    private static CUView instance;
+    private static CUModel instance;
 
-    public static CUView getInstance() {
+    public static CUModel getInstance() {
         if (instance == null)
-            instance = new CUView();
+            instance = new CUModel();
         return instance;
     }
 
-    private CUView() {
+    private CUModel() {
         subscribeAll();
     }
-    /* --- Field ------------------------------ */
 
-    private static CUController receiverCU = CUController.getInstance();
+    /* --- Fields ----------------------------- */
+
+    private static CUController otherCU = CUController.getInstance();
 
     /* --- Body ------------------------------- */
 
     private void subscribeAll() {
-        subscribe(CardChronology.getInstance(), EventType.PLAYER_PLAYED_CARD);
+        subscribe(Loop.getInstance(), EventType.TURN_DECISION);
     }
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
-        HashMap<String, Object> decodedData = data;
-        switch (event) {
-            case PLAYER_PLAYED_CARD:
-                Card card = Card.cards.get((int) data.get("card-tag"));
-                decodedData.remove("card-tag");
-                decodedData.put("card", card);
-                this.notify(event, decodedData);
+    public void update(EventType inputType, HashMap<String, Object> choice) {
+        HashMap<String, Object> decodedData = choice;
+        switch (inputType) {
+            case TURN_DECISION:
+                if (!Game.getInstance().getCurrentPlayer().isHuman())
+                    break;
+                
+                int cardTag = (int) choice.get("card-tag");
+                decodedData.clear();
+                decodedData.put("choice", cardTag);
+                notify(inputType, decodedData);
                 break;
             default:
-                // this.notify(event, decodedData);
                 break;
         }
     }
-
-    public void communicate(EventType event, HashMap<String, Object> data) {
-        receiverCU.update(event, data);
-    }
-
-    /*
-     * TODO questa classe rischia di diventare enorme. Inoltre, in realtà ogni
-     * classe del gameElements funziona a sé stante, bisogna solo togliere
-     * l'implement di EventListener. Potrei pittosto usare il decorator per, as
-     * esempio, creare la classe Cronologia, generale, e poi usare il decorator
-     * CronologiaCarte. Anche se tanto vale usare un generic, ma in questo caso non
-     * avrebbe senso il metodo update che gioca intorno all'evento
-     * PLAYER_PLAYED_CARD.
-     */
 }

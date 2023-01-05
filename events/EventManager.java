@@ -10,7 +10,9 @@ import java.util.Map;
  * the event notified. This enables to update multiple classes at once.
  */
 public class EventManager {
-    private Map<EventType, List<EventListener>> listeners;
+    /* --- Fields ----------------------------- */
+
+    protected Map<EventType, List<EventListener>> listeners;
 
     public EventManager() {
         listeners = new HashMap<>();

@@ -7,10 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Stream;
 
-import controller.DragAndDrop;
-import controller.DeclareUno;
-import controller.Draw;
-import controller.Select;
+import controller.DropAndPlay;
 import events.EventListener;
 import events.EventManager;
 import events.EventType;
@@ -25,7 +22,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -146,12 +142,12 @@ public class JUno extends Application implements EventListener {
 
         root.getChildren().addAll(gameElements, PlayzonePane.getInstance(), SelectionPane.getInstance());
 
-        PlayzonePane.getInstance().setOnMouseClicked(e -> {
-            if (e.getButton().equals(MouseButton.SECONDARY))
-                DeclareUno.getInstance().fire();
-            else
-                Draw.getInstance().fire();
-        });
+        // PlayzonePane.getInstance().setOnMouseClicked(e -> {
+        //     if (e.getButton().equals(MouseButton.SECONDARY))
+        //         DeclareUno.getInstance().fire();
+        //     else
+        //         Draw.getInstance().fire();
+        // });
         PlayzonePane.getInstance().setOnScroll(e -> {
             if (scrollTimer != null)
                 scrollTimer.cancel();
@@ -317,8 +313,7 @@ public class JUno extends Application implements EventListener {
     private void subscribeEventListeners() {
         EventManager em = Loop.events;
         em.subscribe(this, EventType.GAME_READY, EventType.GAME_START, EventType.CARD_CHANGE, EventType.UNO_DECLARED,
-                EventType.TURN_BLOCKED, EventType.USER_DREW,
-                EventType.TURN_END, EventType.INVALID_CARD, EventType.TURN_START, EventType.PLAYER_WON);
+                EventType.TURN_BLOCKED, EventType.TURN_END, EventType.INVALID_CARD, EventType.TURN_START, EventType.PLAYER_WON);
         em.subscribe(GameResults.getInstance(), EventType.PLAYER_WON);
         Info.events.subscribe(GameResults.getInstance(), EventType.XP_EARNED, EventType.NEW_LEVEL_PROGRESS);
         em.subscribe(SettingsMenu.getInstance(), EventType.GAME_START, EventType.RESET);
@@ -335,12 +330,10 @@ public class JUno extends Application implements EventListener {
     }
 
     private void subscribeInputListeners() {
-        Loop il = Loop.getInstance();
-        DragAndDrop.getInstance().setDropTarget(PlayzonePane.getInstance());
-        DragAndDrop.getInstance().setListener(il);
-        DeclareUno.getInstance().setListener(il);
-        Draw.getInstance().setListener(il);
-        Select.setGlobalListener(il);
+        DropAndPlay.setPlayzone(PlayzonePane.getInstance());
+        // DeclareUno.getInstance().setListener(il);
+        // Draw.getInstance().setListener(il);
+        // Select.setGlobalListener(il);
     }
 
     @Override
@@ -438,9 +431,6 @@ public class JUno extends Application implements EventListener {
                 break;
             case INVALID_CARD:
                 Platform.runLater(() -> ResetTranslate.resetTranslate(Card.cards.get(cardTag)));
-                break;
-            case USER_DREW:
-                DragAndDrop.getInstance().setControls(Card.cards.get(cardTag), (Integer) cardTag);
                 break;
             default:
                 throwUnsupportedError(event, cardTag);

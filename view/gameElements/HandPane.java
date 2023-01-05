@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import view.CUView;
 import events.EventListener;
 import events.EventManager;
 import events.EventType;
@@ -17,7 +18,7 @@ import events.EventType;
  */
 public class HandPane extends HBox implements EventListener {
     /* --- Singleton -------------------------- */
-    
+
     private static HandPane instance;
 
     public static HandPane getInstance() {
@@ -148,7 +149,13 @@ public class HandPane extends HBox implements EventListener {
     public void update(EventType event, int cardTag) {
         switch (event) {
             case USER_DREW:
-                Platform.runLater(() -> addCard(Card.cards.get(cardTag)));
+                Platform.runLater(() -> {
+                    addCard(Card.cards.get(cardTag));
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put("card-node", Card.cards.get(cardTag));
+                    data.put("card-tag", cardTag);
+                    CUView.getInstance().communicate(event, data);
+                });
                 break;
             case USER_PLAYED_CARD:
                 Platform.runLater(() -> removeCard(Card.cards.get(cardTag)));
