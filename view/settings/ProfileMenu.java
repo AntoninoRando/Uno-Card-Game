@@ -17,11 +17,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-
-/* --- Mine ------------------------------- */
-
-import events.toView.EventListener;
-import events.toView.EventType;
+import events.EventListener;
+import events.EventType;
 
 /**
  * A GUI element displaying user info, which provides ways of changing user info.

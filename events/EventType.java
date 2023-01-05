@@ -1,4 +1,4 @@
-package events.toView;
+package events;
 
 /**
  * All notifiable events.

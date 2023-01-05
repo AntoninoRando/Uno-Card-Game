@@ -1,4 +1,4 @@
-package events.toView;
+package events;
 
 /**
  * Categories of events.

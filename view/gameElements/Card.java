@@ -11,17 +11,14 @@ import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-
-/* --- Mine ------------------------------- */
-
-import events.toView.EventListener;
-import events.toView.EventType;
+import events.EventListener;
+import events.EventType;
 
 /**
  * The GUI representation of a UNO card: it has an image and it is zoombale, but
  * it does not store card informations.
  */
-public class CardContainer extends ImageView implements EventListener {
+public class Card extends ImageView implements EventListener {
     /* --- Fields ----------------------------- */
 
     private static Path imgFolder = Paths.get("resources/AllUnoCards");
@@ -29,14 +26,14 @@ public class CardContainer extends ImageView implements EventListener {
     private final ScaleTransition zoomIn = new ScaleTransition(Duration.millis(100.0), this);
     private final ScaleTransition zoomOut = new ScaleTransition(Duration.millis(100.0), this);
 
-    public static HashMap<Integer, CardContainer> cards = new HashMap<>();
+    public static HashMap<Integer, Card> cards = new HashMap<>();
 
     /* --- Constructors ----------------------- */
 
     /**
      * Create a blank card with no image.
      */
-    public CardContainer() {
+    public Card() {
         getStyleClass().add("card");
         setPreserveRatio(true);
         setFitWidth(150);
@@ -49,7 +46,7 @@ public class CardContainer extends ImageView implements EventListener {
      * @param card The card info; used to detect which image to load, not to stores
      *             information about the card.
      */
-    public CardContainer(int tag, String representation) {
+    public Card(int tag, String representation) {
         getStyleClass().add("card");
         loadImage(representation);
         setPreserveRatio(true);
@@ -91,7 +88,7 @@ public class CardContainer extends ImageView implements EventListener {
      * 
      * @param card The card GUI object to copy.
      */
-    public void update(CardContainer card) {
+    public void update(Card card) {
         // TODO finire di copiare anche gli altri campi
         setImage(card.getImage());
     }
@@ -121,7 +118,7 @@ public class CardContainer extends ImageView implements EventListener {
     public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case NEW_CARD:
-                Platform.runLater(() -> new CardContainer((int) data.get("tag"), (String) data.get("representation")));
+                Platform.runLater(() -> new Card((int) data.get("tag"), (String) data.get("representation")));
                 break;
             default:
                 throwUnsupportedError(event, data);

@@ -11,9 +11,9 @@ import controller.DragAndDrop;
 import controller.DeclareUno;
 import controller.Draw;
 import controller.Select;
-import events.toView.EventListener;
-import events.toView.EventManager;
-import events.toView.EventType;
+import events.EventListener;
+import events.EventManager;
+import events.EventType;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -38,15 +38,15 @@ import model.gameObjects.Player;
 import model.GameThread;
 import model.data.Info;
 import model.data.PlayerData;
-
+import view.CUView;
 import view.GameResults;
 import view.HomeMenu;
 import view.animations.Animation;
 import view.animations.Animations;
 import view.animations.ResetTranslate;
 import view.gameElements.PlayerPane;
-import view.gameElements.CardContainer;
-import view.gameElements.Chronology;
+import view.gameElements.Card;
+import view.gameElements.CardChronology;
 import view.gameElements.HandPane;
 import view.gameElements.PlayerLabel;
 import view.gameElements.PlayzonePane;
@@ -133,8 +133,8 @@ public class JUno extends Application implements EventListener {
         BorderPane gameElements = new BorderPane();
         gameElements.setLeft(PlayerPane.getInstance());
 
-        StackPane center = new StackPane(TerrainPane.getInstance(), Chronology.getInstance());
-        Chronology.getInstance().setVisible(false);
+        StackPane center = new StackPane(TerrainPane.getInstance(), CardChronology.getInstance());
+        CardChronology.getInstance().setVisible(false);
         gameElements.setCenter(center);
 
         gameElements.setBottom(HandPane.getInstance()); // Added after the terrain card, so that the hand's cards are
@@ -156,15 +156,15 @@ public class JUno extends Application implements EventListener {
             if (scrollTimer != null)
                 scrollTimer.cancel();
 
-            Chronology.getInstance().setVisible(true);
-            Chronology.getInstance().scroll(e.getDeltaY());
+            CardChronology.getInstance().setVisible(true);
+            CardChronology.getInstance().scroll(e.getDeltaY());
 
             scrollTimer = new Timer();
             scrollTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    Chronology.getInstance().setVisible(false);
-                    Chronology.getInstance().bringToTheEnd();
+                    CardChronology.getInstance().setVisible(false);
+                    CardChronology.getInstance().bringToTheEnd();
                 }
             }, 2000L);
         });
@@ -313,6 +313,7 @@ public class JUno extends Application implements EventListener {
 
     // TODO le animazioni le gioca toppo on the top: stanno sopra al menù di pausa
 
+    // Modificare e fare che legge un Json
     private void subscribeEventListeners() {
         EventManager em = Loop.events;
         em.subscribe(this, EventType.GAME_READY, EventType.GAME_START, EventType.CARD_CHANGE, EventType.UNO_DECLARED,
@@ -321,14 +322,16 @@ public class JUno extends Application implements EventListener {
         em.subscribe(GameResults.getInstance(), EventType.PLAYER_WON);
         Info.events.subscribe(GameResults.getInstance(), EventType.XP_EARNED, EventType.NEW_LEVEL_PROGRESS);
         em.subscribe(SettingsMenu.getInstance(), EventType.GAME_START, EventType.RESET);
-        em.subscribe(Chronology.getInstance(), EventType.CARD_CHANGE, EventType.TURN_BLOCKED, EventType.PLAYER_DREW,
-                EventType.PLAYER_PLAYED_CARD, EventType.RESET);
+
+        em.subscribe(CardChronology.getInstance(), EventType.RESET);
+        em.subscribe(CUView.getInstance(), EventType.PLAYER_PLAYED_CARD);
+
         em.subscribe(HandPane.getInstance(), EventType.GAME_READY, EventType.USER_PLAYED_CARD, EventType.USER_DREW);
         em.subscribe(PlayerPane.getInstance(), EventType.GAME_READY, EventType.PLAYER_HAND_DECREASE,
                 EventType.PLAYER_HAND_INCREASE);
         em.subscribe(SelectionPane.getInstance(), EventType.USER_SELECTING_CARD);
         em.subscribe(TerrainPane.getInstance(), EventType.GAME_READY, EventType.CARD_CHANGE);
-        em.subscribe(new CardContainer(), EventType.NEW_CARD);
+        em.subscribe(new Card(), EventType.NEW_CARD);
     }
 
     private void subscribeInputListeners() {
@@ -338,10 +341,6 @@ public class JUno extends Application implements EventListener {
         DeclareUno.getInstance().setListener(il);
         Draw.getInstance().setListener(il);
         Select.setGlobalListener(il);
-    }
-
-    private void subscribeViewListeners() {
-        // TODO
     }
 
     @Override
@@ -438,10 +437,10 @@ public class JUno extends Application implements EventListener {
                 playingCardAnimation.resetLatch();
                 break;
             case INVALID_CARD:
-                Platform.runLater(() -> ResetTranslate.resetTranslate(CardContainer.cards.get(cardTag)));
+                Platform.runLater(() -> ResetTranslate.resetTranslate(Card.cards.get(cardTag)));
                 break;
             case USER_DREW:
-                DragAndDrop.getInstance().setControls(CardContainer.cards.get(cardTag), (Integer) cardTag);
+                DragAndDrop.getInstance().setControls(Card.cards.get(cardTag), (Integer) cardTag);
                 break;
             default:
                 throwUnsupportedError(event, cardTag);

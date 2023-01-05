@@ -15,10 +15,8 @@ import javafx.scene.shape.Circle;
 
 import java.util.HashMap;
 
-/* --- Mine ------------------------------- */
-
-import events.toView.EventListener;
-import events.toView.EventType;
+import events.EventListener;
+import events.EventType;
 
 public class GameResults extends VBox implements EventListener {
     private static GameResults instance;

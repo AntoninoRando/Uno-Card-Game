@@ -1,4 +1,4 @@
-package events.toView;
+package events;
 
 import java.util.ArrayList;
 import java.util.HashMap;

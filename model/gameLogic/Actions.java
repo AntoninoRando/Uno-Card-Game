@@ -2,9 +2,7 @@ package model.gameLogic;
 
 import java.util.HashMap;
 
-/* --- Mine ------------------------------- */
-
-import events.toView.EventType;
+import events.EventType;
 import model.gameObjects.*;
 
 /**

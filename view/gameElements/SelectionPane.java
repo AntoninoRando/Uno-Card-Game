@@ -9,9 +9,8 @@ import javafx.scene.layout.HBox;
 /* --- Mine ------------------------------- */
 
 import controller.Select;
-
-import events.toView.EventListener;
-import events.toView.EventType;
+import events.EventListener;
+import events.EventType;
 
 public class SelectionPane extends HBox implements EventListener {
     /* --- Singleton -------------------------- */
@@ -43,7 +42,7 @@ public class SelectionPane extends HBox implements EventListener {
             Select control= new Select();
             control.setAction(__ -> completeSelection());
 
-            CardContainer card = CardContainer.cards.get(tag);
+            Card card = Card.cards.get(tag);
             control.setControls(card, tag);
             getChildren().add(card);
         }

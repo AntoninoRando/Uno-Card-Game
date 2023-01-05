@@ -2,10 +2,7 @@ package model.gameLogic;
 
 import java.util.stream.Stream;
 
-/* --- Mine ------------------------------- */
-
-import events.toView.EventType;
-
+import events.EventType;
 import model.data.CardsInfo;
 import model.gameObjects.*;
 

@@ -6,13 +6,13 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import events.EventManager;
+import events.EventType;
+
 /* --- Mine ------------------------------- */
 
 import events.toModel.InputListener;
 import events.toModel.InputType;
-import events.toView.EventManager;
-import events.toView.EventType;
-
 import model.data.Info;
 import model.data.PlayerData;
 
@@ -260,7 +260,9 @@ public class Loop implements InputListener {
                     player.getHand().remove(card);
                     card.getEffect().ifPresent(effect -> effect.cast(player, card));
                     events.notify(EventType.CARD_CHANGE, card.getTag());
-                    events.notify(EventType.PLAYER_PLAYED_CARD, player.getData());
+                    HashMap<String, Object> data = player.getData();
+                    data.put("card-tag", card.getTag());
+                    events.notify(EventType.PLAYER_PLAYED_CARD, data);
                     events.notify(EventType.PLAYER_HAND_DECREASE, player.getData());
 
                     if (!player.isHuman())

@@ -1,84 +1,46 @@
 package view.gameElements;
 
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-
-import java.util.HashMap;
-
-/* --- Mine ------------------------------- */
-
-import events.toView.EventListener;
-import events.toView.EventType;
 
 /*
  * A pane that gather all actions performed during the game, in order from the first to the most recent.
  */
-public class Chronology extends StackPane implements EventListener {
-    /* --- Singleton -------------------------- */
+public class Chronology extends StackPane {
+    /* --- Fields ----------------------------- */
 
-    private static Chronology instance;
+    protected HBox content;
+    protected Node lastRepresentation;
+    protected String lastPerformerIcon;
+    protected String lastPerformerNick;
 
-    public static Chronology getInstance() {
-        if (instance == null)
-            instance = new Chronology();
-        return instance;
-    }
+    /* --- Constructor ------------------------ */
 
-    private Chronology() {
-        ScrollPane sp = new ScrollPane(content);
-        getChildren().add(sp);
+    protected Chronology() {
+        this.content = new HBox();
+        ScrollPane scrollPane = new ScrollPane(content);
+        getChildren().add(scrollPane);
         addStyle();
     }
 
-    /* --- Fields ----------------------------- */
-
-    private int lastMem; // The VALUE of the most recent card played.
-    private GridPane content = new GridPane();
-
     /* --- Body ------------------------------- */
 
-    /**
-     * Add the card just played to the memory.
-     * 
-     * @param card The image of the card played, that is the GUI card.
-     */
-    private void addCard(Node memory) {
-        GridPane.setRowIndex(memory, 0);
-        GridPane.setColumnIndex(memory, lastMem);
-        content.getChildren().add(memory);
-        lastMem++;
+    public void addMemoryInfo(Node representation, String performerIcon, String performerNick) {
+        lastRepresentation = representation;
+        lastPerformerIcon = performerIcon;
+        lastPerformerNick = performerNick;
     }
 
-    /**
-     * Add the icon of the player who performed the action.
-     * 
-     * @param icon The image path to the icon.
-     */
-    private void addIcon(String icon) {
-        Circle avatar = new Circle(30, new ImagePattern(new Image(icon)));
-        GridPane.setRowIndex(avatar, 1);
-        GridPane.setColumnIndex(avatar, lastMem - 1);
-        content.getChildren().add(avatar);
-    }
-
-    /**
-     * Add the nickname of the player who performed the action.
-     * 
-     * @param nick The nickname of the player.
-     */
-    private void addNick(String nick) {
-        Label nickL = new Label(nick);
-        GridPane.setRowIndex(nickL, 3);
-        GridPane.setColumnIndex(nickL, lastMem - 1);
-        content.getChildren().add(nickL);
+    public void update() {
+        content.getChildren().add(new Memory(lastRepresentation, lastPerformerIcon, lastPerformerNick));
     }
 
     /**
@@ -92,9 +54,7 @@ public class Chronology extends StackPane implements EventListener {
         sp.setFitToWidth(true);
         sp.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
         sp.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-
         content.setAlignment(Pos.CENTER_LEFT);
-
         setId("chronology");
     }
 
@@ -110,68 +70,41 @@ public class Chronology extends StackPane implements EventListener {
     }
 
     /**
-     * Return the scroll to the origin, that is the first action of the game.
-     * TODO dovrebbe riportarlo alla fine, non all'origine.
+     * Return the scroll to the rightmost end.
      */
     public void bringToTheEnd() {
         ScrollPane sp = (ScrollPane) getChildren().get(0);
         sp.setHvalue(sp.getHmax());
     }
+}
 
-    /* --- Observer --------------------------- */
+class Memory extends VBox {
+    Node representation;
+    Circle performerAvatar;
+    Label performerLabel;
 
-    @Override
-    public void update(EventType event, int data) {
-        switch (event) {
-            case CARD_CHANGE:
-                Platform.runLater(() -> addCard(CardContainer.cards.get(data)));
-                break;
-            default:
-                // TODO risolvere throwUnsupportedError(event, data);
-                break;
-        }
+    Memory(Node representation, String performerIcon, String performerNickname) {
+        this.representation = representation;
+        this.performerAvatar = avatarOf(performerIcon);
+        this.performerLabel = labelOf(performerNickname);
+        getChildren().addAll(representation, performerAvatar, performerLabel);
     }
 
-    @Override
-    public void update(EventType event, HashMap<String, Object> data) {
-        switch (event) {
-            case PLAYER_PLAYED_CARD:
-                Platform.runLater(() -> {
-                    addIcon((String) data.get("icon"));
-                    addNick((String) data.get("nickname"));
-                });
-                break;
-            case TURN_BLOCKED:
-                Platform.runLater(() -> {
-                    // addCard(new Card(Suit.WILD, -2).getGuiContainer());
-                    addIcon((String) data.get("icon"));
-                    addNick((String) data.get("nickname"));
-                });
-                break;
-            case PLAYER_DREW:
-                Platform.runLater(() -> {
-                    // addCard(new Card(Suit.WILD, -1).getGuiContainer());
-                    addIcon((String) data.get("icon"));
-                    addNick((String) data.get("nickname"));
-                });
-                break;
-            default:
-                throwUnsupportedError(event, data);
-        }
+    /**
+     * Add the icon of the player who performed the action.
+     * 
+     * @param icon The image path to the icon.
+     */
+    private Circle avatarOf(String icon) {
+        return new Circle(30, new ImagePattern(new Image(icon)));
     }
 
-    @Override
-    public void update(EventType event) {
-        switch (event) {
-            case RESET:
-                Platform.runLater(() -> {
-                    content = new GridPane();
-                    ScrollPane sp = (ScrollPane) getChildren().get(0);
-                    sp.setContent(content);
-                });
-                break;
-            default:
-                throwUnsupportedError(event, null);
-        }
+    /**
+     * Add the nickname of the player who performed the action.
+     * 
+     * @param nick The nickname of the player.
+     */
+    private Label labelOf(String nick) {
+        return new Label(nick);
     }
 }

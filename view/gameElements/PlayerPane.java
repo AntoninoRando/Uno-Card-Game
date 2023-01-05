@@ -6,11 +6,8 @@ import java.util.Map;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-
-/* --- Mine ------------------------------- */
-
-import events.toView.EventListener;
-import events.toView.EventType;
+import events.EventListener;
+import events.EventType;
 
 public class PlayerPane extends VBox implements EventListener {
     /* --- Singleton -------------------------- */

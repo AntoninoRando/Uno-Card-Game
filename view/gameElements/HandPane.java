@@ -8,12 +8,9 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
-/* --- Mine ------------------------------- */
-
-import events.toView.EventListener;
-import events.toView.EventManager;
-import events.toView.EventType;
+import events.EventListener;
+import events.EventManager;
+import events.EventType;
 
 /*
  * The section visible to the user where all their cards are gathered.
@@ -47,7 +44,7 @@ public class HandPane extends HBox implements EventListener {
 
     }
 
-    public void removeCard(CardContainer card) {
+    public void removeCard(Card card) {
         getChildren().remove(card);
         cardsStored.remove(card);
         adjustCards();
@@ -151,10 +148,10 @@ public class HandPane extends HBox implements EventListener {
     public void update(EventType event, int cardTag) {
         switch (event) {
             case USER_DREW:
-                Platform.runLater(() -> addCard(CardContainer.cards.get(cardTag)));
+                Platform.runLater(() -> addCard(Card.cards.get(cardTag)));
                 break;
             case USER_PLAYED_CARD:
-                Platform.runLater(() -> removeCard(CardContainer.cards.get(cardTag)));
+                Platform.runLater(() -> removeCard(Card.cards.get(cardTag)));
                 break;
             default:
                 throwUnsupportedError(event, cardTag);

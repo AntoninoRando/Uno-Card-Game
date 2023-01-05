@@ -5,10 +5,8 @@ import javafx.scene.layout.StackPane;
 
 import java.util.HashMap;
 
-/* --- Mine ------------------------------- */
-
-import events.toView.EventListener;
-import events.toView.EventType;
+import events.EventListener;
+import events.EventType;
 
 
 /**
@@ -33,17 +31,17 @@ public class TerrainPane extends StackPane implements EventListener {
     
     /* --- Fields ----------------------------- */
 
-    private CardContainer terrainCard;
+    private Card terrainCard;
 
     /* --- Body ------------------------------- */
 
     private void initialize() {
-        terrainCard = new CardContainer();
+        terrainCard = new Card();
         getChildren().setAll(terrainCard);
     }
 
     private void updateTerrainCard(int cardTag) {
-        terrainCard.update(CardContainer.cards.get(cardTag));
+        terrainCard.update(Card.cards.get(cardTag));
     }
 
     /* --- Observer --------------------------- */
