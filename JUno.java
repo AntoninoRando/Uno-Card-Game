@@ -2,10 +2,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.stream.Stream;
 
 import controller.Controls;
 import controller.DropAndPlay;
@@ -29,12 +27,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
-import model.gameLogic.Loop;
-import model.gameObjects.Player;
+import model.gameLogic.Game;
 import model.GameThread;
 import model.data.Info;
 import model.data.PlayerData;
+import model.gameEntities.Enemies;
+import model.gameEntities.Player;
 import view.CUView;
 import view.GameResults;
 import view.HomeMenu;
@@ -113,12 +111,12 @@ public class JUno extends Application implements EventListener {
                 EventType.USER_PLAYED_GAME, EventType.USER_WON, EventType.LEVELED_UP, EventType.INFO_RESET);
 
         // Setting the first values
-        pm.update(EventType.USER_NEW_NICK, PlayerData.getUserNick());
-        pm.update(EventType.USER_NEW_ICON, PlayerData.getUserIcon());
-        pm.update(EventType.LEVELED_UP, PlayerData.getLevel());
-        pm.update(EventType.USER_PLAYED_GAME, PlayerData.getGames());
-        pm.update(EventType.USER_WON, (int) PlayerData.getWins());
-        pm.update(EventType.NEW_LEVEL_PROGRESS, Info.userLevelProgress());
+        // pm.update(EventType.USER_NEW_NICK, PlayerData.getUserNick());
+        // pm.update(EventType.USER_NEW_ICON, PlayerData.getUserIcon());
+        // pm.update(EventType.LEVELED_UP, PlayerData.getLevel());
+        // pm.update(EventType.USER_PLAYED_GAME, PlayerData.getGames());
+        // pm.update(EventType.USER_WON, (int) PlayerData.getWins());
+        // pm.update(EventType.NEW_LEVEL_PROGRESS, Info.userLevelProgress());
     }
 
     private Timer scrollTimer;
@@ -282,12 +280,15 @@ public class JUno extends Application implements EventListener {
     // Start and end a new game
 
     private void newGame() {
-        Player[] players = Stream.of("userInfo", "BotTopPrincessess", "BotLuca", "BotGiorgio")
-                .map(s -> new Player("resources\\Data\\" + s + ".txt"))
-                .sorted((a, b) -> new Random().nextBoolean() ? 1 : -1)
-                .toArray(Player[]::new);
+        // Player[] players = Stream.of("userInfo", "BotTopPrincessess", "BotLuca",
+        // "BotGiorgio")
+        // .map(s -> new Player("resources\\Data\\" + s + ".txt"))
+        // .sorted((a, b) -> new Random().nextBoolean() ? 1 : -1)
+        // .toArray(Player[]::new);
 
-        Loop.getInstance().setupGame(players);
+        Player[] players = new Player[] { Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE,
+                new Player("resources\\icons\\night.png", "User") };
+        Game.getInstance().setupGame(players);
 
         Rectangle2D screenB = Screen.getPrimary().getBounds();
         a1.setDimensions(screenB.getWidth(), screenB.getHeight());
@@ -296,13 +297,13 @@ public class JUno extends Application implements EventListener {
     }
 
     private void endGame() {
-        GameThread.stop(false);
+        // GameThread.stop(false);
         Sounds.IN_GAME_SOUNDTRACK.stop();
         changeRoot(endGameRoot);
     }
 
     private void quitGame() {
-        GameThread.stop(true);
+        // GameThread.stop(true);
         Sounds.IN_GAME_SOUNDTRACK.stop();
     }
 
@@ -312,22 +313,10 @@ public class JUno extends Application implements EventListener {
 
     // Modificare e fare che legge un Json
     private void subscribeEventListeners() {
-        EventManager em = Loop.events;
+        EventManager em = CUView.getInstance();
         em.subscribe(this, EventType.GAME_READY, EventType.GAME_START, EventType.CARD_CHANGE, EventType.UNO_DECLARED,
                 EventType.TURN_BLOCKED, EventType.TURN_END, EventType.INVALID_CARD, EventType.TURN_START,
                 EventType.PLAYER_WON);
-        em.subscribe(GameResults.getInstance(), EventType.PLAYER_WON);
-        Info.events.subscribe(GameResults.getInstance(), EventType.XP_EARNED, EventType.NEW_LEVEL_PROGRESS);
-        em.subscribe(SettingsMenu.getInstance(), EventType.GAME_START, EventType.RESET);
-
-        em.subscribe(CardChronology.getInstance(), EventType.RESET);
-        em.subscribe(CUView.getInstance(), EventType.PLAYER_PLAYED_CARD);
-
-        em.subscribe(HandPane.getInstance(), EventType.GAME_READY, EventType.USER_PLAYED_CARD, EventType.USER_DREW);
-        em.subscribe(PlayerPane.getInstance(), EventType.GAME_READY, EventType.PLAYER_HAND_DECREASE,
-                EventType.PLAYER_HAND_INCREASE);
-        em.subscribe(TerrainPane.getInstance(), EventType.GAME_READY, EventType.CARD_CHANGE);
-        em.subscribe(new Card(), EventType.NEW_CARD);
     }
 
     private void subscribeInputListeners() {
@@ -335,25 +324,6 @@ public class JUno extends Application implements EventListener {
         DropAndPlay.setPlayzone(playzone);
         Controls.draw.apply(playzone);
         Controls.uno.apply(playzone);
-        // TODO in realtà vorrei applicarlo semple alla playzone, ma non posso metterne
-        // due insieme di setOnMouseClick.
-        // DeclareUno.getInstance().setListener(il);
-        // Draw.getInstance().setListener(il);
-        // Select.setGlobalListener(il);
-    }
-
-    @Override
-    public void update(EventType event) {
-        switch (event) {
-            case UNO_DECLARED:
-                Platform.runLater(() -> {
-                    unoAnimation.setSceneCoordinates(scene.getWidth() / 2 - 200, scene.getHeight() / 2 - 111.85);
-                    unoAnimation.play(gameRoot);
-                });
-                break;
-            default:
-                throwUnsupportedError(event, null);
-        }
     }
 
     @Override
@@ -416,14 +386,6 @@ public class JUno extends Application implements EventListener {
                     endGame();
                 });
                 break;
-            default:
-                throwUnsupportedError(event, null);
-        }
-    }
-
-    @Override
-    public void update(EventType event, int cardTag) {
-        switch (event) {
             case CARD_CHANGE:
                 Platform.runLater(() -> {
                     playingCardAnimation.setSceneCoordinates(scene.getWidth() / 2, scene.getHeight() / 2);
@@ -436,10 +398,16 @@ public class JUno extends Application implements EventListener {
                 playingCardAnimation.resetLatch();
                 break;
             case INVALID_CARD:
-                Platform.runLater(() -> ResetTranslate.resetTranslate(Card.cards.get(cardTag)));
+                Platform.runLater(() -> ResetTranslate.resetTranslate(Card.cards.get((int) data.get("card-tag"))));
+                break;
+            case UNO_DECLARED:
+                Platform.runLater(() -> {
+                    unoAnimation.setSceneCoordinates(scene.getWidth() / 2 - 200, scene.getHeight() / 2 - 111.85);
+                    unoAnimation.play(gameRoot);
+                });
                 break;
             default:
-                throwUnsupportedError(event, cardTag);
+                throwUnsupportedError(event, null);
         }
     }
 

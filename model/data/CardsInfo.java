@@ -12,11 +12,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import events.EventType;
+import model.CUModel;
 
 /* --- Mine ------------------------------- */
 
 import model.gameLogic.EffectBuilder;
-import model.gameLogic.Loop;
 import model.gameObjects.*;
 
 /**
@@ -59,7 +59,7 @@ public abstract class CardsInfo {
             for (int i = 0; i < quantity; i++) {
                 Card copy = card.getCopy();
                 standardSet.add(copy);
-                Loop.events.notify(EventType.NEW_CARD, copy.getData());
+                CUModel.getInstance().communicate(EventType.NEW_CARD, copy.getData());
             }
         }
         return new CardGroup(standardSet);

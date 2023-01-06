@@ -11,7 +11,7 @@ import events.EventType;
 
 public class PlayerPane extends VBox implements EventListener {
     /* --- Singleton -------------------------- */
-    
+
     private static PlayerPane instance;
 
     public static PlayerPane getInstance() {
@@ -58,11 +58,11 @@ public class PlayerPane extends VBox implements EventListener {
     public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_READY:
+                String[] nicknames = (String[]) data.get("all-nicknames");
+                String[] icons = (String[]) data.get("all-icons");
+                int[] hands = (int[]) data.get("all-hand-sizes");
                 Platform.runLater(() -> {
                     initialize();
-                    String[] nicknames = (String[]) data.get("all-nicknames");
-                    String[] icons = (String[]) data.get("all-icons");
-                    int[] hands = (int[]) data.get("all-hand-sizes");
                     for (int i = 0; i < icons.length; i++)
                         addPlayerLabel(nicknames[i], icons[i], hands[i]);
                 });

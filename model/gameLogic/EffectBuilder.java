@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 import events.EventType;
 import model.CUModel;
 import model.data.CardsInfo;
+import model.gameEntities.GameAI;
+import model.gameEntities.Player;
 import model.gameObjects.*;
 
 /**
@@ -181,12 +183,12 @@ public class EffectBuilder {
             String[] cardReprs = allCards.split("  ");
             Card[] cards = Stream.of(cardReprs).map(cn -> CardsInfo.allCards.get(cn)).toArray(Card[]::new);
 
-            if (!effect.getSourcePlayer().isHuman()) {
+            if (effect.getSourcePlayer() instanceof GameAI) {
                 effect.setTargetCard(cards[(int) (Math.random() * cards.length)]);
                 return;
             }
 
-            Loop.getInstance().setDecontexPhase(card -> effect.setTargetCard((Card) card));
+            // Loop.getInstance().setDecontexPhase(card -> effect.setTargetCard((Card) card));
             
             // Notify
             int[] cardTags = Stream.of(cards).mapToInt(card -> card.getTag()).toArray();

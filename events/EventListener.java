@@ -7,26 +7,6 @@ import java.util.HashMap;
  * notified from outside.
  */
 public interface EventListener {
-    default void update(EventType event) {
-        throwUnimplementedError(event);
-    }
-
-    default void update(EventType event, String data) {
-        throwUnimplementedError(event);
-    }
-
-    default void update(EventType event, int data) {
-        throwUnimplementedError(event);
-    }
-
-    default void update(EventType event, int[] data) {
-        throwUnimplementedError(event);
-    }
-
-    default void update(EventType event, double data) {
-        throwUnimplementedError(event);
-    }
-
     default void update(EventType event, HashMap<String, Object> data) {
         throwUnimplementedError(event);
     }

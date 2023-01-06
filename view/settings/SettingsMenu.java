@@ -83,25 +83,25 @@ public class SettingsMenu extends BorderPane implements EventListener {
         displayInGameMenu = () -> contextMenu.getChildren().addAll(nodes);
     }
 
-    @Override
-    public void update(EventType event) {
-        switch (event) {
-            case RESET:
-                Platform.runLater(() -> contextMenu.getChildren().clear());
-                break;
-            default:
-                throwUnsupportedError(event, null);
-        }
-    }
+    // @Override
+    // public void update(EventType event) {
+    //     switch (event) {
+    //         case RESET:
+    //             Platform.runLater(() -> contextMenu.getChildren().clear());
+    //             break;
+    //         default:
+    //             throwUnsupportedError(event, null);
+    //     }
+    // }
 
-    @Override
-    public void update(EventType event, HashMap<String, Object> data) {
-        switch (event) {
-            case GAME_START:
-                Platform.runLater(displayInGameMenu);
-                break;
-            default:
-                throwUnsupportedError(event, null);
-        }
-    }
+    // @Override
+    // public void update(EventType event, HashMap<String, Object> data) {
+    //     switch (event) {
+    //         case GAME_START:
+    //             Platform.runLater(displayInGameMenu);
+    //             break;
+    //         default:
+    //             throwUnsupportedError(event, null);
+    //     }
+    // }
 }

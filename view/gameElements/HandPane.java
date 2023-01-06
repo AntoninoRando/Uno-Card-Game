@@ -140,28 +140,22 @@ public class HandPane extends HBox implements EventListener {
             case GAME_READY:
                 Platform.runLater(() -> initialize());
                 break;
-            default:
-                throwUnsupportedError(event, null);
-        }
-    }
-
-    @Override
-    public void update(EventType event, int cardTag) {
-        switch (event) {
             case USER_DREW:
+                int cardTag = (int) data.get("card-tag");
+                HashMap<String, Object> data2 = new HashMap<>();
+                data2.put("card-node", Card.cards.get(cardTag));
+                data2.put("card-tag", cardTag);
+                CUView.getInstance().communicate(event, data2);
                 Platform.runLater(() -> {
                     addCard(Card.cards.get(cardTag));
-                    HashMap<String, Object> data = new HashMap<>();
-                    data.put("card-node", Card.cards.get(cardTag));
-                    data.put("card-tag", cardTag);
-                    CUView.getInstance().communicate(event, data);
                 });
                 break;
             case USER_PLAYED_CARD:
-                Platform.runLater(() -> removeCard(Card.cards.get(cardTag)));
+                int cardTag2 = (int) data.get("card-tag");
+                Platform.runLater(() -> removeCard(Card.cards.get(cardTag2)));
                 break;
             default:
-                throwUnsupportedError(event, cardTag);
+                throwUnsupportedError(event, null);
         }
     }
 }

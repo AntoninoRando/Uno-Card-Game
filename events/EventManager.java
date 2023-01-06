@@ -48,36 +48,6 @@ public class EventManager {
      * 
      * @param event The event to notify.
      */
-    public void notify(EventType event) {
-        if (!listeners.containsKey(event))
-            return;
-        listeners.get(event).forEach(listener -> listener.update(event));
-    }
-
-    public void notify(EventType event, String data) {
-        if (!listeners.containsKey(event))
-            return;
-        listeners.get(event).forEach(listener -> listener.update(event, data));
-    }
-
-    public void notify(EventType event, int data) {
-        if (!listeners.containsKey(event))
-            return;
-        listeners.get(event).forEach(listener -> listener.update(event, data));
-    }
-
-    public void notify(EventType event, int[] data) {
-        if (!listeners.containsKey(event))
-            return;
-        listeners.get(event).forEach(listener -> listener.update(event, data));
-    }
-
-    public void notify(EventType event, double data) {
-        if (!listeners.containsKey(event))
-            return;
-        listeners.get(event).forEach(listener -> listener.update(event, data));
-    }
-
     public void notify(EventType event, HashMap<String, Object> data) {
         if (!listeners.containsKey(event))
             return;

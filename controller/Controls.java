@@ -17,7 +17,7 @@ public abstract class Controls {
         @Override
         public void onEnd(MouseEvent e) {
             HashMap<String, Object> data = new HashMap<>();
-            data.put("choice-type", "deck-draw");
+            data.put("choice-type", "FROM_DECK_DRAW");
             data.put("choice", 1);
             CUController.getInstance().communicate(EventType.TURN_DECISION, data);
         }
@@ -29,7 +29,7 @@ public abstract class Controls {
         @Override
         public void onEnd(MouseEvent e) {
             HashMap<String, Object> data = new HashMap<>();
-            data.put("choice-type", "say-uno");
+            data.put("choice-type", "SAY_UNO");
             data.put("choice", null);
             CUController.getInstance().communicate(EventType.TURN_DECISION, data);
         }

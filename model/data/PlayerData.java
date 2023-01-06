@@ -68,7 +68,7 @@ public class PlayerData {
         nick = nick.trim();
         if (!nick.equals("") && nick.length() <= Info.getNickMaxLength())
             PlayerData.userNick = nick;
-        Info.events.notify(EventType.USER_NEW_NICK, nick);
+        // Info.events.notify(EventType.USER_NEW_NICK, nick);
     }
 
     /**
@@ -93,7 +93,7 @@ public class PlayerData {
      */
     public static void setUserIcon(String icon) {
         PlayerData.userIcon = icon;
-        Info.events.notify(EventType.USER_NEW_ICON, icon);
+        // Info.events.notify(EventType.USER_NEW_ICON, icon);
     }
 
     /**
@@ -164,9 +164,9 @@ public class PlayerData {
         }
 
         PlayerData.xp = Info.getXpGap(getLevel()) - (gap - quantity - getXp());
-        Info.events.notify(EventType.NEW_LEVEL_PROGRESS, Info.userLevelProgress());
-        if (PlayerData.getLevel() != startingLevel)
-            Info.events.notify(EventType.LEVELED_UP, PlayerData.level);
+        // Info.events.notify(EventType.NEW_LEVEL_PROGRESS, Info.userLevelProgress());
+        // if (PlayerData.getLevel() != startingLevel)
+            // Info.events.notify(EventType.LEVELED_UP, PlayerData.level);
     }
 
     /**
@@ -177,10 +177,10 @@ public class PlayerData {
      */
     public static void addGamePlayed(boolean win) {
         PlayerData.games++;
-        Info.events.notify(EventType.USER_PLAYED_GAME, PlayerData.games);
+        // Info.events.notify(EventType.USER_PLAYED_GAME, PlayerData.games);
         if (win) {
             PlayerData.wins++;
-            Info.events.notify(EventType.USER_WON, PlayerData.wins);
+            // Info.events.notify(EventType.USER_WON, PlayerData.wins);
         }
     }
 

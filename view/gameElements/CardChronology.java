@@ -33,14 +33,6 @@ public class CardChronology extends Chronology implements EventListener {
                     update();
                 });
                 break;
-            default:
-                throwUnsupportedError(event, data);
-        }
-    }
-
-    @Override
-    public void update(EventType event) {
-        switch (event) {
             case RESET:
                 Platform.runLater(() -> {
                     content = new HBox();
@@ -49,7 +41,7 @@ public class CardChronology extends Chronology implements EventListener {
                 });
                 break;
             default:
-                throwUnsupportedError(event, null);
+                throwUnsupportedError(event, data);
         }
     }
 }

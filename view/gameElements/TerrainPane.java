@@ -8,7 +8,6 @@ import java.util.HashMap;
 import events.EventListener;
 import events.EventType;
 
-
 /**
  * A GUI element representing the current card on the ground.
  */
@@ -28,7 +27,7 @@ public class TerrainPane extends StackPane implements EventListener {
         setMaxHeight(400);
         setMaxWidth(400);
     }
-    
+
     /* --- Fields ----------------------------- */
 
     private Card terrainCard;
@@ -47,21 +46,13 @@ public class TerrainPane extends StackPane implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, int cardTag) {
-        switch (event) {
-            case CARD_CHANGE:
-                Platform.runLater(() -> updateTerrainCard(cardTag));
-                break;
-            default:
-                throwUnsupportedError(event, cardTag);
-        }
-    }
-
-    @Override
     public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_READY:
                 Platform.runLater(() -> initialize());
+                break;
+            case CARD_CHANGE:
+                Platform.runLater(() -> updateTerrainCard((int) data.get("card-tag")));
                 break;
             default:
                 throwUnsupportedError(event, data);

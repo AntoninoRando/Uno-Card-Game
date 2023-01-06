@@ -2,6 +2,8 @@ package model.gameLogic;
 
 import java.util.LinkedList;
 
+import model.gameEntities.Player;
+
 /* --- Mine ------------------------------- */
 
 import model.gameObjects.*;

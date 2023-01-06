@@ -3,6 +3,9 @@ package model.gameLogic;
 import java.util.HashMap;
 
 import events.EventType;
+import model.CUModel;
+import model.gameEntities.GameAI;
+import model.gameEntities.Player;
 import model.gameObjects.*;
 
 /**
@@ -53,14 +56,16 @@ public abstract class Actions {
         // Add card
         Card card = takeFromDeck();
         player.getHand().add(card);
-        // Notify
-        if (player.isHuman())
-            Loop.events.notify(EventType.USER_DREW, card.getTag());
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("card-tag", card.getTag());
+        // Notify 
+        if (!(player instanceof GameAI))
+            CUModel.getInstance().communicate(EventType.USER_DREW, data);
         else {
-            Loop.events.notify(EventType.PLAYER_DREW, player.getData());
+            CUModel.getInstance().communicate(EventType.PLAYER_DREW, player.getData());
         }
 
-        Loop.events.notify(EventType.PLAYER_HAND_INCREASE, player.getData());
+        CUModel.getInstance().communicate(EventType.PLAYER_HAND_INCREASE, player.getData());
     }
 
     /**
@@ -87,14 +92,14 @@ public abstract class Actions {
      * Jumps the current turn.
      */
     static void skipTurn() {
-        // Jump phase
-        Loop.getInstance().jumpToPhase(Loop.getInstance().getPhasesQuantity() - 2);
-        // Notify
-        Player player = Game.getInstance().getCurrentPlayer();
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("nickname", player.getNick());
-        data.put("icon", player.getIcon());
-        Loop.events.notify(EventType.TURN_BLOCKED, data);
+        // // Jump phase
+        // Loop.getInstance().jumpToPhase(Loop.getInstance().getPhasesQuantity() - 2);
+        // // Notify
+        // Player player = Game.getInstance().getCurrentPlayer();
+        // HashMap<String, Object> data = new HashMap<>();
+        // data.put("nickname", player.getNickame());
+        // data.put("icon", player.getIcon());
+        // Loop.events.notify(EventType.TURN_BLOCKED, data);
     }
 
     /**

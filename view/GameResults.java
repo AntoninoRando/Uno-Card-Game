@@ -104,25 +104,25 @@ public class GameResults extends VBox implements EventListener {
         }
     }
 
-    @Override
-    public void update(EventType event, int data) {
-        switch (event) {
-            case XP_EARNED:
-                Platform.runLater(() -> newXp.setText("+ " + data + "xp"));
-                break;
-            default:
-                throwUnsupportedError(event, data);
-        }
-    }
+    // @Override
+    // public void update(EventType event, int data) {
+    //     switch (event) {
+    //         case XP_EARNED:
+    //             Platform.runLater(() -> newXp.setText("+ " + data + "xp"));
+    //             break;
+    //         default:
+    //             throwUnsupportedError(event, data);
+    //     }
+    // }
 
-    @Override
-    public void update(EventType event, double data) {
-        switch (event) {
-            case NEW_LEVEL_PROGRESS:
-                Platform.runLater(() -> xpBar.setProgress(data / 100));
-                break;
-            default:
-                throwUnsupportedError(event, data);
-        }
-    }
+    // @Override
+    // public void update(EventType event, double data) {
+    //     switch (event) {
+    //         case NEW_LEVEL_PROGRESS:
+    //             Platform.runLater(() -> xpBar.setProgress(data / 100));
+    //             break;
+    //         default:
+    //             throwUnsupportedError(event, data);
+    //     }
+    // }
 }

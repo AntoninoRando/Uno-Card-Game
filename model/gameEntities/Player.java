@@ -1,10 +1,9 @@
-package model.gameObjects;
+package model.gameEntities;
 
 import java.util.HashMap;
 import java.util.TreeSet;
-
-import model.data.PlayerData;
 import model.gameLogic.Effect;
+import model.gameObjects.CardGroup;
 
 /**
  * This class contains all the info about the player (user or AI) state.
@@ -12,17 +11,16 @@ import model.gameLogic.Effect;
 public class Player {
     /* --- Fields ----------------------------- */
 
-    private String nick;
     private String icon;
-    private boolean isHuman;
+    private String nickname;
     private CardGroup hand;
     private TreeSet<Effect> conditions;
 
     /**
      * @return Player nickname.
      */
-    public String getNick() {
-        return nick;
+    public String getNickame() {
+        return nickname;
     }
 
     /**
@@ -30,13 +28,6 @@ public class Player {
      */
     public String getIcon() {
         return icon;
-    }
-
-    /**
-     * @return Whether the player is the user or the AI.
-     */
-    public boolean isHuman() {
-        return isHuman;
     }
 
     /**
@@ -51,11 +42,9 @@ public class Player {
     /**
      * @param data The path to the file containing player's info.
      */
-    public Player(String data) {
-        PlayerData pd = PlayerData.getPlayerData(data);
-        nick = pd.getNick();
-        icon = pd.getIcon();
-        isHuman = pd.isHuman();
+    public Player(String icon, String nickname) {
+        this.icon = icon;
+        this.nickname = nickname;
         hand = new CardGroup();
         conditions = new TreeSet<>();
     }
@@ -73,7 +62,7 @@ public class Player {
 
     public HashMap<String, Object> getData() {
         HashMap<String, Object> data = new HashMap<>();
-        data.put("nickname", getNick());
+        data.put("nickname", getNickame());
         data.put("icon", getIcon());
         data.put("hand-size", getHand().size());
         return data;

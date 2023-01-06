@@ -8,7 +8,11 @@ import events.EventManager;
 import events.EventType;
 import view.gameElements.Card;
 import view.gameElements.CardChronology;
+import view.gameElements.HandPane;
+import view.gameElements.PlayerPane;
 import view.gameElements.SelectionPane;
+import view.gameElements.TerrainPane;
+import view.settings.SettingsMenu;
 
 /**
  * <b>C</b>ontrol <b>U</b>nit <b>View</b>. This class implements the
@@ -53,8 +57,15 @@ public class CUView extends EventManager implements EventListener {
     /* --- Body ------------------------------- */
 
     private void subscribeAll() {
-        subscribe(CardChronology.getInstance(), EventType.PLAYER_PLAYED_CARD);
+        subscribe(CardChronology.getInstance(), EventType.PLAYER_PLAYED_CARD, EventType.RESET);
         subscribe(SelectionPane.getInstance(), EventType.USER_SELECTING_CARD);
+        subscribe(HandPane.getInstance(), EventType.GAME_READY, EventType.USER_PLAYED_CARD, EventType.USER_DREW);
+        subscribe(PlayerPane.getInstance(), EventType.GAME_READY, EventType.PLAYER_HAND_DECREASE,
+                EventType.PLAYER_HAND_INCREASE);
+        subscribe(TerrainPane.getInstance(), EventType.GAME_READY, EventType.CARD_CHANGE);
+        subscribe(new Card(), EventType.NEW_CARD);
+        // subscribe(GameResults.getInstance(), EventType.PLAYER_WON);
+        // subscribe(SettingsMenu.getInstance(), EventType.GAME_START, EventType.RESET);
     }
 
     @Override
@@ -62,8 +73,10 @@ public class CUView extends EventManager implements EventListener {
         HashMap<String, Object> decodedData = data;
         switch (event) {
             case PLAYER_PLAYED_CARD:
+                int cardTag = (int) data.get("card-tag");
+                String cardRepr = (String) data.get("card-representation");
+                Card.cards.putIfAbsent(cardTag, new Card(cardTag, cardRepr));
                 Card card = Card.cards.get((int) data.get("card-tag"));
-                decodedData.remove("card-tag");
                 decodedData.put("card", card);
                 this.notify(event, decodedData);
                 break;
@@ -76,7 +89,7 @@ public class CUView extends EventManager implements EventListener {
                 this.notify(event, decodedData);
                 break;
             default:
-                // this.notify(event, decodedData);
+                this.notify(event, decodedData);
                 break;
         }
     }

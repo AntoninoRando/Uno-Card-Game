@@ -118,7 +118,7 @@ public class Card extends ImageView implements EventListener {
     public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case NEW_CARD:
-                Platform.runLater(() -> new Card((int) data.get("tag"), (String) data.get("representation")));
+                Card card = new Card((int) data.get("card-tag"), (String) data.get("card-representation"));
                 break;
             default:
                 throwUnsupportedError(event, data);

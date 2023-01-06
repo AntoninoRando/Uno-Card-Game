@@ -38,7 +38,7 @@ public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
     @Override
     public void onEnd(MouseEvent e) {
         HashMap<String, Object> data = new HashMap<>();
-        data.put("choice-type", "card-play-by-tag");
+        data.put("choice-type", "FROM_HAND_PLAY_TAG");
         data.put("choice", this.sourceTag);
         CUController.getInstance().communicate(EventType.TURN_DECISION, data);
     }

@@ -1,5 +1,6 @@
 package view.gameElements;
 
+import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
 import javafx.application.Platform;
@@ -59,10 +60,10 @@ public class SelectionPane extends HBox implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, int[] cardTags) {
+    public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case USER_SELECTING_CARD:
-                Platform.runLater(() -> newSelection(cardTags));
+                Platform.runLater(() -> newSelection((int[]) data.get("all-card-tags")));
                 try {
                     latch.await();
                 } catch (InterruptedException e) {
@@ -70,7 +71,7 @@ public class SelectionPane extends HBox implements EventListener {
                 break;
             // TODO case "enemyTurn cardSelection":
             default:
-                throwUnsupportedError(event, cardTags);
+                throwUnsupportedError(event, data);
         }
     }
 }

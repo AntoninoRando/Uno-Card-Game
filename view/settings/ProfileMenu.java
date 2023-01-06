@@ -191,46 +191,46 @@ public class ProfileMenu extends StackPane implements EventListener {
         }
     }
 
-    @Override
-    public void update(EventType event, String data) {
-        switch (event) {
-            case USER_NEW_NICK:
-                nickField.setPromptText(data);
-                break;
-            case USER_NEW_ICON:
-                avatar.setFill(new ImagePattern(new Image(data)));
-                break;
-            default:
-                throwUnsupportedError(event, data);
-        }
-    }
+    // @Override
+    // public void update(EventType event, String data) {
+    //     switch (event) {
+    //         case USER_NEW_NICK:
+    //             nickField.setPromptText(data);
+    //             break;
+    //         case USER_NEW_ICON:
+    //             avatar.setFill(new ImagePattern(new Image(data)));
+    //             break;
+    //         default:
+    //             throwUnsupportedError(event, data);
+    //     }
+    // }
 
-    @Override
-    public void update(EventType event, int data) {
-        switch (event) {
-            case LEVELED_UP:
-                levelLabel.setText("Level " + data);
-                break;
-            case USER_PLAYED_GAME:
-                gamesPlayedLabel.setText("Games: " + data);
-                break;
-            case USER_WON:
-                winRateLabel.setText("Wins: " + data);
-                break;
-            default:
-                throwUnsupportedError(event, data);
-        }
-    }
+    // @Override
+    // public void update(EventType event, int data) {
+    //     switch (event) {
+    //         case LEVELED_UP:
+    //             levelLabel.setText("Level " + data);
+    //             break;
+    //         case USER_PLAYED_GAME:
+    //             gamesPlayedLabel.setText("Games: " + data);
+    //             break;
+    //         case USER_WON:
+    //             winRateLabel.setText("Wins: " + data);
+    //             break;
+    //         default:
+    //             throwUnsupportedError(event, data);
+    //     }
+    // }
 
-    @Override
-    public void update(EventType event, double data) {
-        switch (event) {
-            case NEW_LEVEL_PROGRESS:
-                xpBar.setProgress(data / 100);
-                progressLabel.setText(data + "%");
-                break;
-            default:
-                throwUnsupportedError(event, data);
-        }
-    }
+    // @Override
+    // public void update(EventType event, double data) {
+    //     switch (event) {
+    //         case NEW_LEVEL_PROGRESS:
+    //             xpBar.setProgress(data / 100);
+    //             progressLabel.setText(data + "%");
+    //             break;
+    //         default:
+    //             throwUnsupportedError(event, data);
+    //     }
+    // }
 }

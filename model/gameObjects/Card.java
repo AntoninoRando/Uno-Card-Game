@@ -76,8 +76,8 @@ public class Card implements Comparable<Card> {
 
     public HashMap<String, Object> getData() {
         HashMap<String, Object> data = new HashMap<>();
-        data.put("tag", getTag());
-        data.put("representation", toString());
+        data.put("card-tag", getTag());
+        data.put("card-representation", toString());
         return data;
     }
 
