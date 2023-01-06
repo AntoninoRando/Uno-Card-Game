@@ -10,7 +10,7 @@
             "request": "launch",
             "mainClass": "JUno",
             "projectName": "JUno_d685fc75",
-            "vmArgs": "--module-path \"JavafxPackage\\javafx-sdk-19\\lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
+            "vmArgs": "--module-path \"resources/JavafxPackage/javafx-sdk-19/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
         },
     ]
 }

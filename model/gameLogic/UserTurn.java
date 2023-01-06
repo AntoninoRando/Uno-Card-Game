@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import events.EventListener;
 import events.EventType;
 import model.CUModel;
+import model.gameEntities.GameAI;
 import model.gameEntities.Player;
 import model.gameObjects.Card;
 
@@ -89,6 +90,11 @@ public class UserTurn implements GameState, EventListener {
     public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case TURN_DECISION:
+                if (game.getCurrentPlayer() instanceof GameAI) {
+                    if (data.containsKey("card-tag"))
+                        CUModel.getInstance().communicate(EventType.INVALID_CARD, data);
+                    break;
+                }
                 synchronized (this) {
                     Action action = Action.valueOf((String) data.get("choice-type"));
                     choice = Map.entry(action, data.get("choice"));
