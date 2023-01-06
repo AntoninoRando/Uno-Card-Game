@@ -24,7 +24,8 @@ public class Click extends Behavior<MouseEvent> {
     /* --- Body ------------------------------- */
 
     protected void applyBehavior() {
-        source.setOnMouseClicked(this::onEnd);
+        // Instead of setOnMouseClick, this way doesn't ovveride previous click behavior
+        source.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onEnd);
     }
 
     @Override

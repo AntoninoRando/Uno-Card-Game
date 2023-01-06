@@ -7,7 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Stream;
 
-import controller.ClickToDraw;
+import controller.Controls;
 import controller.DropAndPlay;
 import events.EventListener;
 import events.EventManager;
@@ -144,10 +144,10 @@ public class JUno extends Application implements EventListener {
         root.getChildren().addAll(gameElements, PlayzonePane.getInstance(), SelectionPane.getInstance());
 
         // PlayzonePane.getInstance().setOnMouseClicked(e -> {
-        //     if (e.getButton().equals(MouseButton.SECONDARY))
-        //         DeclareUno.getInstance().fire();
-        //     else
-        //         Draw.getInstance().fire();
+        // if (e.getButton().equals(MouseButton.SECONDARY))
+        // DeclareUno.getInstance().fire();
+        // else
+        // Draw.getInstance().fire();
         // });
         PlayzonePane.getInstance().setOnScroll(e -> {
             if (scrollTimer != null)
@@ -314,7 +314,8 @@ public class JUno extends Application implements EventListener {
     private void subscribeEventListeners() {
         EventManager em = Loop.events;
         em.subscribe(this, EventType.GAME_READY, EventType.GAME_START, EventType.CARD_CHANGE, EventType.UNO_DECLARED,
-                EventType.TURN_BLOCKED, EventType.TURN_END, EventType.INVALID_CARD, EventType.TURN_START, EventType.PLAYER_WON);
+                EventType.TURN_BLOCKED, EventType.TURN_END, EventType.INVALID_CARD, EventType.TURN_START,
+                EventType.PLAYER_WON);
         em.subscribe(GameResults.getInstance(), EventType.PLAYER_WON);
         Info.events.subscribe(GameResults.getInstance(), EventType.XP_EARNED, EventType.NEW_LEVEL_PROGRESS);
         em.subscribe(SettingsMenu.getInstance(), EventType.GAME_START, EventType.RESET);
@@ -325,7 +326,6 @@ public class JUno extends Application implements EventListener {
         em.subscribe(HandPane.getInstance(), EventType.GAME_READY, EventType.USER_PLAYED_CARD, EventType.USER_DREW);
         em.subscribe(PlayerPane.getInstance(), EventType.GAME_READY, EventType.PLAYER_HAND_DECREASE,
                 EventType.PLAYER_HAND_INCREASE);
-        em.subscribe(SelectionPane.getInstance(), EventType.USER_SELECTING_CARD);
         em.subscribe(TerrainPane.getInstance(), EventType.GAME_READY, EventType.CARD_CHANGE);
         em.subscribe(new Card(), EventType.NEW_CARD);
     }
@@ -333,7 +333,10 @@ public class JUno extends Application implements EventListener {
     private void subscribeInputListeners() {
         PlayzonePane playzone = PlayzonePane.getInstance();
         DropAndPlay.setPlayzone(playzone);
-        new ClickToDraw(playzone);
+        Controls.draw.apply(playzone);
+        Controls.uno.apply(playzone);
+        // TODO in realtà vorrei applicarlo semple alla playzone, ma non posso metterne
+        // due insieme di setOnMouseClick.
         // DeclareUno.getInstance().setListener(il);
         // Draw.getInstance().setListener(il);
         // Select.setGlobalListener(il);

@@ -1,7 +1,6 @@
 package model;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import controller.CUController;
 import events.EventListener;
@@ -49,12 +48,16 @@ public class CUModel extends EventManager implements EventListener {
 
     /* --- Fields ----------------------------- */
 
-    private static CUController otherCU = CUController.getInstance();
+    private static CUController receiverCU = CUController.getInstance();
 
     /* --- Body ------------------------------- */
 
     private void subscribeAll() {
         subscribe(Loop.getInstance(), EventType.TURN_DECISION);
+    }
+
+    public void communicate(EventType event, HashMap<String, Object> data) {
+        receiverCU.update(event, data);
     }
 
     @Override

@@ -234,7 +234,10 @@ public class Loop implements EventListener {
                     .ifPresentOrElse(c -> {
                         setChoiceType("card-play");
                         setChoice(c);
-                    }, () -> setChoiceType("deck-draw"));
+                    }, () -> {
+                        setChoiceType("deck-draw");
+                        setChoice(1);
+                    });
         return true;
     };
 
@@ -273,7 +276,7 @@ public class Loop implements EventListener {
             case "deck-draw":
                 Actions.dealFromDeck(Game.getInstance().getCurrentPlayer(), (int) getChoice());
                 return true;
-            case "unoDeclared":
+            case "say-uno":
                 startUnoTimer();
                 return false;
             default:

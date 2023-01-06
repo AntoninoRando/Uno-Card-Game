@@ -8,6 +8,7 @@ import events.EventManager;
 import events.EventType;
 import view.gameElements.Card;
 import view.gameElements.CardChronology;
+import view.gameElements.SelectionPane;
 
 /**
  * <b>C</b>ontrol <b>U</b>nit <b>View</b>. This class implements the
@@ -53,6 +54,7 @@ public class CUView extends EventManager implements EventListener {
 
     private void subscribeAll() {
         subscribe(CardChronology.getInstance(), EventType.PLAYER_PLAYED_CARD);
+        subscribe(SelectionPane.getInstance(), EventType.USER_SELECTING_CARD);
     }
 
     @Override
@@ -63,6 +65,14 @@ public class CUView extends EventManager implements EventListener {
                 Card card = Card.cards.get((int) data.get("card-tag"));
                 decodedData.remove("card-tag");
                 decodedData.put("card", card);
+                this.notify(event, decodedData);
+                break;
+            case USER_SELECTING_CARD:
+                int[] cardTags = (int[]) data.get("all-card-tags");
+                String[] cardReprs = (String[]) data.get("all-card-representations");
+                for (int i = 0; i < cardTags.length; i++)
+                    Card.cards.putIfAbsent(cardTags[i], new Card(cardTags[i], cardReprs[i]));
+                decodedData.remove("all-card-representations");
                 this.notify(event, decodedData);
                 break;
             default:

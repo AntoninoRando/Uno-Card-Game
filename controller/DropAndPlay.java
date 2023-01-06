@@ -28,7 +28,6 @@ public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
     public DropAndPlay(Node source, int sourceTag) {
         super(new DragAndDrop(source, playzone));
         this.sourceTag = sourceTag;
-        wrappee.setEnd(this::onEnd);
     }
 
     /* --- Body ------------------------------- */

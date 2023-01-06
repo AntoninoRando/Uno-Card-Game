@@ -9,6 +9,7 @@ public class BehaviorDecorator<T extends InputEvent> {
 
     public BehaviorDecorator(Behavior<T> wrappee) {
         this.wrappee = wrappee;
+        wrappee.setEnd(this::onEnd);
     }
 
     public void setEnd(Consumer<T> behavior) {

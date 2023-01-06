@@ -1,8 +1,10 @@
 package model.gameLogic;
 
+import java.util.HashMap;
 import java.util.stream.Stream;
 
 import events.EventType;
+import model.CUModel;
 import model.data.CardsInfo;
 import model.gameObjects.*;
 
@@ -174,10 +176,10 @@ public class EffectBuilder {
      * @param cardsReprs Cards names separated by 2 spaces: " ".
      * @return this.
      */
-    public EffectBuilder selectOneCardOf(String cardsReprs) {
+    public EffectBuilder selectOneCardOf(String allCards) {
         effect.addStep(() -> {
-            Card[] cards = Stream.of(cardsReprs.split("  ")).map(cn -> CardsInfo.allCards.get(cn).getCopy())
-                    .toArray(Card[]::new);
+            String[] cardReprs = allCards.split("  ");
+            Card[] cards = Stream.of(cardReprs).map(cn -> CardsInfo.allCards.get(cn)).toArray(Card[]::new);
 
             if (!effect.getSourcePlayer().isHuman()) {
                 effect.setTargetCard(cards[(int) (Math.random() * cards.length)]);
@@ -187,8 +189,11 @@ public class EffectBuilder {
             Loop.getInstance().setDecontexPhase(card -> effect.setTargetCard((Card) card));
             
             // Notify
-            int[] data = Stream.of(cards).mapToInt(card -> card.getTag()).toArray();
-            Loop.events.notify(EventType.USER_SELECTING_CARD, data);
+            int[] cardTags = Stream.of(cards).mapToInt(card -> card.getTag()).toArray();
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("all-card-tags", cardTags);
+            data.put("all-card-representations", cardReprs);
+            CUModel.getInstance().communicate(EventType.USER_SELECTING_CARD, data);
         });
         return this;
     }
