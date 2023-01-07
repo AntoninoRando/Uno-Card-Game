@@ -1,10 +1,12 @@
 package model.gameEntities;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,11 +21,11 @@ public class CheaterAI extends GameAI {
     }
 
     @Override
-    public Entry<Action, Object> chooseFromHand() {
+    public Entry<Action, Object> chooseFrom(Collection<Card> cards, Predicate<Card> validate) {
         Game game = Game.getInstance();
         Entry<Action, Object> choice = Map.entry(Action.FROM_DECK_DRAW, 1);
 
-        List<Card> options = getHand().stream().filter(game::isPlayable).collect(Collectors.toList());
+        List<Card> options = cards.stream().filter(validate).collect(Collectors.toList());
 
         if (options.size() == 0)
             return choice;
@@ -48,8 +50,7 @@ public class CheaterAI extends GameAI {
     }
 
     @Override
-    public Entry<Action, Object> chooseFromSelection() {
-        // TODO Auto-generated method stub
-        return null;
+    public Entry<Action, Object> chooseFrom(Collection<Card> cards) {
+        return chooseFrom(cards, x -> true);
     }
 }

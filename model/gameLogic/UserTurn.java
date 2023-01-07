@@ -36,7 +36,7 @@ public class UserTurn implements GameState, EventListener {
 
     /* --- Body ------------------------------- */
 
-    public void playCard() {
+    public void takeTurn() {
         choice = null;
         cardPlayed = Optional.empty();
         boolean endTurn = false;
@@ -105,7 +105,7 @@ public class UserTurn implements GameState, EventListener {
 
     @Override
     public void resolve() {
-        playCard();
+        takeTurn();
         passTurn();
     }
 

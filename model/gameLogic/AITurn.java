@@ -32,11 +32,11 @@ public class AITurn implements GameState {
 
     /* --- Body ------------------------------- */
 
-    public void playCard() {
+    public void takeTurn() {
         cardPlayed = Optional.empty();
 
         CUModel.communicate(EventType.TURN_START, AI.getData());
-        Entry<Action, Object> choice = AI.takeTurn();
+        Entry<Action, Object> choice = AI.choose();
 
         switch (choice.getKey()) {
             case FROM_DECK_DRAW:
@@ -90,7 +90,7 @@ public class AITurn implements GameState {
 
     @Override
     public void resolve() {
-        playCard();
+        takeTurn();
         passTurn();
     }
 }

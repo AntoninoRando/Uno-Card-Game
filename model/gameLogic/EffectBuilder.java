@@ -187,8 +187,6 @@ public class EffectBuilder {
                 effect.setTargetCard(cards[(int) (Math.random() * cards.length)]);
                 return;
             }
-
-            // Loop.getInstance().setDecontexPhase(card -> effect.setTargetCard((Card) card));
             
             // Notify
             int[] cardTags = Stream.of(cards).mapToInt(card -> card.getTag()).toArray();

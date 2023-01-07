@@ -88,6 +88,10 @@ public class Game implements EventListener {
         turnOrder = newOrder;
     }
 
+    public Predicate<Card> getPlayCondition() {
+        return playCondition;
+    }
+
     public int getTurn() {
         return turn;
     }
