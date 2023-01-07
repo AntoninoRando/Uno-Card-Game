@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 /* --- Mine ------------------------------- */
 
 import events.EventListener;
-import events.EventType;
+import events.Event;
 
 import model.CUModel;
 import model.data.CardBuilder;
@@ -40,7 +40,7 @@ public class Game implements EventListener {
     private Player[] players;
     private Card terrainCard;
     private final int firstHandSize = 7;
-    private CardGroup deck = CardBuilder.getCards("C:/Users/stefa/Desktop/Nuova cartella/J/JUno/resources/Cards/Small.json");
+    private CardGroup deck = CardBuilder.getCards("resources/Cards/Small.json");
     private CardGroup discardPile;
     private Player[] turnOrder;
     private int turn; // current turn
@@ -169,7 +169,7 @@ public class Game implements EventListener {
         data.put("all-nicknames", Stream.of(players).map(Player::getNickame).toArray(String[]::new));
         data.put("all-icons", Stream.of(players).map(Player::getIcon).toArray(String[]::new));
         data.put("all-hand-sizes", Stream.of(players).mapToInt(p -> p.getHand().size()).toArray());
-        CUModel.communicate(EventType.GAME_READY, data);
+        CUModel.communicate(Event.GAME_READY, data);
 
         // First card
         Actions.shuffleDeck();
@@ -178,13 +178,13 @@ public class Game implements EventListener {
         // Notify
         data.clear();
         data.put("card-tag", firstCard.getTag());
-        CUModel.communicate(EventType.CARD_CHANGE, data);
+        CUModel.communicate(Event.CARD_CHANGE, data);
 
         // Give cards to players
         for (Player p : Game.getInstance().getPlayers())
             Actions.dealFromDeck(p, firstHandSize);
         // Notify
-        CUModel.communicate(EventType.GAME_START, null);
+        CUModel.communicate(Event.GAME_START, null);
     }
 
     public void play() {
@@ -217,7 +217,7 @@ public class Game implements EventListener {
             // Info.events.notify(EventType.XP_EARNED, xpEarned);
         }
 
-        CUModel.communicate(EventType.RESET, null);
+        CUModel.communicate(Event.RESET, null);
         reset();
     }
 }

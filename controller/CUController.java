@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import events.EventListener;
 import events.EventManager;
-import events.EventType;
+import events.Event;
 import javafx.scene.Node;
 import model.CUModel;
 
@@ -35,14 +35,14 @@ public class CUController extends EventManager implements EventListener {
     private void subscribeAll() {
     }
 
-    public void communicate(EventType event, HashMap<String, Object> data) {
+    public static void communicate(Event event, HashMap<String, Object> data) {
         receiverCU.update(event, data);
     }
 
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case USER_DREW:
                 Node card = (Node) data.get("card-node");

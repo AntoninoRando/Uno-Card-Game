@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 import controller.behaviors.BehaviorDecorator;
 import controller.behaviors.Click;
-import events.EventType;
+import events.Event;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 
@@ -19,7 +19,7 @@ public abstract class Controls {
             HashMap<String, Object> data = new HashMap<>();
             data.put("choice-type", "FROM_DECK_DRAW");
             data.put("choice", 1);
-            CUController.getInstance().communicate(EventType.TURN_DECISION, data);
+            CUController.communicate(Event.TURN_DECISION, data);
         }
     };
 
@@ -31,7 +31,7 @@ public abstract class Controls {
             HashMap<String, Object> data = new HashMap<>();
             data.put("choice-type", "SAY_UNO");
             data.put("choice", null);
-            CUController.getInstance().communicate(EventType.TURN_DECISION, data);
+            CUController.communicate(Event.TURN_DECISION, data);
         }
     };
 
@@ -43,7 +43,7 @@ public abstract class Controls {
                     HashMap<String, Object> data = new HashMap<>();
                     data.put("choice-type", "card-selected");
                     data.put("choice", cardTag);
-                    CUController.getInstance().communicate(EventType.SELECTION, data);
+                    CUController.communicate(Event.SELECTION, data);
                 }
             };
 }

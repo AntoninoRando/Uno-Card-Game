@@ -12,7 +12,7 @@ import java.util.Map;
 public class EventManager {
     /* --- Fields ----------------------------- */
 
-    protected Map<EventType, List<EventListener>> listeners;
+    protected Map<Event, List<EventListener>> listeners;
 
     public EventManager() {
         listeners = new HashMap<>();
@@ -25,8 +25,8 @@ public class EventManager {
      *                 events happens.
      * @param events   All the events that the listener is listening.
      */
-    public void subscribe(EventListener listener, EventType... events) {
-        for (EventType event : events) {
+    public void subscribe(EventListener listener, Event... events) {
+        for (Event event : events) {
             listeners.putIfAbsent(event, new ArrayList<>());
             listeners.get(event).add(listener);
             listeners.get(event).sort((e1, e2) -> e1.compareTo(event, e2));
@@ -39,7 +39,7 @@ public class EventManager {
      * @param event    Event that will not update the listener anymore.
      * @param listener The listener that will stop to listen for the given event.
      */
-    public void unsubscribe(EventType event, EventListener listener) {
+    public void unsubscribe(Event event, EventListener listener) {
         listeners.get(event).remove(listener);
     }
 
@@ -48,7 +48,7 @@ public class EventManager {
      * 
      * @param event The event to notify.
      */
-    public void notify(EventType event, HashMap<String, Object> data) {
+    public void notify(Event event, HashMap<String, Object> data) {
         if (!listeners.containsKey(event))
             return;
         listeners.get(event).forEach(listener -> listener.update(event, data));

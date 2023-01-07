@@ -6,7 +6,7 @@ import javafx.scene.layout.StackPane;
 import java.util.HashMap;
 
 import events.EventListener;
-import events.EventType;
+import events.Event;
 
 /**
  * A GUI element representing the current card on the ground.
@@ -46,7 +46,7 @@ public class TerrainPane extends StackPane implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_READY:
                 Platform.runLater(() -> initialize());

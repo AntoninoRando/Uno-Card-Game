@@ -3,7 +3,7 @@ package events;
 /**
  * All notifiable events.
  */
-public enum EventType {
+public enum Event {
     PLAYER_HAND_INCREASE,
     PLAYER_HAND_DECREASE,
     CARD_CHANGE,
@@ -31,7 +31,7 @@ public enum EventType {
 
     TURN_START,
     TURN_END,
-    TURN_DECISION, 
+    TURN_DECISION,
     SELECTION,
 
     GAME_READY,

@@ -18,7 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import events.EventListener;
-import events.EventType;
+import events.Event;
 
 /**
  * A GUI element displaying user info, which provides ways of changing user info.
@@ -175,7 +175,7 @@ public class ProfileMenu extends StackPane implements EventListener {
     }
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case INFO_RESET:
                 nickField.setPromptText((String) data.get("nickname"));

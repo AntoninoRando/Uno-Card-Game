@@ -7,7 +7,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import events.EventListener;
-import events.EventType;
+import events.Event;
 
 public class PlayerPane extends VBox implements EventListener {
     /* --- Singleton -------------------------- */
@@ -55,7 +55,7 @@ public class PlayerPane extends VBox implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_READY:
                 String[] nicknames = (String[]) data.get("all-nicknames");

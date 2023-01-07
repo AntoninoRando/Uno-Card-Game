@@ -6,7 +6,7 @@ import javafx.application.Platform;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import events.EventListener;
-import events.EventType;
+import events.Event;
 
 public class CardChronology extends Chronology implements EventListener {
     /* --- Singleton -------------------------- */
@@ -22,7 +22,7 @@ public class CardChronology extends Chronology implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case PLAYER_PLAYED_CARD:
                 Platform.runLater(() -> {

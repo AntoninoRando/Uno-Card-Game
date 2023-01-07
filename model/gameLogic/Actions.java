@@ -2,7 +2,7 @@ package model.gameLogic;
 
 import java.util.HashMap;
 
-import events.EventType;
+import events.Event;
 import model.CUModel;
 import model.gameEntities.GameAI;
 import model.gameEntities.Player;
@@ -60,12 +60,12 @@ public abstract class Actions {
         data.put("card-tag", card.getTag());
         // Notify 
         if (!(player instanceof GameAI))
-            CUModel.communicate(EventType.USER_DREW, data);
+            CUModel.communicate(Event.USER_DREW, data);
         else {
-            CUModel.communicate(EventType.PLAYER_DREW, player.getData());
+            CUModel.communicate(Event.PLAYER_DREW, player.getData());
         }
 
-        CUModel.communicate(EventType.PLAYER_HAND_INCREASE, player.getData());
+        CUModel.communicate(Event.PLAYER_HAND_INCREASE, player.getData());
     }
 
     /**

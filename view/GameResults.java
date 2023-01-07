@@ -16,7 +16,7 @@ import javafx.scene.shape.Circle;
 import java.util.HashMap;
 
 import events.EventListener;
-import events.EventType;
+import events.Event;
 
 public class GameResults extends VBox implements EventListener {
     private static GameResults instance;
@@ -29,7 +29,7 @@ public class GameResults extends VBox implements EventListener {
 
     private GameResults() {
         setId("game-results");
-        arrangeElements();
+        arrange();
     }
 
 
@@ -43,7 +43,7 @@ public class GameResults extends VBox implements EventListener {
 
     private HBox buttons;
 
-    private void arrangeElements() {
+    private void arrange() {
         setAlignment(Pos.CENTER);
         setSpacing(50.0);
         initialize();
@@ -91,7 +91,7 @@ public class GameResults extends VBox implements EventListener {
     }
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case PLAYER_WON:
                 Platform.runLater(() -> {

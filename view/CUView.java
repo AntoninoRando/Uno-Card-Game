@@ -5,14 +5,13 @@ import java.util.HashMap;
 import controller.CUController;
 import events.EventListener;
 import events.EventManager;
-import events.EventType;
+import events.Event;
 import view.gameElements.Card;
 import view.gameElements.CardChronology;
 import view.gameElements.HandPane;
 import view.gameElements.PlayerPane;
 import view.gameElements.SelectionPane;
 import view.gameElements.TerrainPane;
-import view.settings.SettingsMenu;
 
 /**
  * <b>C</b>ontrol <b>U</b>nit <b>View</b>. This class implements the
@@ -57,19 +56,21 @@ public class CUView extends EventManager implements EventListener {
     /* --- Body ------------------------------- */
 
     private void subscribeAll() {
-        subscribe(CardChronology.getInstance(), EventType.PLAYER_PLAYED_CARD, EventType.RESET);
-        subscribe(SelectionPane.getInstance(), EventType.USER_SELECTING_CARD);
-        subscribe(HandPane.getInstance(), EventType.GAME_READY, EventType.USER_PLAYED_CARD, EventType.USER_DREW);
-        subscribe(PlayerPane.getInstance(), EventType.GAME_READY, EventType.PLAYER_HAND_DECREASE,
-                EventType.PLAYER_HAND_INCREASE);
-        subscribe(TerrainPane.getInstance(), EventType.GAME_READY, EventType.CARD_CHANGE);
-        subscribe(new Card(), EventType.NEW_CARD);
+        subscribe(CardChronology.getInstance(), Event.PLAYER_PLAYED_CARD, Event.RESET);
+        subscribe(SelectionPane.getInstance(), Event.USER_SELECTING_CARD);
+        subscribe(HandPane.getInstance(), Event.GAME_READY, Event.USER_PLAYED_CARD, Event.USER_DREW);
+        subscribe(PlayerPane.getInstance(), Event.GAME_READY, Event.PLAYER_HAND_DECREASE,
+                Event.PLAYER_HAND_INCREASE);
+        subscribe(TerrainPane.getInstance(), Event.GAME_READY, Event.CARD_CHANGE);
+        subscribe(new Card(), Event.NEW_CARD);
         // subscribe(GameResults.getInstance(), EventType.PLAYER_WON);
         // subscribe(SettingsMenu.getInstance(), EventType.GAME_START, EventType.RESET);
     }
 
+    /* --- Observer --------------------------- */
+
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         HashMap<String, Object> decodedData = data;
         switch (event) {
             case PLAYER_PLAYED_CARD:
@@ -94,7 +95,7 @@ public class CUView extends EventManager implements EventListener {
         }
     }
 
-    public void communicate(EventType event, HashMap<String, Object> data) {
+    public static void communicate(Event event, HashMap<String, Object> data) {
         receiverCU.update(event, data);
     }
 

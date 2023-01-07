@@ -7,12 +7,11 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 import javafx.animation.ScaleTransition;
-import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import events.EventListener;
-import events.EventType;
+import events.Event;
 
 /**
  * The GUI representation of a UNO card: it has an image and it is zoombale, but
@@ -115,10 +114,10 @@ public class Card extends ImageView implements EventListener {
     }
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case NEW_CARD:
-                Card card = new Card((int) data.get("card-tag"), (String) data.get("card-representation"));
+                new Card((int) data.get("card-tag"), (String) data.get("card-representation"));
                 break;
             default:
                 throwUnsupportedError(event, data);

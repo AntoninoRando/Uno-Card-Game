@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import view.CUView;
 import events.EventListener;
 import events.EventManager;
-import events.EventType;
+import events.Event;
 
 /*
  * The section visible to the user where all their cards are gathered.
@@ -135,7 +135,7 @@ public class HandPane extends HBox implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_READY:
                 Platform.runLater(() -> initialize());
@@ -145,7 +145,7 @@ public class HandPane extends HBox implements EventListener {
                 HashMap<String, Object> data2 = new HashMap<>();
                 data2.put("card-node", Card.cards.get(cardTag));
                 data2.put("card-tag", cardTag);
-                CUView.getInstance().communicate(event, data2);
+                CUView.communicate(event, data2);
                 Platform.runLater(() -> {
                     addCard(Card.cards.get(cardTag));
                 });

@@ -9,7 +9,7 @@ import controller.Controls;
 import controller.DropAndPlay;
 import events.EventListener;
 import events.EventManager;
-import events.EventType;
+import events.Event;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -35,7 +35,6 @@ import model.gameEntities.Enemies;
 import model.gameEntities.Player;
 import view.CUView;
 import view.GameResults;
-import view.HomeMenu;
 import view.animations.Animation;
 import view.animations.Animations;
 import view.animations.ResetTranslate;
@@ -52,196 +51,34 @@ import view.settings.SettingsMenu;
 import view.sounds.Sounds;
 
 public class JUno extends Application implements EventListener {
+    /* --- Fields ----------------------------- */
+
     private Scene scene;
-    private StackPane rootContainer = new StackPane();
-    private StackPane homeRoot;
-    private StackPane gameRoot;
-    private StackPane endGameRoot;
+    private StackPane root;
+    private SettingsMenu settings;
+    private Button settingsButton;
+
+    /* ---.--- Getters and Setters ------------ */
+
+    public Scene getScene() {
+        return scene;
+    }
+
+    /* --- Constructors ----------------------- */
 
     public JUno() {
-        scene = new Scene(rootContainer, 1000, 600);
-        homeRoot = newHomeRoot();
-        gameRoot = newGameRoot();
-        endGameRoot = newEndGameRoot();
-        changeRoot(homeRoot);
+        createElements();
+        arrangeElements();
 
         scene.getStylesheets().add(getClass().getResource("resources\\Style.css").toExternalForm());
     }
 
-    // ROOTS
-
-    private void changeRoot(Pane newRoot) {
-        rootContainer.getChildren().setAll(newRoot);
-    }
-
-    private StackPane newHomeRoot() {
-        StackPane root = new StackPane();
-
-        HomeMenu home = HomeMenu.getInstance();
-        home.setPlayButtonAction(e -> {
-            Sounds.BUTTON_CLICK.play();
-            newGame();
-        });
-        home.setProfileAction(e -> {
-            Sounds.BUTTON_CLICK.play();
-            ProfileMenu.getInstance().setVisible(!ProfileMenu.getInstance().isVisible());
-        });
-
-        root.getChildren().addAll(home, ProfileMenu.getInstance());
-        StackPane.setAlignment(home, Pos.TOP_LEFT);
-
-        initializeProfile(home);
-
-        return root;
-    }
-
-    private void initializeProfile(Pane settingsContainer) {
-        ProfileMenu pm = ProfileMenu.getInstance();
-        pm.setVisible(false);
-        pm.onDelete(e -> PlayerData.reset());
-        pm.onNickType(newNick -> PlayerData.setUserNick(newNick));
-        pm.getAvatarPicker().onChoice(icoPath -> PlayerData.setUserIcon(icoPath));
-        pm.setCloseContainer(settingsContainer);
-        try {
-            pm.getAvatarPicker().addOptions(Info.allIcons());
-        } catch (IOException e1) {
-        }
-
-        Info.events.subscribe(pm, EventType.USER_NEW_NICK, EventType.USER_NEW_ICON, EventType.NEW_LEVEL_PROGRESS,
-                EventType.USER_PLAYED_GAME, EventType.USER_WON, EventType.LEVELED_UP, EventType.INFO_RESET);
-
-        // Setting the first values
-        // pm.update(EventType.USER_NEW_NICK, PlayerData.getUserNick());
-        // pm.update(EventType.USER_NEW_ICON, PlayerData.getUserIcon());
-        // pm.update(EventType.LEVELED_UP, PlayerData.getLevel());
-        // pm.update(EventType.USER_PLAYED_GAME, PlayerData.getGames());
-        // pm.update(EventType.USER_WON, (int) PlayerData.getWins());
-        // pm.update(EventType.NEW_LEVEL_PROGRESS, Info.userLevelProgress());
-    }
-
-    private Timer scrollTimer;
-
-    private StackPane newGameRoot() {
-        StackPane root = new StackPane();
-        root.setId("background");
-
-        BorderPane gameElements = new BorderPane();
-        gameElements.setLeft(PlayerPane.getInstance());
-
-        StackPane center = new StackPane(TerrainPane.getInstance(), CardChronology.getInstance());
-        CardChronology.getInstance().setVisible(false);
-        gameElements.setCenter(center);
-
-        gameElements.setBottom(HandPane.getInstance()); // Added after the terrain card, so that the hand's cards are
-                                                        // displayed on top
-
-        Region padderRegionRight = new Region();
-        padderRegionRight.prefWidthProperty().bind(PlayerPane.getInstance().widthProperty());
-        gameElements.setRight(padderRegionRight);
-
-        root.getChildren().addAll(gameElements, PlayzonePane.getInstance(), SelectionPane.getInstance());
-
-        // PlayzonePane.getInstance().setOnMouseClicked(e -> {
-        // if (e.getButton().equals(MouseButton.SECONDARY))
-        // DeclareUno.getInstance().fire();
-        // else
-        // Draw.getInstance().fire();
-        // });
-        PlayzonePane.getInstance().setOnScroll(e -> {
-            if (scrollTimer != null)
-                scrollTimer.cancel();
-
-            CardChronology.getInstance().setVisible(true);
-            CardChronology.getInstance().scroll(e.getDeltaY());
-
-            scrollTimer = new Timer();
-            scrollTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    CardChronology.getInstance().setVisible(false);
-                    CardChronology.getInstance().bringToTheEnd();
-                }
-            }, 2000L);
-        });
-
-        addSettingsContents(root);
-
-        return root;
-    }
-
-    private StackPane newEndGameRoot() {
-        // End Game Buttons
-        Button playAgain = new Button();
-        playAgain.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.play();
-            newGame();
-        });
-        playAgain.setStyle("-fx-background-color: none");
-
-        ImageView icon = new ImageView(new Image("resources\\BlueButton.png"));
-        icon.setPreserveRatio(true);
-        icon.setFitWidth(150.0);
-        playAgain.setGraphic(icon);
-
-        Button backHome = new Button();
-        backHome.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.play();
-            changeRoot(homeRoot);
-        });
-        backHome.setStyle("-fx-background-color: none");
-        ImageView icon2 = new ImageView(new Image("resources\\HomeButton.png"));
-        icon2.setPreserveRatio(true);
-        icon2.setFitWidth(150.0);
-        backHome.setGraphic(icon2);
-
-        GameResults.getInstance().addButtons(playAgain, backHome);
-
-        return new StackPane(GameResults.getInstance());
-    }
-
-    private void addSettingsContents(Pane root) {
-        SettingsMenu sm = SettingsMenu.getInstance();
-        sm.setVisible(false);
-
-        Button restartB = new Button("Restart");
-        Button quitB = new Button("Quit game");
-        restartB.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.play();
-            sm.setVisible(false);
-            quitGame();
-            newGame();
-        });
-        quitB.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.play();
-            sm.setVisible(false);
-            quitGame();
-            changeRoot(homeRoot);
-        });
-        sm.inGameMenu(restartB, quitB);
-
-        Button openB = new Button();
-        openB.setId("settings-button");
-        try {
-            Image image = new Image(Paths.get("resources\\settingsIcon.png").toUri().toURL().toExternalForm());
-            ImageView icon = new ImageView(image);
-            icon.setFitWidth(50.0);
-            icon.setFitHeight(50.0);
-            openB.setGraphic(icon);
-        } catch (MalformedURLException e1) {
-        }
-        openB.setOnMouseClicked(__ -> sm.setVisible(!sm.isVisible()));
-        root.getChildren().addAll(sm, openB);
-        StackPane.setAlignment(openB, Pos.TOP_RIGHT);
-    }
-
-    /* ANIMATIONS */
+    /* --- Body ------------------------------- */
 
     private Animation unoAnimation;
     private Animation blockTurnAnimation;
     private Animation playingCardAnimation;
     private Animation focusPlayerOnTurnAnimation;
-    private Animation a1 = Animations.NEW_GAME.get();
-    private Animation a2 = Animations.NEW_GAME.get();
 
     private void loadMedia() {
         Animations.FOCUS_PLAYER.get().load();
@@ -263,156 +100,165 @@ public class JUno extends Application implements EventListener {
         focusPlayerOnTurnAnimation.setWillCountdown(true);
         focusPlayerOnTurnAnimation.setWillStay(true);
 
-        a1.setStopFrame(5);
-        a1.setWillStay(true);
-        a1.setOnFinishAction(e -> {
-            GameThread.play();
-
-            rootContainer.getChildren().remove(0);
-            rootContainer.getChildren().add(0, gameRoot);
-        });
-
-        a2.setStartFrame(6);
-
         Sounds.loadAll();
     }
 
-    // Start and end a new game
+    /* --- State ------------------------------ */
 
-    private void newGame() {
-        // Player[] players = Stream.of("userInfo", "BotTopPrincessess", "BotLuca",
-        // "BotGiorgio")
-        // .map(s -> new Player("resources\\Data\\" + s + ".txt"))
-        // .sorted((a, b) -> new Random().nextBoolean() ? 1 : -1)
-        // .toArray(Player[]::new);
+    private AppState state;
 
-        Player[] players = new Player[] { Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE,
-                new Player("resources\\icons\\night.png", "User") };
-        Game.getInstance().setupGame(players);
-
-        Rectangle2D screenB = Screen.getPrimary().getBounds();
-        a1.setDimensions(screenB.getWidth(), screenB.getHeight());
-        a2.setDimensions(screenB.getWidth(), screenB.getHeight());
-        a1.play(rootContainer);
+    public void changeState(AppState state) {
+        this.state = state;
+        root.getChildren().remove(0);
+        root.getChildren().add(0, (Pane) state);
+        state.display();
     }
 
-    private void endGame() {
-        // GameThread.stop(false);
-        Sounds.IN_GAME_SOUNDTRACK.stop();
-        changeRoot(endGameRoot);
+    private void createElements() {
+        root = new StackPane();
+        scene = new Scene(root, 1000, 600);
+        settings = SettingsMenu.getInstance();
+        settingsButton = new Button();
+
+        settingsButton.setOnMouseClicked(e -> {
+            Sounds.BUTTON_CLICK.play();
+            settings.setVisible(!settings.isVisible());
+        });
+
+        settingsButton.setId("settings-button");
+
+        try {
+            Image image = new Image(Paths.get("resources\\settingsIcon.png").toUri().toURL().toExternalForm());
+            ImageView icon = new ImageView(image);
+            icon.setFitWidth(50.0);
+            icon.setFitHeight(50.0);
+            settingsButton.setGraphic(icon);
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        }
+
+        // TODO spostare nell'InGame.java
+        // Button restart = new Button("Restart");
+        // Button quit = new Button("Quit game");
+
+        // restart.setOnMouseClicked(e -> {
+        // Sounds.BUTTON_CLICK.play();
+        // settings.setVisible(false);
+        // // quitGame();
+        // // newGame();
+        // });
+        // quit.setOnMouseClicked(e -> {
+        // Sounds.BUTTON_CLICK.play();
+        // settings.setVisible(false);
+        // // quitGame();
+        // // changeRoot(homeRoot);
+        // });
     }
 
-    private void quitGame() {
-        // GameThread.stop(true);
-        Sounds.IN_GAME_SOUNDTRACK.stop();
+    private void arrangeElements() {
+        settings.setVisible(false);
+        root.getChildren().addAll(Home.getInstance(), settings, settingsButton);
+        StackPane.setAlignment(settingsButton, Pos.TOP_RIGHT);
+
+        Home.getInstance().setContext(this);
     }
 
-    /* EVENT LISTENER METHODS */
-
-    // TODO le animazioni le gioca toppo on the top: stanno sopra al menù di pausa
+    /* --- Observer --------------------------- */
 
     // Modificare e fare che legge un Json
-    private void subscribeEventListeners() {
-        EventManager em = CUView.getInstance();
-        em.subscribe(this, EventType.GAME_READY, EventType.GAME_START, EventType.CARD_CHANGE, EventType.UNO_DECLARED,
-                EventType.TURN_BLOCKED, EventType.TURN_END, EventType.INVALID_CARD, EventType.TURN_START,
-                EventType.PLAYER_WON);
-    }
 
-    private void subscribeInputListeners() {
-        PlayzonePane playzone = PlayzonePane.getInstance();
-        DropAndPlay.setPlayzone(playzone);
-        Controls.draw.apply(playzone);
-        Controls.uno.apply(playzone);
+    private void subscribeAll() {
+        CUView.getInstance().subscribe(this, Event.GAME_READY, Event.GAME_START, Event.CARD_CHANGE, Event.UNO_DECLARED,
+                Event.TURN_BLOCKED, Event.TURN_END, Event.INVALID_CARD, Event.TURN_START,
+                Event.PLAYER_WON);
     }
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
-        switch (event) {
-            case GAME_READY:
-                subscribeInputListeners();
-                Platform.runLater(() -> {
-                    int i = 0;
-                    while (i < gameRoot.getChildren().size()) {
-                        if (gameRoot.getChildren().get(i).getStyleClass().contains("fleeting"))
-                            gameRoot.getChildren().remove(i);
-                        else
-                            i += 1;
-                    }
-                });
-                break;
-            case GAME_START:
-                Platform.runLater(() -> {
-                    Sounds.IN_GAME_SOUNDTRACK.play();
-                    a2.play(rootContainer);
-                });
-                break;
-            // About players
-            case TURN_START:
-                Platform.runLater(() -> {
-                    String nick = (String) data.get("nickname");
-                    PlayerLabel pl = PlayerPane.getInstance().getPlayerLabel(nick);
-                    ;
-                    Bounds b = pl.localToScene(pl.getBoundsInLocal());
+    public void update(Event event, HashMap<String, Object> data) {
+        // switch (event) {
+        //     case GAME_READY:
+        //         Platform.runLater(() -> {
+        //             int i = 0;
+        //             while (i < gameRoot.getChildren().size()) {
+        //                 if (gameRoot.getChildren().get(i).getStyleClass().contains("fleeting"))
+        //                     gameRoot.getChildren().remove(i);
+        //                 else
+        //                     i += 1;
+        //             }
+        //         });
+        //         break;
+        //     case GAME_START:
+        //         Platform.runLater(() -> {
+        //             Sounds.IN_GAME_SOUNDTRACK.play();
+        //             a2.play(rootContainer);
+        //         });
+        //         break;
+        //     // About players
+        //     case TURN_START:
+        //         Platform.runLater(() -> {
+        //             String nick = (String) data.get("nickname");
+        //             PlayerLabel pl = PlayerPane.getInstance().getPlayerLabel(nick);
+        //             ;
+        //             Bounds b = pl.localToScene(pl.getBoundsInLocal());
 
-                    focusPlayerOnTurnAnimation.setDimensions(PlayerPane.getInstance().getWidth(), b.getHeight() + 10);
-                    focusPlayerOnTurnAnimation.setSceneCoordinates(0.0, b.getMinY() - 5);
-                    focusPlayerOnTurnAnimation.play(gameRoot, 0).getValue().getStyleClass().addAll("fleeting",
-                            "turn-start-animation");
-                });
-                try {
-                    focusPlayerOnTurnAnimation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                focusPlayerOnTurnAnimation.resetLatch();
-                break;
-            case TURN_END:
-                Platform.runLater(() -> {
-                    ObservableList<Node> l = gameRoot.getChildren();
-                    l.remove(l.indexOf(l.stream().filter(n -> n.getStyleClass().contains("turn-start-animation"))
-                            .findFirst().get()));
-                });
-                break;
-            case TURN_BLOCKED:
-                Platform.runLater(() -> blockTurnAnimation.play(gameRoot));
-                try {
-                    blockTurnAnimation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                blockTurnAnimation.resetLatch();
-                break;
-            case PLAYER_WON:
-                Platform.runLater(() -> {
-                    endGame();
-                });
-                break;
-            case CARD_CHANGE:
-                Platform.runLater(() -> {
-                    playingCardAnimation.setSceneCoordinates(scene.getWidth() / 2, scene.getHeight() / 2);
-                    playingCardAnimation.play(gameRoot, gameRoot.getChildren().size() - 2);
-                });
-                try {
-                    playingCardAnimation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                playingCardAnimation.resetLatch();
-                break;
-            case INVALID_CARD:
-                Platform.runLater(() -> ResetTranslate.resetTranslate(Card.cards.get((int) data.get("card-tag"))));
-                break;
-            case UNO_DECLARED:
-                Platform.runLater(() -> {
-                    unoAnimation.setSceneCoordinates(scene.getWidth() / 2 - 200, scene.getHeight() / 2 - 111.85);
-                    unoAnimation.play(gameRoot);
-                });
-                break;
-            default:
-                throwUnsupportedError(event, null);
-        }
+        //             focusPlayerOnTurnAnimation.setDimensions(PlayerPane.getInstance().getWidth(), b.getHeight() + 10);
+        //             focusPlayerOnTurnAnimation.setSceneCoordinates(0.0, b.getMinY() - 5);
+        //             focusPlayerOnTurnAnimation.play(gameRoot, 0).getValue().getStyleClass().addAll("fleeting",
+        //                     "turn-start-animation");
+        //         });
+        //         try {
+        //             focusPlayerOnTurnAnimation.latch.await();
+        //         } catch (InterruptedException e) {
+        //         }
+        //         focusPlayerOnTurnAnimation.resetLatch();
+        //         break;
+        //     case TURN_END:
+        //         Platform.runLater(() -> {
+        //             ObservableList<Node> l = gameRoot.getChildren();
+        //             l.remove(l.indexOf(l.stream().filter(n -> n.getStyleClass().contains("turn-start-animation"))
+        //                     .findFirst().get()));
+        //         });
+        //         break;
+        //     case TURN_BLOCKED:
+        //         Platform.runLater(() -> blockTurnAnimation.play(gameRoot));
+        //         try {
+        //             blockTurnAnimation.latch.await();
+        //         } catch (InterruptedException e) {
+        //         }
+        //         blockTurnAnimation.resetLatch();
+        //         break;
+        //     case PLAYER_WON:
+        //         Platform.runLater(() -> {
+        //             endGame();
+        //         });
+        //         break;
+        //     case CARD_CHANGE:
+        //         Platform.runLater(() -> {
+        //             playingCardAnimation.setSceneCoordinates(scene.getWidth() / 2, scene.getHeight() / 2);
+        //             playingCardAnimation.play(gameRoot, gameRoot.getChildren().size() - 2);
+        //         });
+        //         try {
+        //             playingCardAnimation.latch.await();
+        //         } catch (InterruptedException e) {
+        //         }
+        //         playingCardAnimation.resetLatch();
+        //         break;
+        //     case INVALID_CARD:
+        //         Platform.runLater(() -> ResetTranslate.resetTranslate(Card.cards.get((int) data.get("card-tag"))));
+        //         break;
+        //     case UNO_DECLARED:
+        //         Platform.runLater(() -> {
+        //             unoAnimation.setSceneCoordinates(scene.getWidth() / 2 - 200, scene.getHeight() / 2 - 111.85);
+        //             unoAnimation.play(gameRoot);
+        //         });
+        //         break;
+        //     default:
+        //         throwUnsupportedError(event, null);
+        // }
     }
 
     @Override
-    public int getEventPriority(EventType event) {
+    public int getEventPriority(Event event) {
         switch (event) {
             case CARD_CHANGE:
                 return 2;
@@ -429,8 +275,7 @@ public class JUno extends Application implements EventListener {
         stage.setOnCloseRequest(e -> System.exit(0));
         stage.setScene(scene);
         loadMedia();
-        subscribeEventListeners();
-        subscribeInputListeners();
+        subscribeAll();
         stage.show();
     }
 

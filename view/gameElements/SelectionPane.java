@@ -10,7 +10,7 @@ import javafx.scene.layout.HBox;
 /* --- Mine ------------------------------- */
 
 import events.EventListener;
-import events.EventType;
+import events.Event;
 
 public class SelectionPane extends HBox implements EventListener {
     /* --- Singleton -------------------------- */
@@ -60,7 +60,7 @@ public class SelectionPane extends HBox implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case USER_SELECTING_CARD:
                 Platform.runLater(() -> newSelection((int[]) data.get("all-card-tags")));

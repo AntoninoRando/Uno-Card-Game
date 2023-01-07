@@ -7,11 +7,11 @@ import java.util.HashMap;
  * notified from outside.
  */
 public interface EventListener {
-    default void update(EventType event, HashMap<String, Object> data) {
+    default void update(Event event, HashMap<String, Object> data) {
         throwUnimplementedError(event);
     }
 
-    default int getEventPriority(EventType event) {
+    default int getEventPriority(Event event) {
         return 1;
     }
 
@@ -23,7 +23,7 @@ public interface EventListener {
      * @param data
      * @throws Error
      */
-    default void throwUnsupportedError(EventType event, Object data) throws Error {
+    default void throwUnsupportedError(Event event, Object data) throws Error {
         throw new Error(this + " was listening for " + event + " with " + data
                 + " as data, but it does not support this event!");
     }
@@ -36,11 +36,11 @@ public interface EventListener {
      * @param data
      * @throws Error
      */
-    default void throwUnimplementedError(EventType event) throws Error {
+    default void throwUnimplementedError(Event event) throws Error {
         throw new Error(this + " was notified about " + event + ", but it does not support this event!");
     }
 
-    default int compareTo(EventType event, EventListener otherListener) throws Error {
+    default int compareTo(Event event, EventListener otherListener) throws Error {
         return -Integer.compare(getEventPriority(event), otherListener.getEventPriority(event));
     }
 }

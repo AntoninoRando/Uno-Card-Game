@@ -11,7 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import events.EventListener;
-import events.EventType;
+import events.Event;
 
 /**
  * A GUI element containing different settings about the applications that are changeable by the user.

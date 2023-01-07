@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.Map.Entry;
 
 import events.EventListener;
-import events.EventType;
+import events.Event;
 
 import model.CUModel;
 import model.gameEntities.GameAI;
@@ -62,7 +62,7 @@ public class UserTurn implements GameState, EventListener {
                     if (!game.isPlayable(card)) {
                         HashMap<String, Object> data = new HashMap<>();
                         data.put("card-tag", card.getTag());
-                        CUModel.communicate(EventType.INVALID_CARD, data);
+                        CUModel.communicate(Event.INVALID_CARD, data);
                         break;
                     }
 
@@ -72,10 +72,10 @@ public class UserTurn implements GameState, EventListener {
 
                     HashMap<String, Object> data = user.getData();
                     data.putAll(card.getData());
-                    CUModel.communicate(EventType.CARD_CHANGE, data);
-                    CUModel.communicate(EventType.PLAYER_PLAYED_CARD, data);
-                    CUModel.communicate(EventType.PLAYER_HAND_DECREASE, data);
-                    CUModel.communicate(EventType.USER_PLAYED_CARD, data);
+                    CUModel.communicate(Event.CARD_CHANGE, data);
+                    CUModel.communicate(Event.PLAYER_PLAYED_CARD, data);
+                    CUModel.communicate(Event.PLAYER_HAND_DECREASE, data);
+                    CUModel.communicate(Event.USER_PLAYED_CARD, data);
                     endTurn = true;
                     break;
                 // TODO case SAY_UNO:
@@ -112,14 +112,14 @@ public class UserTurn implements GameState, EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(EventType event, HashMap<String, Object> data) {
+    public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case TURN_DECISION:
                 Action action = Action.valueOf((String) data.get("choice-type"));
 
                 if (game.getCurrentPlayer() instanceof GameAI) {
                     if (action.equals(Action.FROM_HAND_PLAY_TAG))
-                        CUModel.communicate(EventType.INVALID_CARD, data);
+                        CUModel.communicate(Event.INVALID_CARD, data);
                     break;
                 }
 

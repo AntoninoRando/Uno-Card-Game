@@ -8,7 +8,7 @@ import controller.behaviors.BehaviorDecorator;
 import controller.behaviors.DragAndDrop;
 import javafx.scene.Node;
 
-import events.EventType;
+import events.Event;
 
 public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
     /* --- Fields ----------------------------- */
@@ -40,6 +40,6 @@ public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
         HashMap<String, Object> data = new HashMap<>();
         data.put("choice-type", "FROM_HAND_PLAY_TAG");
         data.put("choice", this.sourceTag);
-        CUController.getInstance().communicate(EventType.TURN_DECISION, data);
+        CUController.communicate(Event.TURN_DECISION, data);
     }
 }

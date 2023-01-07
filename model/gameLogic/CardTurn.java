@@ -1,6 +1,6 @@
 package model.gameLogic;
 
-import events.EventType;
+import events.Event;
 import model.CUModel;
 import model.gameEntities.GameAI;
 import model.gameEntities.Player;
@@ -21,7 +21,7 @@ public class CardTurn implements GameState {
     /* --- Body ------------------------------- */
 
     public void passTurn() {
-        CUModel.communicate(EventType.TURN_END, game.getCurrentPlayer().getData());
+        CUModel.communicate(Event.TURN_END, game.getCurrentPlayer().getData());
 
         Player following = game.getNextPlayer();
         game.advanceTurn(1);

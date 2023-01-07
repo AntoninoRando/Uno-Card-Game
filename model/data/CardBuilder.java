@@ -12,7 +12,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import events.EventType;
+import events.Event;
 import model.CUModel;
 
 /* --- Mine ------------------------------- */
@@ -57,7 +57,7 @@ public abstract class CardBuilder {
             for (int i = 0; i < copies; i++) {
                 Card card = cardConstructor.get((String) info.get("type")).get();
                 cards.add(card);
-                CUModel.communicate(EventType.NEW_CARD, card.getData());
+                CUModel.communicate(Event.NEW_CARD, card.getData());
             }
         }
     }

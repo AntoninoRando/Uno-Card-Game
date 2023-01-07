@@ -9,7 +9,7 @@ import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-import events.EventType;
+import events.Event;
 
 /**
  * A class containig player's info. It also contains static info about the user.
@@ -198,7 +198,7 @@ public class PlayerData {
         HashMap<String, Object> data = new HashMap<>();
         data.put("nickname", PlayerData.userNick);
         data.put("icon", PlayerData.userIcon);
-        Info.events.notify(EventType.INFO_RESET, data);
+        Info.events.notify(Event.INFO_RESET, data);
     }
 
     private void loadData(String filePathname) {

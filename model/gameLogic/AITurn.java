@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.Map.Entry;
 
-import events.EventType;
+import events.Event;
 import model.CUModel;
 import model.gameEntities.GameAI;
 import model.gameEntities.Player;
@@ -35,7 +35,7 @@ public class AITurn implements GameState {
     public void takeTurn() {
         cardPlayed = Optional.empty();
 
-        CUModel.communicate(EventType.TURN_START, AI.getData());
+        CUModel.communicate(Event.TURN_START, AI.getData());
         Entry<Action, Object> choice = AI.choose();
 
         switch (choice.getKey()) {
@@ -52,9 +52,9 @@ public class AITurn implements GameState {
 
                 HashMap<String, Object> data = AI.getData();
                 data.putAll(card.getData());
-                CUModel.communicate(EventType.CARD_CHANGE, data);
-                CUModel.communicate(EventType.PLAYER_PLAYED_CARD, data);
-                CUModel.communicate(EventType.PLAYER_HAND_DECREASE, data);
+                CUModel.communicate(Event.CARD_CHANGE, data);
+                CUModel.communicate(Event.PLAYER_PLAYED_CARD, data);
+                CUModel.communicate(Event.PLAYER_HAND_DECREASE, data);
                 break;
             default:
                 throw new Error("AI toke its turn with an unimplemented choice: " + choice.getKey());
@@ -67,7 +67,7 @@ public class AITurn implements GameState {
             return;
         }
 
-        CUModel.communicate(EventType.TURN_END, AI.getData());
+        CUModel.communicate(Event.TURN_END, AI.getData());
 
         Player following = game.getNextPlayer();
         game.advanceTurn(1);
