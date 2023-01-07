@@ -1,7 +1,6 @@
-true
-User
+
 resources\icons\night.png
 0
 0
-0
+2
 0

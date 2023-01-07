@@ -12,6 +12,7 @@ import view.gameElements.HandPane;
 import view.gameElements.PlayerPane;
 import view.gameElements.SelectionPane;
 import view.gameElements.TerrainPane;
+import view.settings.ProfileMenu;
 
 /**
  * <b>C</b>ontrol <b>U</b>nit <b>View</b>. This class implements the
@@ -55,6 +56,10 @@ public class CUView extends EventManager implements EventListener {
 
     /* --- Body ------------------------------- */
 
+    /**
+     * Subscribe all model-changes listeners to this. Thos listeners will be
+     * notified by this after a <code>CUModel.communicate</code> call.
+     */
     private void subscribeAll() {
         subscribe(CardChronology.getInstance(), Event.PLAYER_PLAYED_CARD, Event.RESET);
         subscribe(SelectionPane.getInstance(), Event.USER_SELECTING_CARD);
@@ -63,8 +68,8 @@ public class CUView extends EventManager implements EventListener {
                 Event.PLAYER_HAND_INCREASE);
         subscribe(TerrainPane.getInstance(), Event.GAME_READY, Event.CARD_CHANGE);
         subscribe(new Card(), Event.NEW_CARD);
+        subscribe(ProfileMenu.getInstance(), Event.INFO_CHANGE);
         // subscribe(GameResults.getInstance(), EventType.PLAYER_WON);
-        // subscribe(SettingsMenu.getInstance(), EventType.GAME_START, EventType.RESET);
     }
 
     /* --- Observer --------------------------- */

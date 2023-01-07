@@ -1,29 +1,43 @@
 package view.settings;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
+import controller.Controls;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+
+/* --- Mine ------------------------------- */
+
 import events.EventListener;
 import events.Event;
 
+import view.Visible;
+
 /**
- * A GUI element displaying user info, which provides ways of changing user info.
+ * A GUI element that displays user info and provides ways of changing them.
  */
-public class ProfileMenu extends StackPane implements EventListener {
+public class ProfileMenu extends StackPane implements EventListener, Visible {
+    /* --- Singleton -------------------------- */
+
     private static ProfileMenu instance;
 
     public static ProfileMenu getInstance() {
@@ -33,10 +47,11 @@ public class ProfileMenu extends StackPane implements EventListener {
     }
 
     private ProfileMenu() {
-        setId("profile-menu");
-        initialize();
+        createElements();
         arrangeElements();
     }
+
+    /* --- Fields ----------------------------- */
 
     private AvatarPicker avatarPicker;
     private VBox infoContainer;
@@ -49,97 +64,20 @@ public class ProfileMenu extends StackPane implements EventListener {
     private Label winRateLabel;
     private Button deleteButton;
 
-    private void initialize() {
-        newAvatarPicker();
-        newInfoContainer();
-        newAvatar();
-        newNickField();
-        newLevelLabel();
-        newXpBar();
-        newProgressLabel();
-        newGamesPlayedLabel();
-        newWinRateLabel();
-        newDeleteButton();
-    }
+    /* ---.--- Getters and Setters ------------ */
 
-    private void arrangeElements() {
-        setMaxHeight(500.0);
-        setMaxWidth(700.0);
-        setPrefWidth(700.0);
-        setPrefHeight(500.0);
-
-        HBox first = new HBox(20.0, avatar, nickField, levelLabel, xpBar, progressLabel);
-
-        HBox second = new HBox(20.0, gamesPlayedLabel, winRateLabel);
-
-        HBox third = new HBox(deleteButton);
-
-        infoContainer.getChildren().addAll(first, second, new HBox(), new HBox(), third);
-        infoContainer.setSpacing(40.0);
-
-        getChildren().addAll(infoContainer, avatarPicker);
-    }
-
-    private void newAvatarPicker() {
-        avatarPicker = new AvatarPicker();
-        avatarPicker.setVisible(false);
-    }
-
-    private void newInfoContainer() {
-        infoContainer = new VBox();
-    }
-
-    private void newAvatar() {
-        avatar = new Circle(20, 20, 20);
-        avatar.setId("avatar");
-        avatar.setOnMouseClicked(e -> avatarPicker.setVisible(!avatarPicker.isVisible()));
-    }
-
-    private void newNickField() {
-        nickField = new TextField();
-    }
-
-    private void newLevelLabel() {
-        levelLabel = new Label();
-        levelLabel.setId("level-label");
-    }
-
-    private void newXpBar() {
-        xpBar = new ProgressBar();
-        xpBar.getStyleClass().add("xp-bar");
-    }
-
-    private void newProgressLabel() {
-        progressLabel = new Label();
-        progressLabel.setId("level-progress-label");
-    }
-
-    private void newGamesPlayedLabel() {
-        gamesPlayedLabel = new Label();
-        gamesPlayedLabel.setId("games-played-label");
-    }
-
-    private void newWinRateLabel() {
-        winRateLabel = new Label();
-        winRateLabel.setId("win-rate-label");
-    }
-
-    private void newDeleteButton() {
-        deleteButton = new Button("Delete Account");
-        deleteButton.setId("delete-button");
-    }
-
-    /**
-     * Getters for the <code>AvatarPicker</code> of this, which can be opened by clicking in the avatar icon.
-     * @return The <code>AvatarPicker</code> of this.
-     */
     public AvatarPicker getAvatarPicker() {
         return avatarPicker;
     }
 
+    /* --- Body ------------------------------- */
+
     /**
-     * Set the action to perform when the user confirm the new text typed into the nickname prompt field.
-     * @param action A consumer that takes as input the text typed and performs the desired action on it.
+     * Set the action to perform when the user confirm the new text typed into the
+     * nickname prompt field.
+     * 
+     * @param action A consumer that takes as input the text typed and performs the
+     *               desired action on it.
      */
     public void onNickType(Consumer<String> action) {
         nickField.setOnKeyReleased(e -> {
@@ -154,83 +92,179 @@ public class ProfileMenu extends StackPane implements EventListener {
 
     /**
      * Set the action to perform when the delete button is clicked.
+     * 
      * @param action Interface from JavaFX describing the mouse click event.
      */
     public void onDelete(EventHandler<MouseEvent> action) {
         deleteButton.setOnMouseClicked(action);
     }
 
-    /**
-     * Set the property of closing this when clicked outside.
-     * @param container The pane that hold the click event which closes this.
-     */
-    // TODO fare che aggiunge l'azione al listener invece che sovrascriverla
-    public void setCloseContainer(Pane container) {
-        container.setOnMouseClicked(e -> {
-            if (e.getPickResult().getIntersectedNode() != container)
+    /* --- Visible ---------------------------- */
+
+    @Override
+    public void createElements() {
+        avatarPicker = new AvatarPicker();
+        infoContainer = new VBox();
+        avatar = new Circle(20, 20, 20);
+        nickField = new TextField();
+        levelLabel = new Label();
+        xpBar = new ProgressBar();
+        progressLabel = new Label();
+        gamesPlayedLabel = new Label();
+        winRateLabel = new Label();
+        deleteButton = new Button("Delete Account");
+
+        // setOnMouseClicked(e -> {
+        //     Node clicked = e.getPickResult().getIntersectedNode();
+        //     System.out.print(e.getPickResult());
+        //     if (clicked == avatarPicker || clicked == infoContainer)
+        //         return;
+        //     setVisible(false);
+        //     avatarPicker.setVisible(false);
+        // });
+        
+        avatar.setOnMouseClicked(e -> avatarPicker.setVisible(!avatarPicker.isVisible()));
+        Controls.NICK_ENTER.apply(nickField, nickField.getPromptText());
+        nickField.setOnKeyReleased(e -> {
+            if (e.getCode() != KeyCode.ENTER)
                 return;
-            setVisible(false);
-            avatarPicker.setVisible(false);
+            String text = nickField.getText();
+            nickField.clear();
+            nickField.setPromptText(text);
+            requestFocus(); // Used to remove focus from the text field
         });
     }
 
     @Override
+    public void arrangeElements() {
+        avatarPicker.setVisible(false);
+        avatar.setId("avatar");
+        levelLabel.setId("level-label");
+        xpBar.getStyleClass().add("xp-bar");
+        progressLabel.setId("level-progress-label");
+        gamesPlayedLabel.setId("games-played-label");
+        winRateLabel.setId("win-rate-label");
+        deleteButton.setId("delete-button");
+
+        setId("profile-menu");
+
+        setMaxHeight(500.0);
+        setMaxWidth(700.0);
+        setPrefWidth(700.0);
+        setPrefHeight(500.0);
+
+        HBox first = new HBox(20.0, avatar, nickField, levelLabel, xpBar, progressLabel);
+        HBox second = new HBox(20.0, gamesPlayedLabel, winRateLabel);
+        HBox third = new HBox(deleteButton);
+
+        infoContainer.getChildren().addAll(first, second, new HBox(), new HBox(), third);
+        infoContainer.setSpacing(40.0);
+
+        getChildren().addAll(infoContainer, avatarPicker);
+    }
+
+    /* --- Observer --------------------------- */
+
+    @Override
     public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
-            case INFO_RESET:
-                nickField.setPromptText((String) data.get("nickname"));
-                avatar.setFill(new ImagePattern(new Image((String) data.get("icon"))));
-                xpBar.setProgress(0);
-                progressLabel.setText("0%");
-                levelLabel.setText("Level 1");
-                gamesPlayedLabel.setText("Games: 0");
-                winRateLabel.setText("Wins: 0");
+            case INFO_CHANGE:
+                String nickname = (String) data.get("nickname");
+                String icon = (String) data.get("icon");
+                int level = (int) data.get("level");
+                int xp = (int) data.get("xp");
+                int gap = (int) data.get("xp-gap");
+                int games = (int) data.get("games");
+                int wins = (int) data.get("wins");
+
+                nickField.setPromptText(nickname);
+                avatar.setFill(new ImagePattern(new Image(icon)));
+                levelLabel.setText("Level " +  Integer.toString(level));
+
+                double progress = ((double) xp) / ((double) gap);
+                xpBar.setProgress(progress);
+                progressLabel.setText(Integer.toString((int) progress * 100) + "%");
+
+                gamesPlayedLabel.setText("Games: " + Integer.toString(games));
+
+                int winRate = (int) (((double) wins) / ((double) games)) * 100;
+                winRateLabel.setText("Win rate: " + Integer.toString(winRate) + "%");
                 break;
             default:
                 throwUnsupportedError(event, data);
         }
     }
+}
 
-    // @Override
-    // public void update(EventType event, String data) {
-    //     switch (event) {
-    //         case USER_NEW_NICK:
-    //             nickField.setPromptText(data);
-    //             break;
-    //         case USER_NEW_ICON:
-    //             avatar.setFill(new ImagePattern(new Image(data)));
-    //             break;
-    //         default:
-    //             throwUnsupportedError(event, data);
-    //     }
-    // }
+/**
+ * Displays all icons and lets user pick one to be their new icon.
+ */
+class AvatarPicker extends StackPane implements Visible {
+    /* --- Fields ----------------------------- */
 
-    // @Override
-    // public void update(EventType event, int data) {
-    //     switch (event) {
-    //         case LEVELED_UP:
-    //             levelLabel.setText("Level " + data);
-    //             break;
-    //         case USER_PLAYED_GAME:
-    //             gamesPlayedLabel.setText("Games: " + data);
-    //             break;
-    //         case USER_WON:
-    //             winRateLabel.setText("Wins: " + data);
-    //             break;
-    //         default:
-    //             throwUnsupportedError(event, data);
-    //     }
-    // }
+    private GridPane grid;
+    private final int iconsPerLine = 5;
+    private ScrollPane container;
+    private Button closeButton;
 
-    // @Override
-    // public void update(EventType event, double data) {
-    //     switch (event) {
-    //         case NEW_LEVEL_PROGRESS:
-    //             xpBar.setProgress(data / 100);
-    //             progressLabel.setText(data + "%");
-    //             break;
-    //         default:
-    //             throwUnsupportedError(event, data);
-    //     }
-    // }
+    /* --- Constructors ----------------------- */
+
+    public AvatarPicker() {
+        createElements();
+        arrangeElements();
+    }
+
+    /* --- Body ------------------------------- */
+
+    /**
+     * Set all the clickable icons.
+     * 
+     * @param iconsPaths A collection of all the icons paths.
+     */
+    private void addOptions(String dirPath) {
+        File directoryPath = new File(dirPath);
+        String[] icons = directoryPath.list();
+
+        for (int i = 0; i < icons.length; i++) {
+            String path = directoryPath.getPath() + "/" + icons[i];
+            Circle icon = createIcon(path);
+            GridPane.setColumnIndex(icon, i % iconsPerLine);
+            GridPane.setRowIndex(icon, i / iconsPerLine);
+            grid.getChildren().add(icon);
+
+            Controls.INFO_CHANGE.apply(icon, Map.entry("icon", path));
+        }
+    }
+
+    private Circle createIcon(String iconPath) {
+        Circle avatar = new Circle(30, new ImagePattern(new Image(iconPath)));
+        return avatar;
+    }
+
+    /* --- Visible ---------------------------- */
+
+    @Override
+    public void createElements() {
+        grid = new GridPane();
+        container = new ScrollPane(grid);
+        closeButton = new Button("X");
+
+        closeButton.setOnMouseClicked(e -> this.setVisible(false));
+
+        addOptions("resources/icons");
+    }
+
+    @Override
+    public void arrangeElements() {
+        setId("avatar-picker");
+        setMaxHeight(400.0);
+        setMaxWidth(400.0);
+        setPrefWidth(400.0);
+        setPrefHeight(400.0);
+
+        closeButton.getStyleClass().add("button");
+
+        getChildren().addAll(container, closeButton);
+        StackPane.setAlignment(closeButton, Pos.TOP_RIGHT);
+    }
 }

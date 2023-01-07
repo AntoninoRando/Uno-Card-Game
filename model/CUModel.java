@@ -5,6 +5,7 @@ import java.util.HashMap;
 import events.EventListener;
 import events.EventManager;
 import events.Event;
+import model.data.UserData;
 import model.gameEntities.GameAI;
 import model.gameLogic.Game;
 import model.gameLogic.UserTurn;
@@ -62,6 +63,7 @@ public class CUModel extends EventManager implements EventListener {
 
     private void subscribeAll() {
         subscribe(UserTurn.getInstance(), Event.TURN_DECISION);
+        subscribe(UserData.EVENT_LISTENER, Event.INFO_CHANGE);
     }
 
     public static void communicate(Event event, HashMap<String, Object> data) {
@@ -69,14 +71,15 @@ public class CUModel extends EventManager implements EventListener {
     }
 
     @Override
-    public void update(Event inputType, HashMap<String, Object> choice) {
-        switch (inputType) {
+    public void update(Event event, HashMap<String, Object> data) {
+        switch (event) {
             case TURN_DECISION:
                 if (Game.getInstance().getCurrentPlayer() instanceof GameAI)
                     break;
-                notify(inputType, choice);
+                notify(event, data);
                 break;
             default:
+                notify(event, data);
                 break;
         }
     }

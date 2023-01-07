@@ -1,7 +1,0 @@
-false
-Giorgio
-resources\icons\pirate.png
-0
-0
-0
-0

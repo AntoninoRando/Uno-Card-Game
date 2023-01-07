@@ -1,7 +1,0 @@
-false
-Top Princessess
-resources\icons\queen.png
-0
-0
-0
-0

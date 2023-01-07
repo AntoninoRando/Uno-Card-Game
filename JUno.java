@@ -14,17 +14,18 @@ import javafx.stage.Stage;
 
 /* --- Mine ------------------------------- */
 
-import model.data.PlayerData;
-
+import model.data.UserData;
+import view.Visible;
 import view.animations.Animations;
 import view.settings.SettingsMenu;
 import view.sounds.Sounds;
 
 import events.EventListener;
 
-public class JUno extends Application implements EventListener {
+public class JUno extends Application implements EventListener, Visible {
     /* --- Fields ----------------------------- */
 
+    private AppState state;
     private Scene scene;
     private StackPane root;
     private SettingsMenu settings;
@@ -41,26 +42,6 @@ public class JUno extends Application implements EventListener {
     public JUno() {
         createElements();
         arrangeElements();
-
-        scene.getStylesheets().add(getClass().getResource("resources\\Style.css").toExternalForm());
-    }
-
-    /* --- Application ------------------------ */
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        stage.setTitle("JUno");
-        stage.setFullScreen(true);
-        stage.setFullScreenExitHint("");
-        stage.setOnCloseRequest(e -> System.exit(0));
-        stage.setScene(scene);
-        loadMedia();
-        stage.show();
-    }
-
-    public static void main(String[] args) {
-        PlayerData.getPlayerData("resources\\Data\\userInfo.txt"); // Used to load the user info
-        launch(args);
     }
 
     /* --- Body ------------------------------- */
@@ -75,20 +56,17 @@ public class JUno extends Application implements EventListener {
         Sounds.loadAll();
     }
 
-    /* --- State ------------------------------ */
-
-    private AppState state;
-
-    public void changeState(AppState arrivalState) {
-        this.state = arrivalState;
-        Platform.runLater(() -> {
-            root.getChildren().remove(0);
-            root.getChildren().add(0, (Pane) state);
-            state.display();
-        });
+    public static void main(String[] args) {
+        String userDataPath = "resources\\Data\\userInfo.txt";
+        UserData.load(userDataPath);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> UserData.write(userDataPath)));
+        launch(args);
     }
 
-    private void createElements() {
+    /* --- Visible ---------------------------- */
+
+    @Override
+    public void createElements() {
         root = new StackPane();
         scene = new Scene(root, 1000, 600);
         settings = SettingsMenu.getInstance();
@@ -112,11 +90,37 @@ public class JUno extends Application implements EventListener {
         }
     }
 
-    private void arrangeElements() {
+    @Override
+    public void arrangeElements() {
+        scene.getStylesheets().add(getClass().getResource("resources\\Style.css").toExternalForm());
         settings.setVisible(false);
         root.getChildren().addAll(Home.getInstance(), settings, settingsButton);
         StackPane.setAlignment(settingsButton, Pos.TOP_RIGHT);
 
         Home.getInstance().setContext(this);
+    }
+
+    /* --- State ------------------------------ */
+
+    public void changeState(AppState arrivalState) {
+        this.state = arrivalState;
+        Platform.runLater(() -> {
+            root.getChildren().remove(0);
+            root.getChildren().add(0, (Pane) state);
+            state.display();
+        });
+    }
+
+    /* --- Application ------------------------ */
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        stage.setTitle("JUno");
+        stage.setFullScreen(true);
+        stage.setFullScreenExitHint("");
+        stage.setOnCloseRequest(e -> System.exit(0));
+        stage.setScene(scene);
+        loadMedia();
+        stage.show();
     }
 }

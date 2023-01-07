@@ -8,11 +8,12 @@ import javafx.scene.layout.VBox;
 /* --- Mine ------------------------------- */
 
 import view.GameResults;
+import view.Visible;
 import view.animations.Animation;
 import view.animations.Animations;
 import view.sounds.Sounds;
 
-public class EndGame extends StackPane implements AppState {
+public class EndGame extends StackPane implements AppState, Visible {
     /* --- Singleton -------------------------- */
 
     private static EndGame instance;
@@ -52,12 +53,8 @@ public class EndGame extends StackPane implements AppState {
         app.changeState(Home.getInstance());
     }
 
-    /* --- State ------------------------------ */
+    /* --- Visible ---------------------------- */
 
-    public void setContext(JUno app) {
-        this.app = app;
-    }
-    
     @Override
     public void createElements() {
         playAgain = new Button();
@@ -86,6 +83,13 @@ public class EndGame extends StackPane implements AppState {
         VBox content = new VBox(GameResults.getInstance(), buttonsContainer);
         getChildren().add(content);
     }
+    
+    /* --- State ------------------------------ */
+
+    public void setContext(JUno app) {
+        this.app = app;
+    }
+
 
     @Override
     public void display() {

@@ -3,6 +3,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import view.Visible;
 
 /* --- Mine ------------------------------- */
 
@@ -11,7 +12,7 @@ import view.animations.Animations;
 import view.settings.ProfileMenu;
 import view.sounds.Sounds;
 
-public class Home extends StackPane implements AppState {
+public class Home extends StackPane implements AppState, Visible {
     /* --- Singleton -------------------------- */
 
     private static Home instance;
@@ -87,11 +88,7 @@ public class Home extends StackPane implements AppState {
         // profileMenu.update(EventType.NEW_LEVEL_PROGRESS, Info.userLevelProgress());
     }
 
-    /* --- State ------------------------------ */
-
-    public void setContext(JUno app) {
-        this.app = app;
-    }
+    /* --- Visible ---------------------------- */
 
     @Override
     public void createElements() {
@@ -124,6 +121,13 @@ public class Home extends StackPane implements AppState {
         getChildren().addAll(buttons, profileMenu);
         StackPane.setAlignment(buttons, Pos.TOP_LEFT);
     }
+    
+    /* --- State ------------------------------ */
+
+    public void setContext(JUno app) {
+        this.app = app;
+    }
+
 
     @Override
     public void display() {

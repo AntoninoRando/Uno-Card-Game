@@ -12,6 +12,7 @@ import events.Event;
 
 import model.CUModel;
 import model.data.CardBuilder;
+import model.data.UserData;
 import model.gameEntities.GameAI;
 import model.gameEntities.Player;
 import model.gameObjects.*;
@@ -50,7 +51,6 @@ public class Game implements EventListener {
         return aS == bS || terrainCard.getValue() == card.getValue() || aS == Suit.WILD || bS == Suit.WILD;
     };
     private final Predicate<Player> winCondition = player -> player.getHand().isEmpty();
-    private boolean isOver;
     private long timeStart;
 
     /* ---.--- Getters and Setters ------------ */
@@ -89,10 +89,6 @@ public class Game implements EventListener {
 
     public int getTurn() {
         return turn;
-    }
-
-    public boolean isOver() {
-        return isOver;
     }
 
     /* --- Body ------------------------------- */
@@ -199,26 +195,18 @@ public class Game implements EventListener {
 
     public void end(boolean interrupted) {
         CUModel.communicate(Event.GAME_END, null);
-        isOver = true;
 
         Player winner = Game.getInstance().getCurrentPlayer();
+        boolean humanWon = !(winner instanceof GameAI);
         int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F);
-        // PlayerData.addXp(xpEarned);
 
-        if (!interrupted) {
-            // boolean humanWon = !(Game.getInstance().getCurrentPlayer() instanceof
-            // GameAI);
-            // if (humanWon) {
-            // PlayerData.addXp(5);
-            // xpEarned += 5;
-            // }
-            // PlayerData.addGamePlayed(humanWon);
-            // // Notify
-            // events.notify(EventType.PLAYER_WON, winner.getData());
-            // Info.events.notify(EventType.XP_EARNED, xpEarned);
-        }
+        UserData.addXp(xpEarned + (humanWon ? 7 : 0));
+        UserData.addGamePlayed(humanWon);
 
+        CUModel.communicate(Event.INFO_CHANGE, UserData.wrapData());
+        CUModel.communicate(Event.PLAYER_WON, winner.getData());
         CUModel.communicate(Event.RESET, null);
+
         reset();
     }
 }

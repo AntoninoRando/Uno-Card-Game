@@ -50,6 +50,7 @@ public class CUController extends EventManager implements EventListener {
                 new DropAndPlay(card, cardTag);
                 break;
             default:
+                notify(event, data);
                 break;
         }
     }

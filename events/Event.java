@@ -17,14 +17,7 @@ public enum Event {
     UNO_DECLARED,
     INVALID_CARD,
 
-    XP_EARNED,
-    NEW_LEVEL_PROGRESS,
-    LEVELED_UP,
-    USER_WON,
-    USER_PLAYED_GAME,
-    USER_NEW_NICK,
-    USER_NEW_ICON,
-    INFO_RESET,
+    INFO_CHANGE,
 
     PLAYER_WON,
     NEW_CARD,

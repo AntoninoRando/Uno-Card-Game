@@ -24,6 +24,7 @@ import model.gameEntities.Enemies;
 import model.gameEntities.Player;
 import model.gameLogic.Game;
 import view.CUView;
+import view.Visible;
 import view.animations.Animation;
 import view.animations.Animations;
 import view.animations.ResetTranslate;
@@ -38,7 +39,7 @@ import view.gameElements.TerrainPane;
 import view.settings.SettingsMenu;
 import view.sounds.Sounds;
 
-public class InGame extends StackPane implements AppState, EventListener {
+public class InGame extends StackPane implements AppState, EventListener, Visible {
     /* --- Singleton -------------------------- */
 
     private static InGame instance;
@@ -135,11 +136,7 @@ public class InGame extends StackPane implements AppState, EventListener {
         }
     }
 
-    /* --- State ------------------------------ */
-
-    public void setContext(JUno app) {
-        this.app = app;
-    }
+    /* --- Visible ---------------------------- */
 
     @Override
     public void createElements() {
@@ -190,6 +187,12 @@ public class InGame extends StackPane implements AppState, EventListener {
         getChildren().addAll(gameElements, playZone, selectionZone);
     }
 
+    /* --- State ------------------------------ */
+
+    public void setContext(JUno app) {
+        this.app = app;
+    }
+
     @Override
     public void display() {
         newGame();
@@ -201,7 +204,7 @@ public class InGame extends StackPane implements AppState, EventListener {
     public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case GAME_END:
-                quit(false);
+                Platform.runLater(() -> quit(false));
                 break;
             case TURN_START:
                 Animation focusPlayerOnTurnAnimation = Animations.FOCUS_PLAYER.get();

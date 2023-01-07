@@ -1,7 +1,0 @@
-false
-Luca
-resources\icons\blood.png
-0
-0
-0
-0
