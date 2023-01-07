@@ -60,12 +60,12 @@ public abstract class Actions {
         data.put("card-tag", card.getTag());
         // Notify 
         if (!(player instanceof GameAI))
-            CUModel.getInstance().communicate(EventType.USER_DREW, data);
+            CUModel.communicate(EventType.USER_DREW, data);
         else {
-            CUModel.getInstance().communicate(EventType.PLAYER_DREW, player.getData());
+            CUModel.communicate(EventType.PLAYER_DREW, player.getData());
         }
 
-        CUModel.getInstance().communicate(EventType.PLAYER_HAND_INCREASE, player.getData());
+        CUModel.communicate(EventType.PLAYER_HAND_INCREASE, player.getData());
     }
 
     /**

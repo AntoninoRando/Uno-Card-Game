@@ -9,12 +9,12 @@ import java.util.stream.Stream;
 
 import org.json.simple.parser.ParseException;
 
-import events.EventListener;
-import events.EventType;
-import model.CUModel;
-
 /* --- Mine ------------------------------- */
 
+import events.EventListener;
+import events.EventType;
+
+import model.CUModel;
 import model.data.CardsInfo;
 import model.gameEntities.GameAI;
 import model.gameEntities.Player;
@@ -36,9 +36,8 @@ public class Game implements EventListener {
     }
 
     private Game() {
+        deck = standardDeck();
         discardPile = new CardGroup();
-        restorePlayCondition();
-        restoreWinCondition();
     }
 
     /* --- Fields ----------------------------- */
@@ -46,12 +45,16 @@ public class Game implements EventListener {
     private Player[] players;
     private Card terrainCard;
     private final int firstHandSize = 7;
-    private CardGroup deck = standardDeck();
+    private CardGroup deck;
     private CardGroup discardPile;
     private Player[] turnOrder;
     private int turn; // current turn
-    private Predicate<Card> playCondition;
-    private Predicate<Player> winCondition;
+    private final Predicate<Card> playCondition = card -> {
+        Suit aS = terrainCard.getSuit();
+        Suit bS = card.getSuit();
+        return aS == bS || terrainCard.getValue() == card.getValue() || aS == Suit.WILD || bS == Suit.WILD;
+    };
+    private final Predicate<Player> winCondition = player -> player.getHand().isEmpty();
     private boolean isOver;
     private long timeStart;
 
@@ -61,20 +64,12 @@ public class Game implements EventListener {
         return players;
     }
 
-    public void setPlayers(Player[] players) {
-        this.players = players;
-    }
-
     public Card getTerrainCard() {
         return terrainCard;
     }
 
     public void setTerrainCard(Card terrainCard) {
         this.terrainCard = terrainCard;
-    }
-
-    public int getFirstHandSize() {
-        return firstHandSize;
     }
 
     public CardGroup getDeck() {
@@ -97,27 +92,8 @@ public class Game implements EventListener {
         return turn;
     }
 
-    public void setPlayConditon(Predicate<Card> newCondition) {
-        playCondition = newCondition;
-    }
-
-    public void setWinCondition(Predicate<Player> newCondition) {
-        winCondition = newCondition;
-    }
-
     public boolean isOver() {
         return isOver;
-    }
-
-    /* ---.--- Default values ----------------- */
-
-    /**
-     * 
-     * @return The default turn order, that is the list of players as it was
-     *         originally created.
-     */
-    private Player[] defaultTurnOrder() {
-        return players;
     }
 
     private CardGroup standardDeck() {
@@ -127,20 +103,6 @@ public class Game implements EventListener {
             e.printStackTrace();
             return null;
         }
-    }
-
-    private Predicate<Card> defaultPlayCondition() {
-        return card -> {
-            Suit aS = terrainCard.getSuit();
-            Suit bS = card.getSuit();
-            return aS == Suit.WILD || bS == Suit.WILD || aS == bS || terrainCard.getValue() == card.getValue();
-        };
-    }
-
-    private Predicate<Player> defaultWinCondition() {
-        return player -> {
-            return player.getHand().isEmpty();
-        };
     }
 
     /* --- Body ------------------------------- */
@@ -193,18 +155,6 @@ public class Game implements EventListener {
         instance = null;
     }
 
-    void restoreTurnOrder() {
-        turnOrder = defaultTurnOrder();
-    }
-
-    void restorePlayCondition() {
-        playCondition = defaultPlayCondition();
-    }
-
-    void restoreWinCondition() {
-        winCondition = defaultWinCondition();
-    }
-
     /* -------------------- */
 
     private GameState state;
@@ -213,30 +163,15 @@ public class Game implements EventListener {
         this.state = state;
     }
 
-    public void resolveTurn() {
-        CUModel.getInstance().communicate(EventType.TURN_START, getCurrentPlayer().getData());
-        state.resolveTurn();
-    }
-
-    public void nextTurn() {
-        CUModel.getInstance().communicate(EventType.TURN_END, getCurrentPlayer().getData());
-        setTurn(getNextPlayer());
-
-        if (getCurrentPlayer() instanceof GameAI)
-            changeState(AITurn.getInstance(getCurrentPlayer().getNickame()));
-        else
-            changeState(UserTurn.getInstance());
-    }
-
     public void setupGame(Player[] players) {
-        setPlayers(players);
-        restoreTurnOrder();
+        this.players = players;
+        turnOrder = players;
 
         Player firstPlayer = turnOrder[turn];
         GameState initialState = firstPlayer instanceof GameAI ? AITurn.getInstance(firstPlayer.getNickame())
                 : UserTurn.getInstance();
         for (Player player : getPlayers()) {
-            if (player instanceof GameAI) 
+            if (player instanceof GameAI)
                 AITurn.getInstance(player.getNickame()).setContext(this, (GameAI) player);
             else
                 UserTurn.getInstance().setContext(this, player);
@@ -251,7 +186,7 @@ public class Game implements EventListener {
         data.put("all-nicknames", Stream.of(players).map(Player::getNickame).toArray(String[]::new));
         data.put("all-icons", Stream.of(players).map(Player::getIcon).toArray(String[]::new));
         data.put("all-hand-sizes", Stream.of(players).mapToInt(p -> p.getHand().size()).toArray());
-        CUModel.getInstance().communicate(EventType.GAME_READY, data);
+        CUModel.communicate(EventType.GAME_READY, data);
 
         // First card
         Actions.shuffleDeck();
@@ -260,27 +195,23 @@ public class Game implements EventListener {
         // Notify
         data.clear();
         data.put("card-tag", firstCard.getTag());
-        CUModel.getInstance().communicate(EventType.CARD_CHANGE, data);
+        CUModel.communicate(EventType.CARD_CHANGE, data);
 
         // Give cards to players
         for (Player p : Game.getInstance().getPlayers())
-            Actions.dealFromDeck(p, Game.getInstance().getFirstHandSize());
+            Actions.dealFromDeck(p, firstHandSize);
         // Notify
-        CUModel.getInstance().communicate(EventType.GAME_START, null);
+        CUModel.communicate(EventType.GAME_START, null);
     }
 
     public void play() {
         setupFirstTurn();
         timeStart = System.currentTimeMillis();
 
-        while (!isOver()) { // TODO && !isPaused) {
-            resolveTurn();
+        while (!isOver() || didPlayerWin(getCurrentPlayer())) // TODO && !isPaused) {
+            state.resolve();
 
-            if (didPlayerWin(getCurrentPlayer()))
-                end(false);
-            else
-                nextTurn();
-        }
+        end(false);
     }
 
     public void end(boolean interrupted) {
@@ -303,7 +234,7 @@ public class Game implements EventListener {
             // Info.events.notify(EventType.XP_EARNED, xpEarned);
         }
 
-        CUModel.getInstance().communicate(EventType.RESET, null);
+        CUModel.communicate(EventType.RESET, null);
         reset();
     }
 }

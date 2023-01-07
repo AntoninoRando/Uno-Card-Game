@@ -2,7 +2,6 @@ package model;
 
 import java.util.HashMap;
 
-import controller.CUController;
 import events.EventListener;
 import events.EventManager;
 import events.EventType;
@@ -65,7 +64,7 @@ public class CUModel extends EventManager implements EventListener {
         subscribe(UserTurn.getInstance(), EventType.TURN_DECISION);
     }
 
-    public void communicate(EventType event, HashMap<String, Object> data) {
+    public static void communicate(EventType event, HashMap<String, Object> data) {
         receiverCU.update(event, data);
     }
 

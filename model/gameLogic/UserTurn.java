@@ -2,10 +2,12 @@ package model.gameLogic;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 
 import events.EventListener;
 import events.EventType;
+
 import model.CUModel;
 import model.gameEntities.GameAI;
 import model.gameEntities.Player;
@@ -30,14 +32,13 @@ public class UserTurn implements GameState, EventListener {
     private Player user;
     private Game game;
     private Entry<Action, Object> choice;
+    private Optional<Card> cardPlayed;
 
-    public void setContext(Game game, Player user) {
-        this.game = game;
-        this.user = user;
-    }
+    /* --- Body ------------------------------- */
 
-    @Override
-    public void resolveTurn() {
+    public void playCard() {
+        choice = null;
+        cardPlayed = Optional.empty();
         boolean endTurn = false;
 
         while (!endTurn) {
@@ -61,20 +62,20 @@ public class UserTurn implements GameState, EventListener {
                     if (!game.isPlayable(card)) {
                         HashMap<String, Object> data = new HashMap<>();
                         data.put("card-tag", card.getTag());
-                        CUModel.getInstance().communicate(EventType.INVALID_CARD, data);
+                        CUModel.communicate(EventType.INVALID_CARD, data);
                         break;
                     }
 
+                    cardPlayed = Optional.of(card);
                     Actions.changeCurrentCard(card);
                     user.getHand().remove(card);
-                    card.getEffect().ifPresent(effect -> effect.cast(user, card));
 
                     HashMap<String, Object> data = user.getData();
                     data.putAll(card.getData());
-                    CUModel.getInstance().communicate(EventType.CARD_CHANGE, data);
-                    CUModel.getInstance().communicate(EventType.PLAYER_PLAYED_CARD, data);
-                    CUModel.getInstance().communicate(EventType.PLAYER_HAND_DECREASE, data);
-                    CUModel.getInstance().communicate(EventType.USER_PLAYED_CARD, data);
+                    CUModel.communicate(EventType.CARD_CHANGE, data);
+                    CUModel.communicate(EventType.PLAYER_PLAYED_CARD, data);
+                    CUModel.communicate(EventType.PLAYER_HAND_DECREASE, data);
+                    CUModel.communicate(EventType.USER_PLAYED_CARD, data);
                     endTurn = true;
                     break;
                 // TODO case SAY_UNO:
@@ -82,21 +83,47 @@ public class UserTurn implements GameState, EventListener {
                     throw new Error("User toke its turn with an unimplemented choice: " + choice.getKey());
             }
         }
-
-        choice = null;
     }
+
+    public void passTurn() {
+        if (cardPlayed.isPresent()) {
+            game.changeState(new CardTurn(game, cardPlayed.get()));
+            return;
+        }
+
+        Player following = game.getNextPlayer();
+        game.setTurn(following);
+        game.changeState(AITurn.getInstance(following.getNickame()));
+    }
+
+    /* --- State ------------------------------ */
+
+    public void setContext(Game game, Player user) {
+        this.game = game;
+        this.user = user;
+    }
+
+    @Override
+    public void resolve() {
+        playCard();
+        passTurn();
+    }
+
+    /* --- Observer --------------------------- */
 
     @Override
     public void update(EventType event, HashMap<String, Object> data) {
         switch (event) {
             case TURN_DECISION:
+                Action action = Action.valueOf((String) data.get("choice-type"));
+
                 if (game.getCurrentPlayer() instanceof GameAI) {
-                    if (data.containsKey("card-tag"))
-                        CUModel.getInstance().communicate(EventType.INVALID_CARD, data);
+                    if (action.equals(Action.FROM_HAND_PLAY_TAG))
+                        CUModel.communicate(EventType.INVALID_CARD, data);
                     break;
                 }
+
                 synchronized (this) {
-                    Action action = Action.valueOf((String) data.get("choice-type"));
                     choice = Map.entry(action, data.get("choice"));
                     notify();
                 }

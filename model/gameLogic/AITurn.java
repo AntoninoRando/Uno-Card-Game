@@ -1,11 +1,13 @@
 package model.gameLogic;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Map.Entry;
 
 import events.EventType;
 import model.CUModel;
 import model.gameEntities.GameAI;
+import model.gameEntities.Player;
 import model.gameObjects.Card;
 
 public class AITurn implements GameState {
@@ -24,15 +26,16 @@ public class AITurn implements GameState {
     /* --- Fields ----------------------------- */
 
     private GameAI AI;
-    private Game game; // TODO togliere la classe Actions e usare solo il game
+    private Game game;
+    private Optional<Card> cardPlayed;
 
-    public void setContext(Game game, GameAI AI) {
-        this.game = game;
-        this.AI = AI;
-    }
 
-    @Override
-    public void resolveTurn() {
+    /* --- Body ------------------------------- */
+
+    public void playCard() {
+        cardPlayed = Optional.empty();
+
+        CUModel.communicate(EventType.TURN_START, AI.getData());
         Entry<Action, Object> choice = AI.takeTurn();
 
         switch (choice.getKey()) {
@@ -42,18 +45,52 @@ public class AITurn implements GameState {
                 break;
             case FROM_HAND_PLAY_CARD:
                 Card card = (Card) choice.getValue();
+
+                cardPlayed = Optional.of(card);
                 Actions.changeCurrentCard(card);
                 AI.getHand().remove(card);
-                card.getEffect().ifPresent(effect -> effect.cast(AI, card));
 
                 HashMap<String, Object> data = AI.getData();
                 data.putAll(card.getData());
-                CUModel.getInstance().communicate(EventType.CARD_CHANGE, data);
-                CUModel.getInstance().communicate(EventType.PLAYER_PLAYED_CARD, data);
-                CUModel.getInstance().communicate(EventType.PLAYER_HAND_DECREASE, data);
+                CUModel.communicate(EventType.CARD_CHANGE, data);
+                CUModel.communicate(EventType.PLAYER_PLAYED_CARD, data);
+                CUModel.communicate(EventType.PLAYER_HAND_DECREASE, data);
                 break;
             default:
                 throw new Error("AI toke its turn with an unimplemented choice: " + choice.getKey());
         }
+    }
+
+    public void passTurn() {
+        if (cardPlayed.isPresent()) {
+            game.changeState(new CardTurn(game, cardPlayed.get()));
+            return;
+        }
+
+        CUModel.communicate(EventType.TURN_END, AI.getData());
+
+        Player following = game.getNextPlayer();
+        game.setTurn(following);
+
+        /*
+         * "In the State pattern, the particular states may be aware of each other and initiate transitions from one state to another [...]"
+         */
+        if (following instanceof GameAI)
+            game.changeState(getInstance(following.getNickame()));
+        else
+            game.changeState(UserTurn.getInstance());
+    }
+
+    /* --- State ------------------------------ */
+
+    public void setContext(Game game, GameAI AI) {
+        this.game = game;
+        this.AI = AI;
+    }
+
+    @Override
+    public void resolve() {
+        playCard();
+        passTurn();
     }
 }

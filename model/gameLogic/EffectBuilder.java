@@ -195,7 +195,7 @@ public class EffectBuilder {
             HashMap<String, Object> data = new HashMap<>();
             data.put("all-card-tags", cardTags);
             data.put("all-card-representations", cardReprs);
-            CUModel.getInstance().communicate(EventType.USER_SELECTING_CARD, data);
+            CUModel.communicate(EventType.USER_SELECTING_CARD, data);
         });
         return this;
     }
