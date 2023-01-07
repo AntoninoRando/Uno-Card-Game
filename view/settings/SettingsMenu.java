@@ -1,8 +1,5 @@
 package view.settings;
 
-import java.util.HashMap;
-
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -11,10 +8,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import events.EventListener;
-import events.Event;
 
 /**
- * A GUI element containing different settings about the applications that are changeable by the user.
+ * A GUI element containing different settings about the applications that are
+ * changeable by the user.
  */
 public class SettingsMenu extends BorderPane implements EventListener {
     private static SettingsMenu instance;
@@ -36,7 +33,6 @@ public class SettingsMenu extends BorderPane implements EventListener {
     private HBox contextMenu;
     private Button general;
     private Button audio;
-    private Runnable displayInGameMenu;
 
     private void initialize() {
         newTitle();
@@ -49,7 +45,7 @@ public class SettingsMenu extends BorderPane implements EventListener {
         setMaxWidth(700.0);
         setPrefWidth(700.0);
         setPrefHeight(500.0);
-        
+
         setTop(title);
         setLeft(optionsMenu);
         setBottom(contextMenu);
@@ -77,31 +73,36 @@ public class SettingsMenu extends BorderPane implements EventListener {
 
     /**
      * Set the nodes that will appear only during a game.
+     * 
      * @param nodes The nodes with their properties.
      */
-    public void inGameMenu(Node... nodes) {
-        displayInGameMenu = () -> contextMenu.getChildren().addAll(nodes);
+    public void addOptions(Node... nodes) {
+        contextMenu.getChildren().setAll(nodes);
+    }
+
+    public void removeOptions() {
+        contextMenu.getChildren().clear();
     }
 
     // @Override
     // public void update(EventType event) {
-    //     switch (event) {
-    //         case RESET:
-    //             Platform.runLater(() -> contextMenu.getChildren().clear());
-    //             break;
-    //         default:
-    //             throwUnsupportedError(event, null);
-    //     }
+    // switch (event) {
+    // case RESET:
+    // Platform.runLater(() -> contextMenu.getChildren().clear());
+    // break;
+    // default:
+    // throwUnsupportedError(event, null);
+    // }
     // }
 
     // @Override
     // public void update(EventType event, HashMap<String, Object> data) {
-    //     switch (event) {
-    //         case GAME_START:
-    //             Platform.runLater(displayInGameMenu);
-    //             break;
-    //         default:
-    //             throwUnsupportedError(event, null);
-    //     }
+    // switch (event) {
+    // case GAME_START:
+    // Platform.runLater(displayInGameMenu);
+    // break;
+    // default:
+    // throwUnsupportedError(event, null);
+    // }
     // }
 }

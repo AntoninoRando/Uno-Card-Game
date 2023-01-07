@@ -191,13 +191,14 @@ public class Game implements EventListener {
         setupFirstTurn();
         timeStart = System.currentTimeMillis();
 
-        while (!isOver() || didPlayerWin(getCurrentPlayer())) // TODO && !isPaused) {
+        while (!didPlayerWin(getCurrentPlayer())) // TODO && !isPaused) {
             state.resolve();
 
         end(false);
     }
 
     public void end(boolean interrupted) {
+        CUModel.communicate(Event.GAME_END, null);
         isOver = true;
 
         Player winner = Game.getInstance().getCurrentPlayer();
