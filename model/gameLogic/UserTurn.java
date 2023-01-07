@@ -92,7 +92,7 @@ public class UserTurn implements GameState, EventListener {
         }
 
         Player following = game.getNextPlayer();
-        game.setTurn(following);
+        game.advanceTurn(1);
         game.changeState(AITurn.getInstance(following.getNickame()));
     }
 

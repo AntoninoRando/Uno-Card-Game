@@ -1,13 +1,9 @@
 package model.gameLogic;
 
-import java.io.IOException;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import org.json.simple.parser.ParseException;
 
 /* --- Mine ------------------------------- */
 
@@ -15,7 +11,7 @@ import events.EventListener;
 import events.EventType;
 
 import model.CUModel;
-import model.data.CardsInfo;
+import model.data.CardBuilder;
 import model.gameEntities.GameAI;
 import model.gameEntities.Player;
 import model.gameObjects.*;
@@ -36,7 +32,6 @@ public class Game implements EventListener {
     }
 
     private Game() {
-        deck = standardDeck();
         discardPile = new CardGroup();
     }
 
@@ -45,7 +40,7 @@ public class Game implements EventListener {
     private Player[] players;
     private Card terrainCard;
     private final int firstHandSize = 7;
-    private CardGroup deck;
+    private CardGroup deck = CardBuilder.getCards("C:/Users/stefa/Desktop/Nuova cartella/J/JUno/resources/Cards/Small.json");
     private CardGroup discardPile;
     private Player[] turnOrder;
     private int turn; // current turn
@@ -100,23 +95,14 @@ public class Game implements EventListener {
         return isOver;
     }
 
-    private CardGroup standardDeck() {
-        try {
-            return CardsInfo.load("Standard");
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     /* --- Body ------------------------------- */
 
-    public int getNextTurn() {
-        return (turn + 1) % countPlayers();
+    public void advanceTurn(int ahead) {
+        turn = (turn + ahead) % countPlayers();
     }
 
     public Player getNextPlayer() {
-        return turnOrder[getNextTurn()];
+        return turnOrder[(turn + 1) % countPlayers()];
     }
 
     public Player getCurrentPlayer() {
@@ -138,13 +124,6 @@ public class Game implements EventListener {
 
     public int getTurnOf(Player player) {
         return Arrays.asList(turnOrder).indexOf(player);
-    }
-
-    // TODO non so cosa faccia questo metodo... forse setuppa il turno
-    public void setTurn(Player player) {
-        for (int i = 0; i < countPlayers(); i++)
-            if (turnOrder[i] == player)
-                turn = i;
     }
 
     public boolean isPlayable(Card card) {

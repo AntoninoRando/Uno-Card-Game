@@ -24,7 +24,7 @@ public class CardTurn implements GameState {
         CUModel.communicate(EventType.TURN_END, game.getCurrentPlayer().getData());
 
         Player following = game.getNextPlayer();
-        game.setTurn(following);
+        game.advanceTurn(1);
 
         /*
          * "In the State pattern, the particular states may be aware of each other and initiate transitions from one state to another [...]"
@@ -45,7 +45,7 @@ public class CardTurn implements GameState {
 
     @Override
     public void resolve() {
-        card.getEffect().ifPresent(effect -> effect.cast(game.getCurrentPlayer(), card));
+        card.play();
         passTurn();
     }
     

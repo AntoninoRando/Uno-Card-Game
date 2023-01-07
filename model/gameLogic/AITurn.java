@@ -70,7 +70,7 @@ public class AITurn implements GameState {
         CUModel.communicate(EventType.TURN_END, AI.getData());
 
         Player following = game.getNextPlayer();
-        game.setTurn(following);
+        game.advanceTurn(1);
 
         /*
          * "In the State pattern, the particular states may be aware of each other and initiate transitions from one state to another [...]"

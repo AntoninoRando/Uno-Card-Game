@@ -52,7 +52,7 @@ public abstract class Actions {
      * 
      * @param player The player that will receive the card.
      */
-    static void dealFromDeck(Player player) {
+    public static void dealFromDeck(Player player) {
         // Add card
         Card card = takeFromDeck();
         player.getHand().add(card);
@@ -74,7 +74,7 @@ public abstract class Actions {
      * @param player The player that will receive the cards.
      * @param times  The amount of cards to give.
      */
-    static void dealFromDeck(Player player, int times) {
+    public static void dealFromDeck(Player player, int times) {
         while (times-- > 0)
             dealFromDeck(player);
     }
@@ -109,8 +109,8 @@ public abstract class Actions {
      * @param target The card to become.
      */
     static void transformCard(Card source, Card target) {
-        source.setSuit(target.getSuit());
-        source.setValue(target.getValue());
-        source.setEffect(target.getEffect());
+        // source.setSuit(target.getSuit());
+        // source.setValue(target.getValue());
+        // source.setEffect(target.getEffect());
     }
 }

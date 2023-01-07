@@ -1,8 +1,6 @@
 package model.gameEntities;
 
 import java.util.HashMap;
-import java.util.TreeSet;
-import model.gameLogic.Effect;
 import model.gameObjects.CardGroup;
 
 /**
@@ -14,7 +12,6 @@ public class Player {
     private String icon;
     private String nickname;
     private CardGroup hand;
-    private TreeSet<Effect> conditions;
 
     /**
      * @return Player nickname.
@@ -46,19 +43,10 @@ public class Player {
         this.icon = icon;
         this.nickname = nickname;
         hand = new CardGroup();
-        conditions = new TreeSet<>();
     }
 
     /* --- Body ------------------------------- */
 
-    public void addCondition(Effect condition) {
-        conditions.add(condition);
-    }
-
-    public void consumeConditions() {
-        conditions.forEach(effect -> effect.cast(this, null));
-        conditions.clear();
-    }
 
     public HashMap<String, Object> getData() {
         HashMap<String, Object> data = new HashMap<>();
