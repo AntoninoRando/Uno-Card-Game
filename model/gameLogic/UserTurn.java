@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import events.EventListener;
 import events.Event;
@@ -32,6 +34,7 @@ public class UserTurn implements GameState, EventListener {
     private Game game;
     private Entry<Action, Object> choice;
     private Optional<Card> cardPlayed;
+    private HashMap<Integer, Card> selectionCards;
 
     /* --- Body ------------------------------- */
 
@@ -39,6 +42,8 @@ public class UserTurn implements GameState, EventListener {
         choice = null;
         cardPlayed = Optional.empty();
         boolean endTurn = false;
+
+        CUModel.communicate(Event.TURN_START, user.getData());
 
         while (!endTurn) {
             synchronized (this) {
@@ -95,6 +100,30 @@ public class UserTurn implements GameState, EventListener {
         game.changeState(AITurn.getInstance(following.getNickame()));
     }
 
+    public Card chooseFrom(Card... cards) {
+        selectionCards = (HashMap<Integer, Card>) Stream.of(cards).collect(Collectors.toMap(
+                card -> card.getTag(),
+                card -> card));
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("all-card-tags", Stream.of(cards).mapToInt(card -> card.getTag()).toArray());
+        data.put("all-card-representations", Stream.of(cards).map(card -> card.toString()).toArray(String[]::new));
+        CUModel.communicate(Event.USER_SELECTING_CARD, data);
+
+        synchronized (this) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+            }
+        }
+
+        int tag = (int) choice.getValue();
+        Card card = selectionCards.get(tag);
+        choice = null;
+        selectionCards = null;
+        return card;
+    }
+
     /* --- State ------------------------------ */
 
     public void setContext(Game game, Player user) {
@@ -112,16 +141,22 @@ public class UserTurn implements GameState, EventListener {
 
     @Override
     public void update(Event event, HashMap<String, Object> data) {
+        Action action = Action.valueOf((String) data.get("choice-type"));
         switch (event) {
             case TURN_DECISION:
-                Action action = Action.valueOf((String) data.get("choice-type"));
-
                 if (game.getCurrentPlayer() instanceof GameAI) {
                     if (action.equals(Action.FROM_HAND_PLAY_TAG))
                         CUModel.communicate(Event.INVALID_CARD, data);
                     break;
                 }
 
+                synchronized (this) {
+                    choice = Map.entry(action, data.get("choice"));
+                    notify();
+                }
+                break;
+            case SELECTION:
+                CUModel.communicate(Event.SELECTION, null);
                 synchronized (this) {
                     choice = Map.entry(action, data.get("choice"));
                     notify();

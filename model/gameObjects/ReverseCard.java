@@ -22,5 +22,5 @@ public class ReverseCard extends Card {
             newOrder[(i + currentTurn) % n] = oldOrder[((currentTurn - i) + n) % n];
 
         game.setTurnOrder(newOrder);
-    }
+    } 
 }

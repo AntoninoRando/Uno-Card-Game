@@ -1,5 +1,6 @@
 package model.gameObjects;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 /* --- Mine ------------------------------- */
@@ -54,7 +55,22 @@ public abstract class Card implements Comparable<Card> {
 
     /* --- Strategy --------------------------- */
 
+    /**
+     * Executes the card effect.
+     * 
+     */
     public abstract void play();
+
+    /**
+     * Puts this card into the input collection in a specific way established by
+     * this method.
+     * 
+     * @param cards The collection of cards that may contain this card after this
+     *              method call.
+     */
+    public void shuffleIn(Collection<Card> cards) {
+        cards.add(this);
+    }
 
     /* --- Comparable ------------------------- */
 

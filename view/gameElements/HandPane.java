@@ -141,18 +141,14 @@ public class HandPane extends HBox implements EventListener {
                 Platform.runLater(() -> initialize());
                 break;
             case USER_DREW:
-                int cardTag = (int) data.get("card-tag");
-                HashMap<String, Object> data2 = new HashMap<>();
-                data2.put("card-node", Card.cards.get(cardTag));
-                data2.put("card-tag", cardTag);
-                CUView.communicate(event, data2);
+                CUView.communicate(event, data);
+
                 Platform.runLater(() -> {
-                    addCard(Card.cards.get(cardTag));
+                    addCard((Card) data.get("card-node"));
                 });
                 break;
             case USER_PLAYED_CARD:
-                int cardTag2 = (int) data.get("card-tag");
-                Platform.runLater(() -> removeCard(Card.cards.get(cardTag2)));
+                Platform.runLater(() -> removeCard((Card) data.get("card-node")));
                 break;
             default:
                 throwUnsupportedError(event, null);

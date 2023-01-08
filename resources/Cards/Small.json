@@ -1,75 +1,24 @@
 [
     {
+        "suit": "WILD",
+        "value": -5,
+        "copies": 10,
+        "type": "change color"
+    },
+    {
         "suit": "RED",
         "value": -1,
-        "copies": 2,
+        "copies": 4,
         "type": "block"
     },
     {
         "suit": "BLUE",
-        "value": -1,
-        "copies": 2,
-        "type": "block"
-    },
-    {
-        "suit": "GREEN",
-        "value": -1,
-        "copies": 2,
-        "type": "block"
-    },
-    {
-        "suit": "YELLOW",
-        "value": -1,
-        "copies": 2,
-        "type": "block"
-    },
-    {
-        "suit": "RED",
         "value": -3,
-        "copies": 2,
-        "type": "reverse"
-    },
-    {
-        "suit": "BLUE",
-        "value": -3,
-        "copies": 2,
+        "copies": 4,
         "type": "reverse"
     },
     {
         "suit": "GREEN",
-        "value": -3,
-        "copies": 2,
-        "type": "reverse"
-    },
-    {
-        "suit": "YELLOW",
-        "value": -3,
-        "copies": 2,
-        "type": "reverse"
-    },
-    {
-        "suit": "RED",
-        "value": -2,
-        "copies": 2,
-        "type": "draw 2",
-        "amount": 2
-    },
-    {
-        "suit": "BLUE",
-        "value": -2,
-        "copies": 2,
-        "type": "draw 2",
-        "amount": 2
-    },
-    {
-        "suit": "GREEN",
-        "value": -2,
-        "copies": 2,
-        "type": "draw 2",
-        "amount": 2
-    },
-    {
-        "suit": "YELLOW",
         "value": -2,
         "copies": 2,
         "type": "draw 2",
@@ -78,7 +27,7 @@
     {
         "suit": "WILD",
         "value": -4,
-        "copies": 2,
+        "copies": 4,
         "type": "draw 4",
         "amount": 4
     },

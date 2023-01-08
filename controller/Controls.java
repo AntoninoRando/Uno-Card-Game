@@ -39,13 +39,13 @@ public abstract class Controls {
         }
     };
 
-    public static final BiFunction<Node, Integer, BehaviorDecorator<MouseEvent>> select = (source,
+    public static final BiFunction<Node, Integer, BehaviorDecorator<MouseEvent>> SELECT = (source,
             cardTag) -> new BehaviorDecorator<MouseEvent>(new Click(source, new boolean[] { false }, null)) {
 
                 @Override
                 public void onEnd(MouseEvent e) {
                     HashMap<String, Object> data = new HashMap<>();
-                    data.put("choice-type", "card-selected");
+                    data.put("choice-type", "SELECTION_COMPLETED");
                     data.put("choice", cardTag);
                     CUController.communicate(Event.SELECTION, data);
                 }

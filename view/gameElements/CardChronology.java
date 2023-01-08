@@ -26,13 +26,15 @@ public class CardChronology extends Chronology implements EventListener {
         switch (event) {
             case PLAYER_PLAYED_CARD:
                 Platform.runLater(() -> {
-                    Card card = (Card) data.get("card");
+                    Card card = (Card) data.get("card-node");
                     String icon = (String) data.get("icon");
                     String nickname = (String) data.get("nickname");
                     addMemoryInfo(card, icon, nickname);
                     update();
                 });
                 break;
+            // TODO aggiungere anche case SELECTION così che salvo in una memoria (diversa
+            // dalla carta) il risultato della selezione
             case RESET:
                 Platform.runLater(() -> {
                     content = new HBox();

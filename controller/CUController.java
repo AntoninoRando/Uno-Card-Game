@@ -49,6 +49,12 @@ public class CUController extends EventManager implements EventListener {
                 int cardTag = (int) data.get("card-tag");
                 new DropAndPlay(card, cardTag);
                 break;
+            case USER_SELECTING_CARD:
+                Node[] cards = (Node[]) data.get("all-card-nodes");
+                int[] cardTags = (int[]) data.get("all-card-tags");
+                for (int i = 0; i < cards.length; i++)
+                    Controls.SELECT.apply(cards[i], cardTags[i]);
+                break;
             default:
                 notify(event, data);
                 break;

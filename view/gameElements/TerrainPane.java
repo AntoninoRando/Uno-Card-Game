@@ -39,8 +39,8 @@ public class TerrainPane extends StackPane implements EventListener {
         getChildren().setAll(terrainCard);
     }
 
-    private void updateTerrainCard(int cardTag) {
-        terrainCard.update(Card.cards.get(cardTag));
+    private void updateTerrainCard(Card node) {
+        terrainCard.update(node);
     }
 
     /* --- Observer --------------------------- */
@@ -52,7 +52,7 @@ public class TerrainPane extends StackPane implements EventListener {
                 Platform.runLater(() -> initialize());
                 break;
             case CARD_CHANGE:
-                Platform.runLater(() -> updateTerrainCard((int) data.get("card-tag")));
+                Platform.runLater(() -> updateTerrainCard((Card) data.get("card-node")));
                 break;
             default:
                 throwUnsupportedError(event, data);

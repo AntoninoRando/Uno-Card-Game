@@ -6,14 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.BiFunction;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-import events.Event;
-import model.CUModel;
 
 /* --- Mine ------------------------------- */
 
@@ -41,23 +38,23 @@ public abstract class CardBuilder {
         List<Map<String, Object>> setCards = parseJson(setName);
         CardBuilder.cards = new CardGroup();
 
+        Map<String, BiFunction<Suit, Integer, Card>> constructors = Map.of(
+            "simple", (suit, value) -> new SimpleCard(suit, value),
+            "draw 4", (suit, value) -> new DrawCard(suit, value, 4),
+            "draw 2", (suit, value)-> new DrawCard(suit, value, 2),
+            "reverse", (suit, value) -> new ReverseCard(suit, value),
+            "block", (suit, value) -> new BlockCard(suit, value),
+            "change color", (suit, value) -> new ChoseColor(suit, value)
+        );
+
         for (Map<String, Object> info : setCards) {
             Suit suit = Suit.valueOf((String) info.get("suit"));
             int value = (int) (long) info.get("value");
             int copies = (int) (long) info.get("copies");
 
-            Map<String, Supplier<Card>> cardConstructor = Map.of(
-                "simple", () -> new SimpleCard(suit, value),
-                "draw 4", () -> new DrawCard(suit, value, 4),
-                "draw 2", () -> new DrawCard(suit, value, 2),
-                "reverse", () -> new ReverseCard(suit, value),
-                "block", () -> new BlockCard(suit, value)
-            );
-
             for (int i = 0; i < copies; i++) {
-                Card card = cardConstructor.get((String) info.get("type")).get();
+                Card card = constructors.get((String) info.get("type")).apply(suit, value);
                 cards.add(card);
-                CUModel.communicate(Event.NEW_CARD, card.getData());
             }
         }
     }

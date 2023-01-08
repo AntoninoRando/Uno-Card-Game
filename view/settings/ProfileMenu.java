@@ -8,7 +8,6 @@ import java.util.function.Consumer;
 import controller.Controls;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -19,7 +18,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
@@ -122,7 +120,7 @@ public class ProfileMenu extends StackPane implements EventListener, Visible {
         //     setVisible(false);
         //     avatarPicker.setVisible(false);
         // });
-        
+
         avatar.setOnMouseClicked(e -> avatarPicker.setVisible(!avatarPicker.isVisible()));
         Controls.NICK_ENTER.apply(nickField, nickField.getPromptText());
         nickField.setOnKeyReleased(e -> {

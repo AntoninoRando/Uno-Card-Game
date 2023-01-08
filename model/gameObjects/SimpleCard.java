@@ -5,8 +5,11 @@ public class SimpleCard extends Card {
         super(suit, value);
     }
 
+    /**
+     * It does nothing.
+     */
     @Override
     public void play() {  
     }
-    
+
 }

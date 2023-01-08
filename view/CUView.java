@@ -1,6 +1,9 @@
 package view;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.IntStream;
 
 import controller.CUController;
 import events.EventListener;
@@ -62,14 +65,33 @@ public class CUView extends EventManager implements EventListener {
      */
     private void subscribeAll() {
         subscribe(CardChronology.getInstance(), Event.PLAYER_PLAYED_CARD, Event.RESET);
-        subscribe(SelectionPane.getInstance(), Event.USER_SELECTING_CARD);
+        subscribe(SelectionPane.getInstance(), Event.USER_SELECTING_CARD, Event.SELECTION);
         subscribe(HandPane.getInstance(), Event.GAME_READY, Event.USER_PLAYED_CARD, Event.USER_DREW);
         subscribe(PlayerPane.getInstance(), Event.GAME_READY, Event.PLAYER_HAND_DECREASE,
                 Event.PLAYER_HAND_INCREASE);
         subscribe(TerrainPane.getInstance(), Event.GAME_READY, Event.CARD_CHANGE);
-        subscribe(new Card(), Event.NEW_CARD);
         subscribe(ProfileMenu.getInstance(), Event.INFO_CHANGE);
-        // subscribe(GameResults.getInstance(), EventType.PLAYER_WON);
+    }
+
+    private Entry<Integer, Card> getCard(HashMap<String, Object> data) {
+        if (data == null || !data.containsKey("card-tag"))
+            return null;
+
+        int cardTag = (int) data.get("card-tag");
+        Card node = Card.cards.get(cardTag);
+
+        if (node != null)
+            return Map.entry(cardTag, node);
+
+        if (!data.containsKey("card-representation"))
+            throw new Error("An EventListener needed a card, but no info were given.\nData given:" + data.toString());
+
+        String cardRepr = (String) data.get("card-representation");
+        node = new Card(cardTag, cardRepr);
+        Card.cards.put(cardTag, node);
+
+        return Map.entry(cardTag, node);
+
     }
 
     /* --- Observer --------------------------- */
@@ -77,40 +99,29 @@ public class CUView extends EventManager implements EventListener {
     @Override
     public void update(Event event, HashMap<String, Object> data) {
         HashMap<String, Object> decodedData = data;
+
+        Entry<Integer, Card> card = getCard(data);
+        if (card != null) {
+            Card.cards.putIfAbsent(card.getKey(), card.getValue());
+            decodedData.put("card-node", card.getValue());
+        }
+
+        if (data != null && data.containsKey("all-card-tags")) {
+            int[] cardTags = (int[]) data.get("all-card-tags");
+            String[] cardReprs = (String[]) data.get("all-card-representations");
+            for (int i = 0; i < cardTags.length; i++)
+                Card.cards.putIfAbsent(cardTags[i], new Card(cardTags[i], cardReprs[i]));
+            decodedData.put("all-card-nodes",
+                    IntStream.of(cardTags).mapToObj(tag -> (Card) Card.cards.get((int) tag)).toArray(Card[]::new));
+        }
+
         switch (event) {
-            case PLAYER_PLAYED_CARD:
-                int cardTag = (int) data.get("card-tag");
-                String cardRepr = (String) data.get("card-representation");
-                Card.cards.putIfAbsent(cardTag, new Card(cardTag, cardRepr));
-                Card card = Card.cards.get((int) data.get("card-tag"));
-                decodedData.put("card", card);
-                this.notify(event, decodedData);
-                break;
-            case USER_SELECTING_CARD:
-                int[] cardTags = (int[]) data.get("all-card-tags");
-                String[] cardReprs = (String[]) data.get("all-card-representations");
-                for (int i = 0; i < cardTags.length; i++)
-                    Card.cards.putIfAbsent(cardTags[i], new Card(cardTags[i], cardReprs[i]));
-                decodedData.remove("all-card-representations");
-                this.notify(event, decodedData);
-                break;
             default:
                 this.notify(event, decodedData);
-                break;
         }
     }
 
     public static void communicate(Event event, HashMap<String, Object> data) {
         receiverCU.update(event, data);
     }
-
-    /*
-     * TODO questa classe rischia di diventare enorme. Inoltre, in realtà ogni
-     * classe del gameElements funziona a sé stante, bisogna solo togliere
-     * l'implement di EventListener. Potrei pittosto usare il decorator per, as
-     * esempio, creare la classe Cronologia, generale, e poi usare il decorator
-     * CronologiaCarte. Anche se tanto vale usare un generic, ma in questo caso non
-     * avrebbe senso il metodo update che gioca intorno all'evento
-     * PLAYER_PLAYED_CARD.
-     */
 }

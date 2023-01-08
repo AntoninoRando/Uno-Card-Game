@@ -173,8 +173,7 @@ public class Game implements EventListener {
         Actions.changeCurrentCard(firstCard);
         // Notify
         data.clear();
-        data.put("card-tag", firstCard.getTag());
-        CUModel.communicate(Event.CARD_CHANGE, data);
+        CUModel.communicate(Event.CARD_CHANGE, firstCard.getData());
 
         // Give cards to players
         for (Player p : Game.getInstance().getPlayers())

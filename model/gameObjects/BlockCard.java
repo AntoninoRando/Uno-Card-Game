@@ -1,5 +1,7 @@
 package model.gameObjects;
 
+import java.util.Collection;
+
 import events.Event;
 import model.CUModel;
 import model.gameEntities.Player;
@@ -16,5 +18,10 @@ public class BlockCard extends Card{
         Player blocked = game.getNextPlayer();
         game.advanceTurn(1);
         CUModel.communicate(Event.TURN_BLOCKED, blocked.getData());
+    }
+
+    @Override
+    public void shuffleIn(Collection<Card> cards) {
+        cards.add(this);
     } 
 }

@@ -1,13 +1,14 @@
 package view.gameElements;
 
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 
 /* --- Mine ------------------------------- */
+
+import view.CUView;
 
 import events.EventListener;
 import events.Event;
@@ -30,31 +31,16 @@ public class SelectionPane extends HBox implements EventListener {
         setAlignment(Pos.CENTER);
     }
 
-    /* --- Fields ----------------------------- */
-
-    private CountDownLatch latch = new CountDownLatch(1);
-
     /* --- Body ------------------------------- */
 
-    public void newSelection(int[] cardTags) {
-        // for (int i = 0; i < cardTags.length; i++) {
-        //     int tag = cardTags[i];
-        //     // Select control= new Select();
-        //     // control.setAction(__ -> completeSelection());
-
-        //     Card card = Card.cards.get(tag);
-        //     // control.setControls(card, tag);
-        //     getChildren().add(card);
-        // }
-        // // getChildren().addAll(Stream.of(cardTags).map(tag -> CardContainer.cards.get(tag)).toArray(CardContainer[]::new));
-        // setVisible(true);
+    public void newSelection(Card[] nodes) {
+        getChildren().addAll(nodes);
+        setVisible(true);
     }
 
     public void completeSelection() {
         setVisible(false);
         getChildren().clear();
-        latch.countDown();
-        latch = new CountDownLatch(1);
     }
 
     /* --- Observer --------------------------- */
@@ -63,13 +49,12 @@ public class SelectionPane extends HBox implements EventListener {
     public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
             case USER_SELECTING_CARD:
-                Platform.runLater(() -> newSelection((int[]) data.get("all-card-tags")));
-                try {
-                    latch.await();
-                } catch (InterruptedException e) {
-                }
+                Platform.runLater(() -> newSelection((Card[]) data.get("all-card-nodes")));
+                CUView.communicate(Event.USER_SELECTING_CARD, data);
                 break;
-            // TODO case "enemyTurn cardSelection":
+            case SELECTION:
+                Platform.runLater(() -> completeSelection());
+                break;
             default:
                 throwUnsupportedError(event, data);
         }

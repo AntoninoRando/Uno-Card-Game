@@ -4,7 +4,6 @@ import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
@@ -54,7 +53,7 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
         createElements();
         arrangeElements();
         CUView.getInstance().subscribe(this, Event.GAME_END, Event.PLAYER_PLAYED_CARD, Event.INVALID_CARD,
-                Event.TURN_BLOCKED, Event.TURN_START, Event.TURN_END);
+                Event.TURN_BLOCKED, Event.TURN_START);
     }
 
     /* --- Fields ----------------------------- */
@@ -226,13 +225,6 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
                 } catch (InterruptedException e) {
                 }
                 focusPlayerOnTurnAnimation.resetLatch();
-                break;
-            case TURN_END:
-                Platform.runLater(() -> {
-                    Node oldAnimation = getChildren().stream().filter(n -> n.getStyleClass().contains("fleeting"))
-                            .findAny().get();
-                    getChildren().remove(oldAnimation);
-                });
                 break;
             case TURN_BLOCKED:
                 Animation blockTurnAnimation = Animations.BLOCK_TURN.get();

@@ -19,7 +19,7 @@ public abstract class Actions {
      * 
      * @param card The new terrain card.
      */
-    static void changeCurrentCard(Card card) {
+    public static void changeCurrentCard(Card card) {
         Game game = Game.getInstance();
         if (game.getTerrainCard() != null)
             game.getDiscardPile().add(game.getTerrainCard());
@@ -30,7 +30,7 @@ public abstract class Actions {
      * 
      * @return The first card in the deck pile.
      */
-    static Card takeFromDeck() {
+    public static Card takeFromDeck() {
         Game game = Game.getInstance();
         if (game.getDeck().isEmpty())
             shuffleDeck();
@@ -40,9 +40,10 @@ public abstract class Actions {
     /**
      * Shuffles the deck.
      */
-    static void shuffleDeck() {
+    public static void shuffleDeck() {
         Game game = Game.getInstance();
-        game.getDeck().addAll(game.getDiscardPile());
+        for (Card card : game.getDiscardPile())
+            card.shuffleIn(game.getDeck());
         game.getDeck().shuffle();
         game.getDiscardPile().clear();
     }
@@ -56,16 +57,16 @@ public abstract class Actions {
         // Add card
         Card card = takeFromDeck();
         player.getHand().add(card);
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("card-tag", card.getTag());
-        // Notify 
+        HashMap<String, Object> data = card.getData();
+        data.putAll(player.getData());
+        // Notify
         if (!(player instanceof GameAI))
             CUModel.communicate(Event.USER_DREW, data);
         else {
-            CUModel.communicate(Event.PLAYER_DREW, player.getData());
+            CUModel.communicate(Event.PLAYER_DREW, data);
         }
 
-        CUModel.communicate(Event.PLAYER_HAND_INCREASE, player.getData());
+        CUModel.communicate(Event.PLAYER_HAND_INCREASE, data);
     }
 
     /**

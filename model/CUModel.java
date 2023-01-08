@@ -62,7 +62,7 @@ public class CUModel extends EventManager implements EventListener {
     /* --- Body ------------------------------- */
 
     private void subscribeAll() {
-        subscribe(UserTurn.getInstance(), Event.TURN_DECISION);
+        subscribe(UserTurn.getInstance(), Event.TURN_DECISION, Event.SELECTION);
         subscribe(UserData.EVENT_LISTENER, Event.INFO_CHANGE);
     }
 

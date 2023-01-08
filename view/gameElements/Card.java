@@ -11,7 +11,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import events.EventListener;
-import events.Event;
 
 /**
  * The GUI representation of a UNO card: it has an image and it is zoombale, but
@@ -111,16 +110,5 @@ public class Card extends ImageView implements EventListener {
                 zoomOut.play();
             }
         });
-    }
-
-    @Override
-    public void update(Event event, HashMap<String, Object> data) {
-        switch (event) {
-            case NEW_CARD:
-                new Card((int) data.get("card-tag"), (String) data.get("card-representation"));
-                break;
-            default:
-                throwUnsupportedError(event, data);
-        }
     }
 }
