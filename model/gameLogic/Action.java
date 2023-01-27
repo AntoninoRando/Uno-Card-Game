@@ -1,15 +1,15 @@
 package model.gameLogic;
 
 /**
- * Possible actions performable by the user and AI during the game.
+ * Action performed by players to resolve their turn.
  */
 public enum Action {
     FROM_DECK_DRAW("Draw a card from the main deck."),
-    FROM_HAND_PLAY_CARD("Selected a card from hand."),
-    FROM_HAND_PLAY_TAG("Selected a card from hand recognized by its tag."),
+    FROM_HAND_PLAY_CARD("Select a card from hand."),
+    FROM_HAND_PLAY_TAG("Select a tag of a card in hand."),
     SAY_UNO("Say uno to avoid malus."),
-    SELECTION_COMPLETED("Selected a card among alternatives."),
-    SKIP("Skip the turn doing nothing. Expecially useful when user quit the game.");
+    SELECTION_COMPLETED("Select a card among alternatives."),
+    SKIP("Skip the turn doing nothing. Expecially usefull when user quits the game.");
 
     private String description;
 

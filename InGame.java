@@ -21,7 +21,7 @@ import model.gameEntities.Enemies;
 import model.gameEntities.Player;
 import model.gameLogic.GameThread;
 import view.CUView;
-import view.Visible;
+import view.GUIContainer;
 import view.animations.Animation;
 import view.animations.Animations;
 import view.animations.ResetTranslate;
@@ -36,7 +36,7 @@ import view.gameElements.TerrainPane;
 import view.settings.SettingsMenu;
 import view.sounds.Sounds;
 
-public class InGame extends StackPane implements AppState, EventListener, Visible {
+public class InGame extends StackPane implements AppState, EventListener, GUIContainer {
     /* --- Singleton -------------------------- */
 
     private static InGame instance;
@@ -50,6 +50,7 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
     private InGame() {
         createElements();
         arrangeElements();
+        applyBehaviors();
         CUView.getInstance().subscribe(this, Event.PLAYER_PLAYED_CARD, Event.INVALID_CARD,
                 Event.TURN_BLOCKED, Event.TURN_START, Event.GAME_START);
     }
@@ -99,7 +100,7 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
      */
     private void newGame() {
         Player[] players = new Player[] { Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE,
-                new Player("resources\\icons\\night.png", "User") };
+                new Player() };
 
         SettingsMenu.getInstance().addOptions(quit, restart);
 
@@ -145,25 +146,6 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
         restart = new Button("Restart");
         quit = new Button("Quit game");
 
-        playZone.setOnScroll(this::scrollChronology);
-        DropAndPlay.setPlayzone(playZone);
-        Controls.draw.apply(playZone);
-        Controls.uno.apply(playZone);
-
-        restart.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.play();
-            SettingsMenu.getInstance().setVisible(false);
-            restart();
-        });
-        quit.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.play();
-            SettingsMenu.getInstance().setVisible(false);
-            quit();
-        });
-
-        Controls.SKIP.apply(restart);
-        Controls.SKIP.apply(quit);
-
         closingAnimation = Animations.NEW_GAME.get();
         closingAnimation.setStopFrame(5);
         closingAnimation.setWillStay(true);
@@ -188,6 +170,28 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
         gameElements.setRight(padderRegionRight);
 
         getChildren().addAll(gameElements, playZone, selectionZone);
+    }
+
+    @Override
+    public void applyBehaviors() {
+        playZone.setOnScroll(this::scrollChronology);
+        DropAndPlay.setPlayzone(playZone);
+        Controls.draw.apply(playZone);
+        Controls.uno.apply(playZone);
+
+        restart.setOnMouseClicked(e -> {
+            Sounds.BUTTON_CLICK.play();
+            SettingsMenu.getInstance().setVisible(false);
+            restart();
+        });
+        quit.setOnMouseClicked(e -> {
+            Sounds.BUTTON_CLICK.play();
+            SettingsMenu.getInstance().setVisible(false);
+            quit();
+        });
+
+        Controls.SKIP.apply(restart);
+        Controls.SKIP.apply(quit);
     }
 
     /* --- State ------------------------------ */

@@ -3,10 +3,7 @@ package view.settings;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
-import controller.Controls;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,8 +11,6 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -28,12 +23,14 @@ import javafx.scene.shape.Circle;
 import events.EventListener;
 import events.Event;
 
-import view.Visible;
+import view.GUIContainer;
+
+import controller.Controls;
 
 /**
  * A GUI element that displays user info and provides ways of changing them.
  */
-public class ProfileMenu extends StackPane implements EventListener, Visible {
+public class ProfileMenu extends StackPane implements EventListener, GUIContainer {
     /* --- Singleton -------------------------- */
 
     private static ProfileMenu instance;
@@ -47,6 +44,7 @@ public class ProfileMenu extends StackPane implements EventListener, Visible {
     private ProfileMenu() {
         createElements();
         arrangeElements();
+        applyBehaviors();
     }
 
     /* --- Fields ----------------------------- */
@@ -68,35 +66,6 @@ public class ProfileMenu extends StackPane implements EventListener, Visible {
         return avatarPicker;
     }
 
-    /* --- Body ------------------------------- */
-
-    /**
-     * Set the action to perform when the user confirm the new text typed into the
-     * nickname prompt field.
-     * 
-     * @param action A consumer that takes as input the text typed and performs the
-     *               desired action on it.
-     */
-    public void onNickType(Consumer<String> action) {
-        nickField.setOnKeyReleased(e -> {
-            if (e.getCode() != KeyCode.ENTER)
-                return;
-
-            action.accept(nickField.getText());
-            nickField.clear();
-            requestFocus(); // Used to remove focus from the text field
-        });
-    }
-
-    /**
-     * Set the action to perform when the delete button is clicked.
-     * 
-     * @param action Interface from JavaFX describing the mouse click event.
-     */
-    public void onDelete(EventHandler<MouseEvent> action) {
-        deleteButton.setOnMouseClicked(action);
-    }
-
     /* --- Visible ---------------------------- */
 
     @Override
@@ -111,26 +80,6 @@ public class ProfileMenu extends StackPane implements EventListener, Visible {
         gamesPlayedLabel = new Label();
         winRateLabel = new Label();
         deleteButton = new Button("Delete Account");
-
-        // setOnMouseClicked(e -> {
-        //     Node clicked = e.getPickResult().getIntersectedNode();
-        //     System.out.print(e.getPickResult());
-        //     if (clicked == avatarPicker || clicked == infoContainer)
-        //         return;
-        //     setVisible(false);
-        //     avatarPicker.setVisible(false);
-        // });
-
-        avatar.setOnMouseClicked(e -> avatarPicker.setVisible(!avatarPicker.isVisible()));
-        Controls.NICK_ENTER.apply(nickField, nickField.getPromptText());
-        nickField.setOnKeyReleased(e -> {
-            if (e.getCode() != KeyCode.ENTER)
-                return;
-            String text = nickField.getText();
-            nickField.clear();
-            nickField.setPromptText(text);
-            requestFocus(); // Used to remove focus from the text field
-        });
     }
 
     @Override
@@ -161,6 +110,18 @@ public class ProfileMenu extends StackPane implements EventListener, Visible {
         getChildren().addAll(infoContainer, avatarPicker);
     }
 
+    @Override
+    public void applyBehaviors() {
+        avatar.setOnMouseClicked(e -> avatarPicker.setVisible(!avatarPicker.isVisible()));
+        Controls.NICK_ENTER.apply(nickField, () -> {
+            String text = nickField.getText();
+            nickField.clear();
+            nickField.setPromptText(text);
+            requestFocus(); // Used to remove focus from the text field
+            return text;
+        });
+    }
+
     /* --- Observer --------------------------- */
 
     @Override
@@ -177,7 +138,7 @@ public class ProfileMenu extends StackPane implements EventListener, Visible {
 
                 nickField.setPromptText(nickname);
                 avatar.setFill(new ImagePattern(new Image(icon)));
-                levelLabel.setText("Level " +  Integer.toString(level));
+                levelLabel.setText("Level " + Integer.toString(level));
 
                 double progress = ((double) xp) / ((double) gap);
                 xpBar.setProgress(progress);
@@ -197,7 +158,7 @@ public class ProfileMenu extends StackPane implements EventListener, Visible {
 /**
  * Displays all icons and lets user pick one to be their new icon.
  */
-class AvatarPicker extends StackPane implements Visible {
+class AvatarPicker extends StackPane implements GUIContainer {
     /* --- Fields ----------------------------- */
 
     private GridPane grid;
@@ -247,8 +208,6 @@ class AvatarPicker extends StackPane implements Visible {
         container = new ScrollPane(grid);
         closeButton = new Button("X");
 
-        closeButton.setOnMouseClicked(e -> this.setVisible(false));
-
         addOptions("resources/icons");
     }
 
@@ -264,5 +223,10 @@ class AvatarPicker extends StackPane implements Visible {
 
         getChildren().addAll(container, closeButton);
         StackPane.setAlignment(closeButton, Pos.TOP_RIGHT);
+    }
+
+    @Override
+    public void applyBehaviors() {
+        closeButton.setOnMouseClicked(e -> this.setVisible(false));
     }
 }

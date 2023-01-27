@@ -72,6 +72,8 @@ public abstract class Card implements Comparable<Card> {
         cards.add(this);
     }
 
+    // TODO public abstract Card constructor();
+
     /* --- Comparable ------------------------- */
 
     @Override

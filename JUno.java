@@ -15,14 +15,14 @@ import javafx.stage.Stage;
 /* --- Mine ------------------------------- */
 
 import model.data.UserData;
-import view.Visible;
+import view.GUIContainer;
 import view.animations.Animations;
 import view.settings.SettingsMenu;
 import view.sounds.Sounds;
 
 import events.EventListener;
 
-public class JUno extends Application implements EventListener, Visible {
+public class JUno extends Application implements EventListener, GUIContainer {
     /* --- Fields ----------------------------- */
 
     private AppState state;
@@ -42,6 +42,7 @@ public class JUno extends Application implements EventListener, Visible {
     public JUno() {
         createElements();
         arrangeElements();
+        applyBehaviors();
     }
 
     /* --- Body ------------------------------- */
@@ -72,11 +73,6 @@ public class JUno extends Application implements EventListener, Visible {
         settings = SettingsMenu.getInstance();
         settingsButton = new Button();
 
-        settingsButton.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.play();
-            settings.setVisible(!settings.isVisible());
-        });
-
         settingsButton.setId("settings-button");
 
         try {
@@ -98,6 +94,14 @@ public class JUno extends Application implements EventListener, Visible {
         StackPane.setAlignment(settingsButton, Pos.TOP_RIGHT);
 
         Home.getInstance().setContext(this);
+    }
+
+    @Override
+    public void applyBehaviors() {
+        settingsButton.setOnMouseClicked(e -> {
+            Sounds.BUTTON_CLICK.play();
+            settings.setVisible(!settings.isVisible());
+        });
     }
 
     /* --- State ------------------------------ */

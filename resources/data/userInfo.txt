@@ -1,6 +1,6 @@
-
-resources\icons/blood.png
+Antonino
+resources\icons/pirate.png
 1500668
-8
-125
+0
+136
 19

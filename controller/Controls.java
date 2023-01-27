@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import controller.behaviors.BehaviorDecorator;
 import controller.behaviors.Click;
@@ -61,12 +62,12 @@ public abstract class Controls {
                 }
             };
 
-    public static final BiFunction<Node, String, BehaviorDecorator<KeyEvent>> NICK_ENTER = (
+    public static final BiFunction<Node, Supplier<String>, BehaviorDecorator<KeyEvent>> NICK_ENTER = (
             source, text) -> new BehaviorDecorator<KeyEvent>(new KeyPress(source, KeyCode.ENTER.getCode())) {
                 @Override
                 public void onEnd(KeyEvent e) {
                     HashMap<String, Object> data = new HashMap<>();
-                    data.put("nickname", text);
+                    data.put("nickname", text.get());
                     CUController.communicate(Event.INFO_CHANGE, data);
                 }
             };

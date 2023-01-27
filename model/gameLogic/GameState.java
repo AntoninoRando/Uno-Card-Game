@@ -1,8 +1,7 @@
 package model.gameLogic;
 
 /**
- * Implements the <em>State Pattern</em>, together with <code>AITurn</code>,
- * <code>UserTurn</code> and <code>UserSelection</code> classes (states).
+ * Implements the <em>State Pattern</em>.
  */
 public interface GameState {
     /**

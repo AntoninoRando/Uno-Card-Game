@@ -1,6 +1,8 @@
 package model.gameEntities;
 
 import java.util.HashMap;
+
+import model.data.UserData;
 import model.gameObjects.CardGroup;
 
 /**
@@ -12,6 +14,8 @@ public class Player {
     private String icon;
     private String nickname;
     private CardGroup hand;
+
+    /* ---.--- Getters and Setters ------------ */
 
     /**
      * @return Player nickname.
@@ -42,6 +46,15 @@ public class Player {
     public Player(String icon, String nickname) {
         this.icon = icon;
         this.nickname = nickname;
+        hand = new CardGroup();
+    }
+
+    /**
+     * Uses the data of the user.
+     */
+    public Player() {
+        this.icon = UserData.getIcon();
+        this.nickname = UserData.getNickname();
         hand = new CardGroup();
     }
 

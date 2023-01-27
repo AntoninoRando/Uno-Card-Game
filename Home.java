@@ -3,14 +3,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import view.Visible;
+import view.GUIContainer;
 
 /* --- Mine ------------------------------- */
 
 import view.settings.ProfileMenu;
 import view.sounds.Sounds;
 
-public class Home extends StackPane implements AppState, Visible {
+public class Home extends StackPane implements AppState, GUIContainer {
     /* --- Singleton -------------------------- */
 
     private static Home instance;
@@ -24,6 +24,7 @@ public class Home extends StackPane implements AppState, Visible {
     private Home() {
         createElements();
         arrangeElements();
+        applyBehaviors();
     }
 
     /* --- Fields ----------------------------- */
@@ -71,13 +72,6 @@ public class Home extends StackPane implements AppState, Visible {
 
         initializeProfileMenu();
 
-        playButton.setOnMouseClicked(e -> {
-            playButton.setDisable(true); // Avoid clicking play multiple times before game starts
-            play();
-        });
-        profile.setOnMouseClicked(e -> openProfile());
-        exit.setOnMouseClicked(e -> exit());
-
         title.getStyleClass().add("title");
         playButton.getStyleClass().add("button");
         profile.getStyleClass().add("button");
@@ -94,6 +88,16 @@ public class Home extends StackPane implements AppState, Visible {
 
         getChildren().addAll(buttons, profileMenu);
         StackPane.setAlignment(buttons, Pos.TOP_LEFT);
+    }
+
+    @Override
+    public void applyBehaviors() {
+        playButton.setOnMouseClicked(e -> {
+            playButton.setDisable(true); // Avoid clicking play multiple times before game starts
+            play();
+        });
+        profile.setOnMouseClicked(e -> openProfile());
+        exit.setOnMouseClicked(e -> exit());
     }
 
     /* --- State ------------------------------ */

@@ -8,12 +8,12 @@ import javafx.scene.layout.VBox;
 /* --- Mine ------------------------------- */
 
 import view.GameResults;
-import view.Visible;
+import view.GUIContainer;
 import view.animations.Animation;
 import view.animations.Animations;
 import view.sounds.Sounds;
 
-public class EndGame extends StackPane implements AppState, Visible {
+public class EndGame extends StackPane implements AppState, GUIContainer {
     /* --- Singleton -------------------------- */
 
     private static EndGame instance;
@@ -27,6 +27,7 @@ public class EndGame extends StackPane implements AppState, Visible {
     private EndGame() {
         createElements();
         arrangeElements();
+        applyBehaviors();
     }
 
     /* --- Fields ----------------------------- */
@@ -59,9 +60,13 @@ public class EndGame extends StackPane implements AppState, Visible {
     public void createElements() {
         playAgain = new Button();
         backHome = new Button();
+    }
 
-        playAgain.setOnMouseClicked(e -> playAgain());
-        backHome.setOnMouseClicked(e -> goHome());
+    @Override
+    public void arrangeElements() {
+        HBox buttonsContainer = new HBox(playAgain, backHome);
+        VBox content = new VBox(GameResults.getInstance(), buttonsContainer);
+        getChildren().add(content);
 
         playAgain.setStyle("-fx-background-color: none");
         backHome.setStyle("-fx-background-color: none");
@@ -78,18 +83,16 @@ public class EndGame extends StackPane implements AppState, Visible {
     }
 
     @Override
-    public void arrangeElements() {
-        HBox buttonsContainer = new HBox(playAgain, backHome);
-        VBox content = new VBox(GameResults.getInstance(), buttonsContainer);
-        getChildren().add(content);
+    public void applyBehaviors() {
+        playAgain.setOnMouseClicked(e -> playAgain());
+        backHome.setOnMouseClicked(e -> goHome());
     }
-    
+
     /* --- State ------------------------------ */
 
     public void setContext(JUno app) {
         this.app = app;
     }
-
 
     @Override
     public void display() {
