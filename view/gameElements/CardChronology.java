@@ -35,7 +35,7 @@ public class CardChronology extends Chronology implements EventListener {
                 break;
             // TODO aggiungere anche case SELECTION così che salvo in una memoria (diversa
             // dalla carta) il risultato della selezione
-            case RESET:
+            case GAME_READY:
                 Platform.runLater(() -> {
                     content = new HBox();
                     ScrollPane scrollPane = (ScrollPane) getChildren().get(0);

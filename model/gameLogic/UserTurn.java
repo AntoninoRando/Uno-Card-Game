@@ -83,8 +83,10 @@ public class UserTurn implements GameState, EventListener {
                     endTurn = true;
                     break;
                 // TODO case SAY_UNO:
+                case SKIP:
+                    return;
                 default:
-                    throw new Error("User toke its turn with an unimplemented choice: " + choice.getKey());
+                    throw new Error("User turn resolved with an unimplemented choice: " + choice.getKey());
             }
         }
     }

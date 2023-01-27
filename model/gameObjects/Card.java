@@ -65,8 +65,8 @@ public abstract class Card implements Comparable<Card> {
      * Puts this card into the input collection in a specific way established by
      * this method.
      * 
-     * @param cards The collection of cards that may contain this card after this
-     *              method call.
+     * @param cards The collection of destination, that may contain this card after
+     *              this method call.
      */
     public void shuffleIn(Collection<Card> cards) {
         cards.add(this);

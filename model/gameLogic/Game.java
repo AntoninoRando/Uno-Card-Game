@@ -41,7 +41,7 @@ public class Game implements EventListener {
     private Player[] players;
     private Card terrainCard;
     private final int firstHandSize = 7;
-    private CardGroup deck = CardBuilder.getCards("resources/Cards/Small.json");
+    private CardGroup deck = new CardGroup(CardBuilder.getCards("resources/Cards/Small.json"));
     private CardGroup discardPile;
     private Player[] turnOrder;
     private int turn; // current turn
@@ -52,6 +52,8 @@ public class Game implements EventListener {
     };
     private final Predicate<Player> winCondition = player -> player.getHand().isEmpty();
     private long timeStart;
+    private boolean isInterrupted;
+    private boolean running;
 
     /* ---.--- Getters and Setters ------------ */
 
@@ -89,6 +91,10 @@ public class Game implements EventListener {
 
     public int getTurn() {
         return turn;
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 
     /* --- Body ------------------------------- */
@@ -130,10 +136,6 @@ public class Game implements EventListener {
         return winCondition.test(player);
     }
 
-    static void reset() {
-        instance = null;
-    }
-
     /* -------------------- */
 
     private GameState state;
@@ -144,7 +146,7 @@ public class Game implements EventListener {
 
     public void setupGame(Player[] players) {
         this.players = players;
-        turnOrder = players;
+        turnOrder = Arrays.copyOf(players, players.length);
 
         Player firstPlayer = turnOrder[turn];
         GameState initialState = firstPlayer instanceof GameAI ? AITurn.getInstance(firstPlayer.getNickame())
@@ -162,6 +164,7 @@ public class Game implements EventListener {
         // Notify
         Player[] players = Game.getInstance().getPlayers();
         HashMap<String, Object> data = new HashMap<>();
+
         data.put("all-nicknames", Stream.of(players).map(Player::getNickame).toArray(String[]::new));
         data.put("all-icons", Stream.of(players).map(Player::getIcon).toArray(String[]::new));
         data.put("all-hand-sizes", Stream.of(players).mapToInt(p -> p.getHand().size()).toArray());
@@ -171,41 +174,51 @@ public class Game implements EventListener {
         Actions.shuffleDeck();
         Card firstCard = Actions.takeFromDeck();
         Actions.changeCurrentCard(firstCard);
-        // Notify
-        data.clear();
-        CUModel.communicate(Event.CARD_CHANGE, firstCard.getData());
+        CUModel.communicate(Event.CARD_CHANGE, firstCard.getData()); // Notify
 
         // Give cards to players
         for (Player p : Game.getInstance().getPlayers())
             Actions.dealFromDeck(p, firstHandSize);
-        // Notify
-        CUModel.communicate(Event.GAME_START, null);
+        CUModel.communicate(Event.GAME_START, null); // Notify
+
+        this.isInterrupted = false;
+        this.running = true;
     }
 
     public void play() {
         setupFirstTurn();
         timeStart = System.currentTimeMillis();
 
-        while (!didPlayerWin(getCurrentPlayer())) // TODO && !isPaused) {
+        while (!isInterrupted && !didPlayerWin(getCurrentPlayer()))
             state.resolve();
 
-        end(false);
+        endAndReset(isInterrupted);
     }
 
-    public void end(boolean interrupted) {
-        CUModel.communicate(Event.GAME_END, null);
-
+    // TODO aggiungere che non conta il vincitore se si interrompe il gioco
+    public void endAndReset(boolean interrupted) {
         Player winner = Game.getInstance().getCurrentPlayer();
-        boolean humanWon = !(winner instanceof GameAI);
         int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F);
 
+        for (Player player : players)
+            player.getHand().clear();
+
+        boolean humanWon = !(winner instanceof GameAI);
         UserData.addXp(xpEarned + (humanWon ? 7 : 0));
         UserData.addGamePlayed(humanWon);
 
         CUModel.communicate(Event.INFO_CHANGE, UserData.wrapData());
         CUModel.communicate(Event.PLAYER_WON, winner.getData());
-        CUModel.communicate(Event.RESET, null);
 
-        reset();
+        instance = null;
+    }
+
+    /**
+     * Interrupts this game if it is running, otherwise it'll do nothing.
+     */
+    public void interruptGame() {
+        if (!isRunning())
+            return;
+        isInterrupted = true;
     }
 }

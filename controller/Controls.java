@@ -34,7 +34,7 @@ public abstract class Controls {
         public void onEnd(MouseEvent e) {
             HashMap<String, Object> data = new HashMap<>();
             data.put("choice-type", "SAY_UNO");
-            data.put("choice", null);
+            data.put("choice", 0);
             CUController.communicate(Event.TURN_DECISION, data);
         }
     };
@@ -70,4 +70,16 @@ public abstract class Controls {
                     CUController.communicate(Event.INFO_CHANGE, data);
                 }
             };
+
+    public static final Function<Node, BehaviorDecorator<MouseEvent>> SKIP = source -> new BehaviorDecorator<MouseEvent>(
+            new Click(source, new boolean[] { false }, null)) {
+
+        @Override
+        public void onEnd(MouseEvent e) {
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("choice-type", "SKIP");
+            data.put("choice", 0);
+            CUController.communicate(Event.TURN_DECISION, data);
+        }
+    };
 }

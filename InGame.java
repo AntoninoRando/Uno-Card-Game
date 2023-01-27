@@ -17,11 +17,9 @@ import controller.DropAndPlay;
 
 import events.Event;
 import events.EventListener;
-
-import model.GameThread;
 import model.gameEntities.Enemies;
 import model.gameEntities.Player;
-import model.gameLogic.Game;
+import model.gameLogic.GameThread;
 import view.CUView;
 import view.Visible;
 import view.animations.Animation;
@@ -52,8 +50,8 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
     private InGame() {
         createElements();
         arrangeElements();
-        CUView.getInstance().subscribe(this, Event.GAME_END, Event.PLAYER_PLAYED_CARD, Event.INVALID_CARD,
-                Event.TURN_BLOCKED, Event.TURN_START);
+        CUView.getInstance().subscribe(this, Event.PLAYER_PLAYED_CARD, Event.INVALID_CARD,
+                Event.TURN_BLOCKED, Event.TURN_START, Event.GAME_START);
     }
 
     /* --- Fields ----------------------------- */
@@ -69,13 +67,17 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
     private Timer scrollTimer;
     private Button restart;
     private Button quit;
+    private Animation closingAnimation;
+    private Animation openingAnimation;
 
     /* --- Body ------------------------------- */
 
     // TODO rendere lo scroll un control, con tanto di timer
     private void scrollChronology(ScrollEvent e) {
-        if (scrollTimer != null)
+        if (scrollTimer != null) {
             scrollTimer.cancel();
+            scrollTimer.purge();
+        }
 
         chronology.setVisible(true);
         chronology.scroll(e.getDeltaY());
@@ -86,6 +88,8 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
             public void run() {
                 chronology.setVisible(false);
                 chronology.bringToTheEnd();
+                scrollTimer.cancel();
+                scrollTimer.purge();
             }
         }, 2000L);
     }
@@ -96,43 +100,33 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
     private void newGame() {
         Player[] players = new Player[] { Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE,
                 new Player("resources\\icons\\night.png", "User") };
-        Game.getInstance().setupGame(players);
-        GameThread.play();
 
         SettingsMenu.getInstance().addOptions(quit, restart);
 
-        Animation opening = Animations.NEW_GAME.get();
-        opening.setStartFrame(6);
-        opening.setDimensions(app.getScene().getWidth(), app.getScene().getHeight());
+        closingAnimation.setDimensions(app.getScene().getWidth(), app.getScene().getHeight());
+        closingAnimation.setOnFinishAction(e -> GameThread.play(players));
+        closingAnimation.play(this);
 
         Sounds.IN_GAME_SOUNDTRACK.play();
-        opening.play(this);
-    }
-
-    /**
-     * Default ending of the game (i.e., a player won).
-     */
-    private void end(boolean isInterrupt) {
-        GameThread.stop(isInterrupt);
-        Sounds.IN_GAME_SOUNDTRACK.stop();
-        SettingsMenu.getInstance().removeOptions();
     }
 
     private void restart() {
-        end(true);
+        Sounds.IN_GAME_SOUNDTRACK.stop();
+        SettingsMenu.getInstance().removeOptions();
         newGame();
     }
 
-    private void quit(boolean isInterrupted) {
-        end(isInterrupted);
+    private void quit() {
+        GameThread.stop(true);
+        Sounds.IN_GAME_SOUNDTRACK.stop();
+        SettingsMenu.getInstance().removeOptions();
 
-        if (isInterrupted) {
-            Home.getInstance().setContext(app);
-            app.changeState(Home.getInstance());
-        } else {
-            EndGame.getInstance().setContext(app);
-            app.changeState(EndGame.getInstance());
-        }
+        Home.getInstance().setContext(app);
+        app.changeState(Home.getInstance());
+        // } else {
+        // EndGame.getInstance().setContext(app);
+        // app.changeState(EndGame.getInstance());
+        // }
     }
 
     /* --- Visible ---------------------------- */
@@ -164,8 +158,18 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
         quit.setOnMouseClicked(e -> {
             Sounds.BUTTON_CLICK.play();
             SettingsMenu.getInstance().setVisible(false);
-            quit(true);
+            quit();
         });
+
+        Controls.SKIP.apply(restart);
+        Controls.SKIP.apply(quit);
+
+        closingAnimation = Animations.NEW_GAME.get();
+        closingAnimation.setStopFrame(5);
+        closingAnimation.setWillStay(true);
+
+        openingAnimation = Animations.NEW_GAME.get();
+        openingAnimation.setStartFrame(6);
     }
 
     @Override
@@ -202,8 +206,9 @@ public class InGame extends StackPane implements AppState, EventListener, Visibl
     @Override
     public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
-            case GAME_END:
-                Platform.runLater(() -> quit(false));
+            case GAME_START:
+                openingAnimation.setDimensions(app.getScene().getWidth(), app.getScene().getHeight());
+                Platform.runLater(() -> openingAnimation.play(this));
                 break;
             case TURN_START:
                 Animation focusPlayerOnTurnAnimation = Animations.FOCUS_PLAYER.get();

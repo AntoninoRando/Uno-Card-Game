@@ -29,8 +29,4 @@ public enum Event {
 
     GAME_READY,
     GAME_START,
-    GAME_END,
-    RESET,
-
-    ADD;
 }
