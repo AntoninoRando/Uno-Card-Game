@@ -18,9 +18,9 @@ public enum Event {
     INVALID_CARD,
 
     INFO_CHANGE,
+    INFO_RESET,
 
     PLAYER_WON,
-    NEW_CARD,
 
     TURN_START,
     TURN_END,

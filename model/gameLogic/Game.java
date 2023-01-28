@@ -40,7 +40,7 @@ public class Game implements EventListener {
 
     private Player[] players;
     private Card terrainCard;
-    private final int firstHandSize = 7;
+    private final int firstHandSize = 1;
     private CardGroup deck = new CardGroup(CardBuilder.getCards("resources/Cards/Small.json"));
     private CardGroup discardPile;
     private Player[] turnOrder;
@@ -197,19 +197,23 @@ public class Game implements EventListener {
 
     // TODO aggiungere che non conta il vincitore se si interrompe il gioco
     public void endAndReset(boolean interrupted) {
-        Player winner = Game.getInstance().getCurrentPlayer();
-        int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F);
+        if (!isInterrupted) {
+            Player winner = Game.getInstance().getCurrentPlayer();
+            boolean humanWon = !(winner instanceof GameAI);
+            int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F) + (humanWon ? 7 : 0);
 
+            UserData.addXp(xpEarned);
+            UserData.addGamePlayed(humanWon);
+
+            HashMap<String, Object> data = UserData.wrapData();
+            data.put("xp-earned", xpEarned);
+            CUModel.communicate(Event.INFO_CHANGE, data);
+            CUModel.communicate(Event.PLAYER_WON, winner.getData());
+        }
+
+        // Reset everything
         for (Player player : players)
             player.getHand().clear();
-
-        boolean humanWon = !(winner instanceof GameAI);
-        UserData.addXp(xpEarned + (humanWon ? 7 : 0));
-        UserData.addGamePlayed(humanWon);
-
-        CUModel.communicate(Event.INFO_CHANGE, UserData.wrapData());
-        CUModel.communicate(Event.PLAYER_WON, winner.getData());
-
         instance = null;
     }
 

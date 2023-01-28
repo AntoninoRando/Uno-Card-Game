@@ -42,9 +42,7 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
     }
 
     private ProfileMenu() {
-        createElements();
-        arrangeElements();
-        applyBehaviors();
+        initialize();
     }
 
     /* --- Fields ----------------------------- */
@@ -120,6 +118,7 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
             requestFocus(); // Used to remove focus from the text field
             return text;
         });
+        Controls.INFO_RESET.apply(deleteButton);
     }
 
     /* --- Observer --------------------------- */
@@ -140,13 +139,13 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
                 avatar.setFill(new ImagePattern(new Image(icon)));
                 levelLabel.setText("Level " + Integer.toString(level));
 
-                double progress = ((double) xp) / ((double) gap);
+                double progress = ((double) xp) / ((double) gap) * 100;
                 xpBar.setProgress(progress);
-                progressLabel.setText(Integer.toString((int) progress * 100) + "%");
+                progressLabel.setText(Integer.toString((int) progress) + "%");
 
                 gamesPlayedLabel.setText("Games: " + Integer.toString(games));
 
-                int winRate = (int) (((double) wins) / ((double) games)) * 100;
+                int winRate = (int) ((((double) wins) / ((double) games)) * 100);
                 winRateLabel.setText("Win rate: " + Integer.toString(winRate) + "%");
                 break;
             default:

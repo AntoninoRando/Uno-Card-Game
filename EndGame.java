@@ -1,8 +1,8 @@
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /* --- Mine ------------------------------- */
@@ -13,7 +13,7 @@ import view.animations.Animation;
 import view.animations.Animations;
 import view.sounds.Sounds;
 
-public class EndGame extends StackPane implements AppState, GUIContainer {
+public class EndGame extends VBox implements AppState, GUIContainer {
     /* --- Singleton -------------------------- */
 
     private static EndGame instance;
@@ -25,9 +25,7 @@ public class EndGame extends StackPane implements AppState, GUIContainer {
     }
 
     private EndGame() {
-        createElements();
-        arrangeElements();
-        applyBehaviors();
+        initialize();
     }
 
     /* --- Fields ----------------------------- */
@@ -64,10 +62,6 @@ public class EndGame extends StackPane implements AppState, GUIContainer {
 
     @Override
     public void arrangeElements() {
-        HBox buttonsContainer = new HBox(playAgain, backHome);
-        VBox content = new VBox(GameResults.getInstance(), buttonsContainer);
-        getChildren().add(content);
-
         playAgain.setStyle("-fx-background-color: none");
         backHome.setStyle("-fx-background-color: none");
 
@@ -80,6 +74,13 @@ public class EndGame extends StackPane implements AppState, GUIContainer {
         backHomeImage.setPreserveRatio(true);
         backHomeImage.setFitWidth(150.0);
         backHome.setGraphic(backHomeImage);
+
+        HBox buttonsContainer = new HBox(playAgain, backHome);
+        buttonsContainer.setAlignment(Pos.CENTER);
+
+        setId("game-results");
+        getChildren().addAll(GameResults.getInstance(), buttonsContainer);
+        setAlignment(Pos.CENTER);
     }
 
     @Override

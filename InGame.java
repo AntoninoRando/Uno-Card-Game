@@ -52,7 +52,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         arrangeElements();
         applyBehaviors();
         CUView.getInstance().subscribe(this, Event.PLAYER_PLAYED_CARD, Event.INVALID_CARD,
-                Event.TURN_BLOCKED, Event.TURN_START, Event.GAME_START);
+                Event.TURN_BLOCKED, Event.TURN_START, Event.GAME_START, Event.PLAYER_WON);
     }
 
     /* --- Fields ----------------------------- */
@@ -99,8 +99,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
      * Starts a new game.
      */
     private void newGame() {
-        Player[] players = new Player[] { Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE,
-                new Player() };
+        Player[] players = new Player[] { new Player(), Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE};
 
         SettingsMenu.getInstance().addOptions(quit, restart);
 
@@ -124,10 +123,15 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
 
         Home.getInstance().setContext(app);
         app.changeState(Home.getInstance());
-        // } else {
-        // EndGame.getInstance().setContext(app);
-        // app.changeState(EndGame.getInstance());
-        // }
+    }
+
+    private void displayResults() {
+        GameThread.stop(true);
+        Sounds.IN_GAME_SOUNDTRACK.stop();
+        SettingsMenu.getInstance().removeOptions();
+
+        EndGame.getInstance().setContext(app);
+        app.changeState(EndGame.getInstance());
     }
 
     /* --- Visible ---------------------------- */
@@ -213,6 +217,9 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
             case GAME_START:
                 openingAnimation.setDimensions(app.getScene().getWidth(), app.getScene().getHeight());
                 Platform.runLater(() -> openingAnimation.play(this));
+                break;
+            case PLAYER_WON:
+                Platform.runLater(() -> displayResults());
                 break;
             case TURN_START:
                 Animation focusPlayerOnTurnAnimation = Animations.FOCUS_PLAYER.get();

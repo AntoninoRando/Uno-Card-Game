@@ -61,6 +61,13 @@ public abstract class Controls {
                     CUController.communicate(Event.INFO_CHANGE, data);
                 }
             };
+    public static final Function<Node, BehaviorDecorator<MouseEvent>> INFO_RESET = source -> new BehaviorDecorator<MouseEvent>(
+            new Click(source, new boolean[] { false }, null)) {
+        @Override
+        public void onEnd(MouseEvent e) {
+            CUController.communicate(Event.INFO_RESET, null);
+        }
+    };
 
     public static final BiFunction<Node, Supplier<String>, BehaviorDecorator<KeyEvent>> NICK_ENTER = (
             source, text) -> new BehaviorDecorator<KeyEvent>(new KeyPress(source, KeyCode.ENTER.getCode())) {

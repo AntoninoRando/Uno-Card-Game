@@ -71,6 +71,7 @@ public class CUView extends EventManager implements EventListener {
                 Event.PLAYER_HAND_INCREASE, Event.GAME_READY);
         subscribe(TerrainPane.getInstance(), Event.GAME_READY, Event.CARD_CHANGE, Event.GAME_READY);
         subscribe(ProfileMenu.getInstance(), Event.INFO_CHANGE);
+        subscribe(GameResults.getInstance(), Event.PLAYER_WON, Event.INFO_CHANGE);
     }
 
     private Entry<Integer, Card> getCard(HashMap<String, Object> data) {

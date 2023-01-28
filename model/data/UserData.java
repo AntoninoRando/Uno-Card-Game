@@ -22,7 +22,7 @@ public abstract class UserData implements EventListener {
     /* --- Fields ----------------------------- */
 
     public static final String DEFAULT_NICKNAME = "User";
-    public static final int NICKNAME_MAX_SIZE = 22;
+    // public static final int NICKNAME_MAX_SIZE = 22;
     public static final String DEFAULT_ICON = "resources\\icons\\night.png";
     public static final int[] XP_GAPS = { 5, 8, 15, 21, 24, 28, 31, 35, 39, 50 };
     public static final EventListener EVENT_LISTENER = new EventListener() {
@@ -40,6 +40,14 @@ public abstract class UserData implements EventListener {
                                 break;
                         }
                     });
+                    break;
+                case INFO_RESET:
+                    nickname = DEFAULT_NICKNAME;
+                    level = 1;
+                    xp = 0;
+                    games = 0;
+                    wins = 0;
+                    setIcon(DEFAULT_ICON); // Used also to notify
                     break;
                 default:
                     throwUnsupportedError(event, data);
@@ -69,7 +77,7 @@ public abstract class UserData implements EventListener {
     public static String getIcon() {
         return icon;
     }
-    
+
     public static void setIcon(String icon) {
         UserData.icon = icon;
         CUModel.communicate(Event.INFO_CHANGE, wrapData());
@@ -167,17 +175,16 @@ public abstract class UserData implements EventListener {
      * @param quantity Number of xp <em>earned</em>.
      */
     public static void addXp(int quantity) {
-        int gap = XP_GAPS[level % XP_GAPS.length];
-        int deltaXp = gap - xp;
+        while (quantity > 0) {
+            int gap = XP_GAPS[level % XP_GAPS.length];
 
-        while (xp + quantity >= gap) {
-            level++;
-            quantity = quantity - deltaXp;
-            gap = XP_GAPS[level % XP_GAPS.length];
-            deltaXp = gap - xp;
+            int toAdd = Integer.min(quantity, gap - xp);
+            xp += toAdd;
+            quantity -= toAdd;
+
+            if (xp == gap)
+                level++;
         }
-
-        xp = quantity;
 
         CUModel.communicate(Event.INFO_CHANGE, wrapData());
     }

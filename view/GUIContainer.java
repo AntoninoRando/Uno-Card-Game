@@ -19,4 +19,13 @@ public interface GUIContainer {
      * Apply behaviors to the elements inside the GUI container.
      */
     public void applyBehaviors();
+
+    /**
+     * TODO
+     */
+    default void initialize() {
+        createElements();
+        arrangeElements();
+        applyBehaviors();
+    }
 }

@@ -63,7 +63,7 @@ public class CUModel extends EventManager implements EventListener {
 
     private void subscribeAll() {
         subscribe(UserTurn.getInstance(), Event.TURN_DECISION, Event.SELECTION);
-        subscribe(UserData.EVENT_LISTENER, Event.INFO_CHANGE);
+        subscribe(UserData.EVENT_LISTENER, Event.INFO_CHANGE, Event.INFO_RESET);
     }
 
     public static void communicate(Event event, HashMap<String, Object> data) {
