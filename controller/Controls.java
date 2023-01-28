@@ -28,7 +28,7 @@ public abstract class Controls {
         }
     };
 
-    public static final Function<Node, BehaviorDecorator<MouseEvent>> uno = source -> new BehaviorDecorator<MouseEvent>(
+    public static final Function<Node, BehaviorDecorator<MouseEvent>> UNO = source -> new BehaviorDecorator<MouseEvent>(
             new Click(source, new boolean[] { true }, null)) {
 
         @Override

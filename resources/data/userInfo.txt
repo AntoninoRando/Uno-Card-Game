@@ -2,5 +2,5 @@ User
 resources\icons\night.png
 4
 20
-20
+21
 16

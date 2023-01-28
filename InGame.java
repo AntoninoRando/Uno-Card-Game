@@ -52,7 +52,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         arrangeElements();
         applyBehaviors();
         CUView.getInstance().subscribe(this, Event.PLAYER_PLAYED_CARD, Event.INVALID_CARD,
-                Event.TURN_BLOCKED, Event.TURN_START, Event.GAME_START, Event.PLAYER_WON);
+                Event.TURN_BLOCKED, Event.TURN_START, Event.GAME_START, Event.PLAYER_WON, Event.UNO_DECLARED);
     }
 
     /* --- Fields ----------------------------- */
@@ -99,7 +99,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
      * Starts a new game.
      */
     private void newGame() {
-        Player[] players = new Player[] { new Player(), Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE};
+        Player[] players = new Player[] { new Player(), Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE };
 
         SettingsMenu.getInstance().addOptions(quit, restart);
 
@@ -181,7 +181,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         playZone.setOnScroll(this::scrollChronology);
         DropAndPlay.setPlayzone(playZone);
         Controls.draw.apply(playZone);
-        Controls.uno.apply(playZone);
+        Controls.UNO.apply(playZone);
 
         restart.setOnMouseClicked(e -> {
             Sounds.BUTTON_CLICK.play();
@@ -276,16 +276,30 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
                 }
                 playingCardAnimation.resetLatch();
                 break;
+            case UNO_DECLARED:
+                Platform.runLater(() -> {
+                    boolean said = (boolean) data.get("said");
+
+                    if (said) {
+                        Animation unoAnimation = Animations.UNO_TEXT.get();
+                        unoAnimation.setDimensions(null, app.getScene().getHeight() / 4);
+                        unoAnimation.setSceneCoordinates(app.getScene().getWidth() / 2,
+                                app.getScene().getHeight() / 2);
+                        unoAnimation.play(this);
+                    } else {
+                        // TODO scegliere un'altra animazione
+                        Animation missed = Animations.BLOCK_TURN.get();
+                        missed.setSceneCoordinates(app.getScene().getWidth() / 2,
+                                app.getScene().getHeight() / 2);
+                        missed.setDimensions(200.0, null);
+                        missed.setWillCountdown(true);
+                        missed.play(this);
+                    }
+                });
+                break;
             case INVALID_CARD:
                 Platform.runLater(() -> ResetTranslate.resetTranslate(Card.cards.get((int) data.get("card-tag"))));
                 break;
-            // case UNO_DECLARED:
-            // Platform.runLater(() -> {
-            // unoAnimation.setSceneCoordinates(scene.getWidth() / 2 - 200,
-            // scene.getHeight() / 2 - 111.85);
-            // unoAnimation.play(gameRoot);
-            // });
-            // break;
             default:
                 throwUnsupportedError(event, data);
         }

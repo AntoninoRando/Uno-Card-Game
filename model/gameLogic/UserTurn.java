@@ -43,6 +43,10 @@ public class UserTurn implements GameState, EventListener {
         cardPlayed = Optional.empty();
         boolean endTurn = false;
 
+        boolean unoNeed = false;
+        if (user.getHand().size() == 2)
+            unoNeed = true;
+
         CUModel.communicate(Event.TURN_START, user.getData());
 
         while (!endTurn) {
@@ -81,8 +85,23 @@ public class UserTurn implements GameState, EventListener {
                     CUModel.communicate(Event.PLAYER_HAND_DECREASE, data);
                     CUModel.communicate(Event.USER_PLAYED_CARD, data);
                     endTurn = true;
+
+                    if (unoNeed) {
+                        HashMap<String, Object> data2 = new HashMap<>();
+                        data2.put("said", false);
+                        CUModel.communicate(Event.UNO_DECLARED, data2);
+                        Actions.dealFromDeck(user, 2);
+                    }
+
                     break;
-                // TODO case SAY_UNO:
+                case SAY_UNO:
+                    if (!unoNeed)
+                        break;
+                    unoNeed = false;
+                    HashMap<String, Object> data2 = new HashMap<>();
+                    data2.put("said", true);
+                    CUModel.communicate(Event.UNO_DECLARED, data2);
+                    break;
                 case SKIP:
                     return;
                 default:
