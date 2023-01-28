@@ -108,7 +108,7 @@ public abstract class UserData implements EventListener {
         data.put("icon", getIcon());
         data.put("level", getLevel());
         data.put("xp", getXp());
-        data.put("xp-gap", XP_GAPS[level % XP_GAPS.length]);
+        data.put("xp-gap", XP_GAPS[level-1 % XP_GAPS.length]);
         data.put("games", getGames());
         data.put("wins", getWins());
 
@@ -176,14 +176,16 @@ public abstract class UserData implements EventListener {
      */
     public static void addXp(int quantity) {
         while (quantity > 0) {
-            int gap = XP_GAPS[level % XP_GAPS.length];
+            int gap = XP_GAPS[level-1 % XP_GAPS.length];
 
             int toAdd = Integer.min(quantity, gap - xp);
             xp += toAdd;
             quantity -= toAdd;
 
-            if (xp == gap)
+            if (xp == gap) {
                 level++;
+                xp = 0;
+            }
         }
 
         CUModel.communicate(Event.INFO_CHANGE, wrapData());

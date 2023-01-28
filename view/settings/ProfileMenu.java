@@ -139,9 +139,9 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
                 avatar.setFill(new ImagePattern(new Image(icon)));
                 levelLabel.setText("Level " + Integer.toString(level));
 
-                double progress = ((double) xp) / ((double) gap) * 100;
+                double progress = ((double) xp) / ((double) gap);
                 xpBar.setProgress(progress);
-                progressLabel.setText(Integer.toString((int) progress) + "%");
+                progressLabel.setText(Integer.toString((int) (progress*100)) + "%");
 
                 gamesPlayedLabel.setText("Games: " + Integer.toString(games));
 

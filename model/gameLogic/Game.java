@@ -200,7 +200,7 @@ public class Game implements EventListener {
         if (!isInterrupted) {
             Player winner = Game.getInstance().getCurrentPlayer();
             boolean humanWon = !(winner instanceof GameAI);
-            int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F) + (humanWon ? 7 : 0);
+            int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F) + (humanWon ? 3 : 0);
 
             UserData.addXp(xpEarned);
             UserData.addGamePlayed(humanWon);
