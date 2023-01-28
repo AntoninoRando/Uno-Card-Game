@@ -27,6 +27,7 @@ public class PlayerPane extends VBox implements EventListener {
     /* --- Fields ----------------------------- */
 
     private Map<String, PlayerLabel> labels;
+    private String activePlayer;
 
     /* --- Body ------------------------------- */
 
@@ -52,6 +53,10 @@ public class PlayerPane extends VBox implements EventListener {
         return labels.get(nickname);
     }
 
+    public PlayerLabel getPlayerLabel() {
+        return labels.get(activePlayer);
+    }
+
     /* --- Observer --------------------------- */
 
     @Override
@@ -73,8 +78,16 @@ public class PlayerPane extends VBox implements EventListener {
             case PLAYER_HAND_DECREASE:
                 Platform.runLater(() -> labels.get((String) data.get("nickname")).modifyHandSize(-1));
                 break;
+            case TURN_START:
+                activePlayer = (String) data.get("nickname");
+                break;
             default:
                 throwUnsupportedError(event, data);
         }
+    }
+
+    @Override
+    public int getEventPriority(Event event) {
+        return event.equals(Event.TURN_START) ? 2 : 1;
     }
 }

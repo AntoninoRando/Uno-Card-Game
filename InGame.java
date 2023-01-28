@@ -1,4 +1,6 @@
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -7,6 +9,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.control.Button;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -23,6 +26,8 @@ import model.gameLogic.GameThread;
 import view.CUView;
 import view.GUIContainer;
 import view.animations.Animation;
+import view.animations.AnimationHandler;
+import view.animations.AnimationLayer;
 import view.animations.Animations;
 import view.animations.ResetTranslate;
 import view.gameElements.Card;
@@ -36,7 +41,7 @@ import view.gameElements.TerrainPane;
 import view.settings.SettingsMenu;
 import view.sounds.Sounds;
 
-public class InGame extends StackPane implements AppState, EventListener, GUIContainer {
+public class InGame extends StackPane implements AppState, EventListener, GUIContainer, AnimationLayer {
     /* --- Singleton -------------------------- */
 
     private static InGame instance;
@@ -51,8 +56,8 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         createElements();
         arrangeElements();
         applyBehaviors();
-        CUView.getInstance().subscribe(this, Event.PLAYER_PLAYED_CARD, Event.INVALID_CARD,
-                Event.TURN_BLOCKED, Event.TURN_START, Event.GAME_START, Event.PLAYER_WON, Event.UNO_DECLARED);
+        CUView.getInstance().subscribe(this, Event.INVALID_CARD, Event.GAME_START, Event.PLAYER_WON);
+        AnimationHandler.subscribe(this, Event.UNO_DECLARED, Event.PLAYER_PLAYED_CARD, Event.TURN_START, Event.TURN_BLOCKED);
     }
 
     /* --- Fields ----------------------------- */
@@ -221,82 +226,6 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
             case PLAYER_WON:
                 Platform.runLater(() -> displayResults());
                 break;
-            case TURN_START:
-                Animation focusPlayerOnTurnAnimation = Animations.FOCUS_PLAYER.get();
-                focusPlayerOnTurnAnimation.setWillCountdown(true);
-                focusPlayerOnTurnAnimation.setWillStay(true);
-
-                Platform.runLater(() -> {
-                    String nick = (String) data.get("nickname");
-                    PlayerLabel playerLabel = PlayerPane.getInstance().getPlayerLabel(nick);
-                    Bounds labelBounds = playerLabel.localToScene(playerLabel.getBoundsInLocal());
-
-                    focusPlayerOnTurnAnimation.setDimensions(players.getWidth(), labelBounds.getHeight() + 10);
-                    focusPlayerOnTurnAnimation.setSceneCoordinates(0.0, labelBounds.getMinY() - 5);
-                    focusPlayerOnTurnAnimation.play(this).getValue().getStyleClass().add("fleeting");
-                });
-
-                try {
-                    focusPlayerOnTurnAnimation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                focusPlayerOnTurnAnimation.resetLatch();
-                break;
-            case TURN_BLOCKED:
-                Animation blockTurnAnimation = Animations.BLOCK_TURN.get();
-
-                Platform.runLater(() -> {
-                    blockTurnAnimation.setSceneCoordinates(app.getScene().getWidth() / 2,
-                            app.getScene().getHeight() / 2);
-                    blockTurnAnimation.setDimensions(200.0, null);
-                    blockTurnAnimation.setWillCountdown(true);
-                    blockTurnAnimation.play(this);
-                });
-
-                try {
-                    blockTurnAnimation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                blockTurnAnimation.resetLatch();
-                break;
-            case PLAYER_PLAYED_CARD:
-                Animation playingCardAnimation = Animations.CARD_PLAYED.get();
-
-                Platform.runLater(() -> {
-                    playingCardAnimation.setDimensions(400.0, null);
-                    playingCardAnimation.setWillCountdown(true);
-                    playingCardAnimation.setSceneCoordinates(app.getScene().getWidth() / 2,
-                            app.getScene().getHeight() / 2);
-                    playingCardAnimation.play(this);
-                });
-
-                try {
-                    playingCardAnimation.latch.await();
-                } catch (InterruptedException e) {
-                }
-                playingCardAnimation.resetLatch();
-                break;
-            case UNO_DECLARED:
-                Platform.runLater(() -> {
-                    boolean said = (boolean) data.get("said");
-
-                    if (said) {
-                        Animation unoAnimation = Animations.UNO_TEXT.get();
-                        unoAnimation.setDimensions(null, app.getScene().getHeight() / 4);
-                        unoAnimation.setSceneCoordinates(app.getScene().getWidth() / 2,
-                                app.getScene().getHeight() / 2);
-                        unoAnimation.play(this);
-                    } else {
-                        // TODO scegliere un'altra animazione
-                        Animation missed = Animations.BLOCK_TURN.get();
-                        missed.setSceneCoordinates(app.getScene().getWidth() / 2,
-                                app.getScene().getHeight() / 2);
-                        missed.setDimensions(200.0, null);
-                        missed.setWillCountdown(true);
-                        missed.play(this);
-                    }
-                });
-                break;
             case INVALID_CARD:
                 Platform.runLater(() -> ResetTranslate.resetTranslate(Card.cards.get((int) data.get("card-tag"))));
                 break;
@@ -306,15 +235,26 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
     }
 
     @Override
-    public int getEventPriority(Event event) {
-        switch (event) {
-            case PLAYER_PLAYED_CARD:
-                return 2;
-            case TURN_START:
-                return -1;
-            default:
-                return 1;
+    public Entry<Pane, Double[]> getPoints(Event event) {
+        Double x = null, y = null, w = null, h = null;
+
+        if (event.equals(Event.UNO_DECLARED))
+            w = 300.0;
+        else if (event.equals(Event.PLAYER_PLAYED_CARD))
+            w = 400.0;
+        else if (event.equals(Event.TURN_BLOCKED))
+            w = 200.0;
+        else if (event.equals(Event.TURN_START)) {
+            PlayerLabel playerLabel = PlayerPane.getInstance().getPlayerLabel();
+            Bounds labelBounds = playerLabel.localToScene(playerLabel.getBoundsInLocal());
+
+            x = 0.0;
+            y = labelBounds.getMinY() - 5;
+            w = players.getWidth();
+            h = labelBounds.getHeight() + 10;
         }
+
+        return Map.entry(this, new Double[] { x, y, w, h });
     }
 
 }

@@ -6,8 +6,6 @@ import events.EventListener;
 import events.EventManager;
 import events.Event;
 import model.data.UserData;
-import model.gameEntities.GameAI;
-import model.gameLogic.Game;
 import model.gameLogic.UserTurn;
 import view.CUView;
 
@@ -72,15 +70,7 @@ public class CUModel extends EventManager implements EventListener {
 
     @Override
     public void update(Event event, HashMap<String, Object> data) {
-        switch (event) {
-            case TURN_DECISION:
-                if (Game.getInstance().getCurrentPlayer() instanceof GameAI)
-                    break;
-                notify(event, data);
-                break;
-            default:
-                notify(event, data);
-                break;
-        }
+        notify(event, data);
+
     }
 }

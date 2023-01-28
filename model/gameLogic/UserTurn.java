@@ -163,23 +163,27 @@ public class UserTurn implements GameState, EventListener {
     @Override
     public void update(Event event, HashMap<String, Object> data) {
         Action action = Action.valueOf((String) data.get("choice-type"));
+        Object info = data.get("choice");
+
         switch (event) {
             case TURN_DECISION:
-                if (game.getCurrentPlayer() instanceof GameAI) {
-                    if (action.equals(Action.FROM_HAND_PLAY_TAG))
-                        CUModel.communicate(Event.INVALID_CARD, data);
+                if (!(game.getCurrentPlayer() instanceof GameAI)) {
+                    synchronized (this) {
+                        choice = Map.entry(action, info);
+                        notify();
+                    }
                     break;
                 }
 
-                synchronized (this) {
-                    choice = Map.entry(action, data.get("choice"));
-                    notify();
+                if (action.equals(Action.FROM_HAND_PLAY_TAG)) {
+                    data.put("card-tag", info);
+                    CUModel.communicate(Event.INVALID_CARD, data);
                 }
                 break;
             case SELECTION:
                 CUModel.communicate(Event.SELECTION, null);
                 synchronized (this) {
-                    choice = Map.entry(action, data.get("choice"));
+                    choice = Map.entry(action,info);
                     notify();
                 }
                 break;
