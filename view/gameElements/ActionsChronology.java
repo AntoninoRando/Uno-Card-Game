@@ -8,14 +8,14 @@ import javafx.scene.layout.HBox;
 import events.EventListener;
 import events.Event;
 
-public class CardChronology extends Chronology implements EventListener {
+public class ActionsChronology extends Chronology implements EventListener {
     /* --- Singleton -------------------------- */
 
-    private static CardChronology instance;
+    private static ActionsChronology instance;
 
-    public static CardChronology getInstance() {
+    public static ActionsChronology getInstance() {
         if (instance == null)
-            instance = new CardChronology();
+            instance = new ActionsChronology();
         return instance;
     }
 

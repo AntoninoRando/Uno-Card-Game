@@ -40,7 +40,7 @@ public class Game implements EventListener {
 
     private Player[] players;
     private Card terrainCard;
-    private final int firstHandSize = 3;
+    private final int firstHandSize = 7;
     private CardGroup deck = new CardGroup(CardBuilder.getCards("resources/Cards/Small.json"));
     private CardGroup discardPile;
     private Player[] turnOrder;

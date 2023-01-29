@@ -27,32 +27,14 @@ public class TerrainPane extends StackPane implements EventListener {
         setMaxHeight(400);
         setMaxWidth(400);
     }
-
-    /* --- Fields ----------------------------- */
-
-    private Card terrainCard;
-
-    /* --- Body ------------------------------- */
-
-    private void initialize() {
-        terrainCard = new Card();
-        getChildren().setAll(terrainCard);
-    }
-
-    private void updateTerrainCard(Card node) {
-        terrainCard.update(node);
-    }
-
+    
     /* --- Observer --------------------------- */
 
     @Override
     public void update(Event event, HashMap<String, Object> data) {
         switch (event) {
-            case GAME_READY:
-                Platform.runLater(() -> initialize());
-                break;
             case CARD_CHANGE:
-                Platform.runLater(() -> updateTerrainCard((Card) data.get("card-node")));
+                Platform.runLater(() -> getChildren().setAll((Card) data.get("card-node")));
                 break;
             default:
                 throwUnsupportedError(event, data);

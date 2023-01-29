@@ -31,7 +31,7 @@ import view.animations.AnimationLayer;
 import view.animations.Animations;
 import view.animations.ResetTranslate;
 import view.gameElements.Card;
-import view.gameElements.CardChronology;
+import view.gameElements.ActionsChronology;
 import view.gameElements.HandPane;
 import view.gameElements.PlayerLabel;
 import view.gameElements.PlayerPane;
@@ -67,7 +67,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
     private PlayerPane players;
     private TerrainPane terrain;
     private HandPane userHand;
-    private CardChronology chronology;
+    private ActionsChronology chronology;
     private PlayzonePane playZone;
     private SelectionPane selectionZone;
     private Timer scrollTimer;
@@ -148,7 +148,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         gameElements = new BorderPane();
         players = PlayerPane.getInstance();
         terrain = TerrainPane.getInstance();
-        chronology = CardChronology.getInstance();
+        chronology = ActionsChronology.getInstance();
         userHand = HandPane.getInstance();
         playZone = PlayzonePane.getInstance();
         selectionZone = SelectionPane.getInstance();
@@ -168,7 +168,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         setId("background");
 
         StackPane cardZone = new StackPane(terrain, chronology);
-        CardChronology.getInstance().setVisible(false);
+        ActionsChronology.getInstance().setVisible(false);
 
         Region padderRegionRight = new Region();
         padderRegionRight.prefWidthProperty().bind(players.widthProperty());

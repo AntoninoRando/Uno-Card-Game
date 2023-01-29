@@ -1,80 +1,94 @@
 package view.animations;
 
-import java.util.List;
+import java.util.Iterator;
 
-import javafx.scene.Node;
-import javafx.scene.layout.HBox;
+/**
+ * Place some nodes on the permiter of a circle, and rotate each node so that it
+ * points toward the center of the circle.
+ */
+public class ArcNodes implements Iterable<double[]> {
+    private int n;
+    private double r, gap, elementW;
 
-public class ArcNodes {
-    private double nodesGap, containerWidth;
-    private double nodeWidth = 150.0;
-    private double containerX = 0;
-    private double containerY = 0;
-    private double centerX, centerY, radius; // Change the center to modify the hand curvature
-    private List<Node> nodes;
-    private HBox container;
+    /**
+     * 
+     * @param n         The number of elements that will be translated.
+     * @param curvature The more is the curvature, the more elements' coordinates
+     *                  tend to look like an horizontal line. The less is the
+     *                  curvature, the more elements' coordinates tend to form
+     *                  like a small circle.
+     * @param gap       The gap between each element.
+     */
+    public ArcNodes(int n, double r, double gap, double elementW) {
+        /* _________________ */
 
-    public ArcNodes(double nodesGap, double containerWidth, List<Node> nodes, HBox container) {
-        this.nodesGap = nodesGap;
-        this.containerWidth = containerWidth;
-        this.nodes = nodes;
-        this.container = container;
+        this.n = n;
+        this.r = r;
+        this.gap = gap;
+        this.elementW = elementW;
     }
 
-    public void play(double curvature) {
-        assignCenter(curvature);
-        adjustCards();
-    }
-
-    private void adjustnodesGap() {
-        container.setSpacing(containerWidth / nodes.size() - nodeWidth);
-    }
-
-    private void assignCenter(double y) {
-        centerX = containerX;
-        centerY = y;
-        radius = y;
-    }
-
-    private double getNodeX(Node node) {
-        int position = nodes.indexOf(node) + 1;
-        int totalCards = nodes.size();
-        // TODO la calcola male la posizione, infatti il problema della curvatura si
-        // trova qua
-        position = position - (totalCards % 2 == 0 ? totalCards / 2 : (totalCards + 1) / 2);
-        return (nodesGap + nodeWidth / 2) * position;
-    }
-
-    private double getNodeY(Node node) {
-        return containerY;
-    }
-
-    private double findOnCircleY(Node node) {
-        // (x-x0)^2 + (y-y0)^2 = r^2 -> y = y0 +- sqrt{-(x-x0)^2 + r^2}
-        double nodeX = getNodeX(node);
-        double sol = centerY - Math.sqrt(-Math.pow(nodeX - centerX, 2) + Math.pow(radius, 2));
-        return sol; // TODO scegliere la soluzione corretta
-    }
-
-    // TODO Fare caching dei valori così da non doverli ripetere e metterli in una
-    // variabile final.
-    private void adjustY(Node node) {
-        node.setTranslateY(findOnCircleY(node) - getNodeY(node));
-    }
-
-    private void pointCenter(Node node) {
-        double angle1 = Math.atan2(containerY - centerY, containerX - centerX);
-        double angle2 = Math.atan2(getNodeY(node) - centerY, getNodeX(node) - centerX);
-        node.setRotate(Math.toDegrees(angle2 - angle1));
-    }
-
-    // TODO fare un metodo publico pointCenter che ti curva la carta in modo che punti il centro dell'oggetto ArcNodes
-
-    private void adjustCards() {
-        adjustnodesGap();
-        for (Node node : nodes) {
-            adjustY(node);
-            pointCenter(node);
-        }
+    @Override
+    public Iterator<double[]> iterator() {
+        return new ArcNodesIterator(n, r, gap, elementW);
     }
 }
+
+class ArcNodesIterator implements Iterator<double[]> {
+    private int i = 1;
+    private int n;
+    private double x0, y0, r;
+    private double gap, elementW;
+
+    public ArcNodesIterator(int n, double r, double gap, double elementW) {
+        /* _________________ */
+
+        this.n = n;
+        this.x0 = 0.0;
+        this.y0 = r;
+        this.r = r;
+        this.gap = gap;
+        this.elementW = elementW;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return i <= n;
+    }
+
+    @Override
+    public double[] next() {
+        int j = i - (n % 2 == 0 ? n / 2 : (n + 1) / 2);
+        double x = (gap + elementW / 2) * j; // x = element.x
+
+        // (x-x0)^2 + (y-y0)^2 = r^2 <==> y = y0 +- sqrt{-(x-x0)^2 + r^2}
+        double y = y0 - Math.sqrt(-Math.pow(x - x0, 2) + Math.pow(r, 2));
+
+        double angle = Math.toDegrees(Math.atan2(-y0, x - x0) - Math.atan2(-y0, -x0));
+
+        i++;
+
+        return new double[] { x, y, angle };
+    }
+}
+
+
+    // private double findX(Node node) {
+    //     int i = getChildren().indexOf(node) + 1;
+    //     int n = getChildren().size();
+    //     int j = i - (n % 2 == 0 ? n / 2 : (n + 1) / 2);
+    //     return (gap + elementW / 2) * j;
+    // }
+
+
+    // private void adjustY(Node node) {
+    //     double x = findX(node);
+    //     double y = y0 - Math.sqrt(-Math.pow(x - x0, 2) + Math.pow(radius, 2));
+    //     node.setTranslateY(y);
+    // }
+
+    // private void pointCenter(Node node) {
+    //     double x = findX(node);
+    //     double angle = Math.toDegrees(Math.atan2(-y0, x - x0) - Math.atan2(-y0, -x0));
+    //     node.setRotate(angle);
+    // }

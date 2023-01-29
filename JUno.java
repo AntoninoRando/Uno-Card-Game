@@ -1,6 +1,7 @@
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 
+import javafx.animation.RotateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -11,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /* --- Mine ------------------------------- */
 
@@ -76,11 +78,22 @@ public class JUno extends Application implements EventListener, GUIContainer {
         settingsButton.setId("settings-button");
 
         try {
-            Image image = new Image(Paths.get("resources\\settingsIcon.png").toUri().toURL().toExternalForm());
+            Image image = new Image(Paths.get("resources\\gear.png").toUri().toURL().toExternalForm());
             ImageView icon = new ImageView(image);
-            icon.setFitWidth(50.0);
-            icon.setFitHeight(50.0);
+            icon.setPreserveRatio(true);
+            icon.setFitWidth(70.0);
             settingsButton.setGraphic(icon);
+            settingsButton.setOnMouseEntered(e -> {
+                Sounds.GEAR.play();
+
+                RotateTransition transition = new RotateTransition();
+                transition.setCycleCount(1);
+                transition.setNode(settingsButton);
+                transition.setDuration(Duration.seconds(1));
+                transition.setFromAngle(0);
+                transition.setToAngle(360);
+                transition.play();
+            });
         } catch (MalformedURLException e1) {
             e1.printStackTrace();
         }
