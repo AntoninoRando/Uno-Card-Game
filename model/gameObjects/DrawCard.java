@@ -13,8 +13,7 @@ public class DrawCard extends BlockCard {
     
     @Override
     public void play() {
-        Game game = Game.getInstance();
-        Actions.dealFromDeck(game.getNextPlayer(), quantity);
         super.play();
+        Actions.dealFromDeck(Game.getCurrentPlayer(), quantity);
     }
 }

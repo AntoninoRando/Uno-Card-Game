@@ -1,9 +1,11 @@
 package model.gameEntities;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import model.data.UserData;
-import model.gameObjects.CardGroup;
+import model.gameObjects.Card;
 
 /**
  * This class contains all the info about the player (user or AI) state.
@@ -13,7 +15,7 @@ public class Player {
 
     private String icon;
     private String nickname;
-    private CardGroup hand;
+    private List<Card> hand;
 
     /* ---.--- Getters and Setters ------------ */
 
@@ -34,7 +36,7 @@ public class Player {
     /**
      * @return The group of cards held by the player.
      */
-    public CardGroup getHand() {
+    public List<Card> getHand() {
         return hand;
     }
 
@@ -46,7 +48,7 @@ public class Player {
     public Player(String icon, String nickname) {
         this.icon = icon;
         this.nickname = nickname;
-        hand = new CardGroup();
+        hand = new LinkedList<Card>();
     }
 
     /**
@@ -55,7 +57,7 @@ public class Player {
     public Player() {
         this.icon = UserData.getIcon();
         this.nickname = UserData.getNickname();
-        hand = new CardGroup();
+        hand = new LinkedList<Card>();
     }
 
     /* --- Body ------------------------------- */

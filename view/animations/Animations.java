@@ -1,6 +1,7 @@
 package view.animations;
 
 import javafx.animation.RotateTransition;
+import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
@@ -48,5 +49,25 @@ public enum Animations {
         transition.setOnFinished(e -> ongoing = false);
         transition.play();
         return true;
+    }
+
+    public static final void zoomIn(Node node, double scalingFactor) {
+        ScaleTransition zoomIn = new ScaleTransition(Duration.millis(100.0), node);
+
+        if (node.getScaleX() <= 1.0 || node.getScaleY() <= 1.0) {
+            zoomIn.setByX(1 + scalingFactor - node.getScaleX());
+            zoomIn.setByY(1 + scalingFactor - node.getScaleY());
+            zoomIn.play();
+        }
+    }
+
+    public static final void zoomOut(Node node, double scalingFactor) {
+        ScaleTransition zoomOut = new ScaleTransition(Duration.millis(100.0), node);
+
+        if (node.getScaleX() != 1.0 || node.getScaleY() != 1.0) {
+            zoomOut.setByX(1 - node.getScaleX());
+            zoomOut.setByY(1 - node.getScaleY());
+            zoomOut.play();
+        }
     }
 }

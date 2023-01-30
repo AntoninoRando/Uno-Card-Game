@@ -17,7 +17,7 @@ public abstract class GameAI extends Player {
     }
     
     public Entry<Action, Object> choose() {
-        return chooseFrom(getHand(), Game.getInstance().getPlayCondition());
+        return chooseFrom(getHand(), Game.getPlayCondition());
     }
 
     public abstract Entry<Action, Object> chooseFrom(Collection<Card> cards);

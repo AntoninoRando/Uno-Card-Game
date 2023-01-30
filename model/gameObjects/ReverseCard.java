@@ -11,16 +11,14 @@ public class ReverseCard extends Card {
 
     @Override
     public void play() {
-        Game game = Game.getInstance();
-
-        int n = game.countPlayers();
-        Player[] oldOrder = game.getTurnOrder();
+        int n = Game.countPlayers();
+        Player[] oldOrder = Game.getPlayers();
         Player[] newOrder = new Player[n];
 
-        int currentTurn = game.getTurn();
+        int currentTurn = Game.getTurn();
         for (int i = 0; i < n; i++)
             newOrder[(i + currentTurn) % n] = oldOrder[((currentTurn - i) + n) % n];
 
-        game.setTurnOrder(newOrder);
-    } 
+        Game.setTurnOrder(newOrder);
+    }
 }

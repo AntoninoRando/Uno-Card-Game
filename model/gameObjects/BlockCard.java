@@ -5,6 +5,7 @@ import java.util.Collection;
 import events.Event;
 import model.CUModel;
 import model.gameEntities.Player;
+import model.gameLogic.Actions;
 import model.gameLogic.Game;
 
 public class BlockCard extends Card{
@@ -14,9 +15,8 @@ public class BlockCard extends Card{
 
     @Override
     public void play() {
-        Game game = Game.getInstance();
-        Player blocked = game.getNextPlayer();
-        game.advanceTurn(1);
+        Actions.advanceTurn(1);
+        Player blocked = Game.getCurrentPlayer();
         CUModel.communicate(Event.TURN_BLOCKED, blocked.getData());
     }
 

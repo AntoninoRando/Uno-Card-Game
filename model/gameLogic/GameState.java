@@ -2,10 +2,13 @@ package model.gameLogic;
 
 /**
  * Implements the <em>State Pattern</em>.
+ * 
+ * Functional interface that represents a game state and its operations.
  */
+@FunctionalInterface
 public interface GameState {
     /**
-     * Resolve the turn accordingly to this game state.
+     * Executes the operations that concern this game state.
      */
     public void resolve();
 }

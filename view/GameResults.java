@@ -8,8 +8,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
 
 import java.util.HashMap;
 
@@ -36,7 +34,7 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
     /* --- Fields ----------------------------- */
 
     private VBox winner;
-    private Circle icon;
+    private ImageView icon;
     private Label nick;
 
     private VBox xpEarned;
@@ -48,7 +46,7 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
     @Override
     public void createElements() {
         winner = new VBox();
-        icon = new Circle();
+        icon = new ImageView();
         nick = new Label();
         xpBar = new ProgressBar();
         newXp = new Label();
@@ -69,7 +67,6 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
         xpEarned.getChildren().setAll(xpBar, newXp);
         xpEarned.setAlignment(Pos.CENTER);
 
-        icon.setRadius(47.0);
         ImageView border = new ImageView(new Image("resources/WinnerBorder.png"));
         border.setPreserveRatio(true);
         border.setFitWidth(100.0);
@@ -102,7 +99,7 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
                 break;
             case PLAYER_WON:
                 Platform.runLater(() -> {
-                    icon.setFill(new ImagePattern(new Image((String) data.get("icon"))));
+                    SpriteFactory.getAvatarSprite((String) data.get("icon")).draw(100.0, icon);
                     nick.setText((String) data.get("nickname"));
                 });
                 break;

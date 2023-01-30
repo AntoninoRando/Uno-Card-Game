@@ -1,7 +1,8 @@
 package model.gameLogic;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -13,27 +14,35 @@ import events.Event;
 import model.CUModel;
 import model.data.CardBuilder;
 import model.data.UserData;
+import model.gameEntities.Enemies;
 import model.gameEntities.GameAI;
 import model.gameEntities.Player;
 import model.gameObjects.*;
 
 /**
- * A class representing the game state. This class does not modify itself,
- * because that is the <code>Loop</code> class job.
+ * Gathers all game info and contains the logic to execute a match.
  */
-public class Game implements EventListener {
+public class Game extends Thread implements EventListener {
     /* --- Singleton -------------------------- */
 
     private static Game instance;
 
-    public static Game getInstance() {
-        if (instance == null)
-            instance = new Game();
-        return instance;
+    public static void createInstance() {
+        if (instance != null)
+            return;
+        instance = new Game();
     }
 
     private Game() {
-        discardPile = new CardGroup();
+        discardPile = new LinkedList<>();
+        deck = new LinkedList<>(CardBuilder.getCards("resources/Cards/Small.json"));
+        playCondition = card -> {
+            Suit aS = terrainCard.getSuit();
+            Suit bS = card.getSuit();
+            return aS == bS || terrainCard.getValue() == card.getValue() || aS == Suit.WILD || bS == Suit.WILD;
+        };
+        winCondition = player -> player.getHand().isEmpty();
+        players = new Player[] { new Player(), Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE };
     }
 
     /* --- Fields ----------------------------- */
@@ -41,133 +50,122 @@ public class Game implements EventListener {
     private Player[] players;
     private Card terrainCard;
     private final int firstHandSize = 7;
-    private CardGroup deck = new CardGroup(CardBuilder.getCards("resources/Cards/Small.json"));
-    private CardGroup discardPile;
-    private Player[] turnOrder;
+    private List<Card> deck;
+    private List<Card> discardPile;
     private int turn; // current turn
-    private final Predicate<Card> playCondition = card -> {
-        Suit aS = terrainCard.getSuit();
-        Suit bS = card.getSuit();
-        return aS == bS || terrainCard.getValue() == card.getValue() || aS == Suit.WILD || bS == Suit.WILD;
-    };
-    private final Predicate<Player> winCondition = player -> player.getHand().isEmpty();
+    private Predicate<Card> playCondition;
+    private Predicate<Player> winCondition;
     private long timeStart;
-    private boolean isInterrupted;
+    private boolean interrupted;
     private boolean running;
+    private GameState state; // Context
 
     /* ---.--- Getters and Setters ------------ */
 
-    public Player[] getPlayers() {
-        return players;
+    public static boolean isInstantiated() {
+        return instance != null;
     }
 
-    public Card getTerrainCard() {
-        return terrainCard;
+    public static Player[] getPlayers() {
+        return instance.players;
     }
 
-    public void setTerrainCard(Card terrainCard) {
-        this.terrainCard = terrainCard;
+    public static Card getTerrainCard() {
+        return instance.terrainCard;
     }
 
-    public CardGroup getDeck() {
-        return deck;
+    public static void setTerrainCard(Card newCard) {
+        instance.terrainCard = newCard;
     }
 
-    public CardGroup getDiscardPile() {
-        return discardPile;
+    public static List<Card> getDeck() {
+        return instance.deck;
     }
 
-    public Player[] getTurnOrder() {
-        return turnOrder;
+    public static List<Card> getDiscardPile() {
+        return instance.discardPile;
     }
 
-    public void setTurnOrder(Player[] newOrder) {
-        turnOrder = newOrder;
+    public static void setTurnOrder(Player[] newOrder) {
+        instance.players = newOrder;
     }
 
-    public Predicate<Card> getPlayCondition() {
-        return playCondition;
+    public static Predicate<Card> getPlayCondition() {
+        return instance.playCondition;
     }
 
-    public int getTurn() {
-        return turn;
+    public static int getTurn() {
+        return instance.turn;
     }
 
-    public boolean isRunning() {
-        return running;
+    public static void setTurn(int newTurn) {
+        instance.turn = newTurn;
+    }
+
+    public static boolean isBlocked() {
+        return instance.interrupted;
+    }
+
+    public static boolean isRunning() {
+        return instance.running;
     }
 
     /* --- Body ------------------------------- */
 
-    public void advanceTurn(int ahead) {
-        turn = (turn + ahead) % countPlayers();
+    public static Player getCurrentPlayer() {
+        return instance.players[instance.turn];
     }
 
-    public Player getNextPlayer() {
-        return turnOrder[(turn + 1) % countPlayers()];
+    public static int countPlayers() {
+        return instance.players.length;
     }
 
-    public Player getCurrentPlayer() {
-        return turnOrder[turn];
+    public static boolean isPlayable(Card card) {
+        return instance.playCondition.test(card);
+    }
+
+    public static boolean didPlayerWin(Player player) {
+        return instance.winCondition.test(player);
     }
 
     /**
-     * 
-     * @param turn Their turn.
-     * @return The player that plays in the given turn.
+     * Interrupts this game if it is running, otherwise it'll do nothing.
      */
-    public Player getPlayerByTurn(int turn) {
-        return turnOrder[turn % countPlayers()];
+    public static void interruptGame() {
+        if (!isRunning())
+            return;
+        instance.interrupted = true;
     }
 
-    public int countPlayers() {
-        return players.length;
+    /* --- State ------------------------------ */
+
+    public static void changeState(GameState newState) {
+        instance.state = newState;
     }
 
-    public int getTurnOf(Player player) {
-        return Arrays.asList(turnOrder).indexOf(player);
-    }
+    /* --- Game Loop -------------------------- */
 
-    public boolean isPlayable(Card card) {
-        return playCondition.test(card);
-    }
+    public static void setupGame() {
+        createInstance();
 
-    public boolean didPlayerWin(Player player) {
-        return winCondition.test(player);
-    }
-
-    /* -------------------- */
-
-    private GameState state;
-
-    public void changeState(GameState state) {
-        this.state = state;
-    }
-
-    public void setupGame(Player[] players) {
-        this.players = players;
-        turnOrder = Arrays.copyOf(players, players.length);
-
-        Player firstPlayer = turnOrder[turn];
-        GameState initialState = firstPlayer instanceof GameAI ? AITurn.getInstance(firstPlayer.getNickame())
-                : UserTurn.getInstance();
-        for (Player player : getPlayers()) {
-            if (player instanceof GameAI)
-                AITurn.getInstance(player.getNickame()).setContext(this, (GameAI) player);
-            else
-                UserTurn.getInstance().setContext(this, player);
+        try {
+            GameAI firstPlayer = (GameAI) getCurrentPlayer();
+            AITurn initialState = new AITurn();
+            initialState.setContext(firstPlayer);
+            changeState(initialState);
+        } catch (ClassCastException e) {
+            UserTurn initialState = UserTurn.getInstance();
+            initialState.setContext(getCurrentPlayer());
+            changeState(initialState);
         }
-        changeState(initialState);
     }
 
-    private void setupFirstTurn() {
+    private static void setupFirstTurn() {
         // Notify
-        Player[] players = Game.getInstance().getPlayers();
         HashMap<String, Object> data = new HashMap<>();
 
-        data.put("all-nicknames", Stream.of(players).map(Player::getNickame).toArray(String[]::new));
-        data.put("all-icons", Stream.of(players).map(Player::getIcon).toArray(String[]::new));
-        data.put("all-hand-sizes", Stream.of(players).mapToInt(p -> p.getHand().size()).toArray());
+        data.put("all-nicknames", Stream.of(getPlayers()).map(Player::getNickame).toArray(String[]::new));
+        data.put("all-icons", Stream.of(getPlayers()).map(Player::getIcon).toArray(String[]::new));
         CUModel.communicate(Event.GAME_READY, data);
 
         // First card
@@ -177,30 +175,30 @@ public class Game implements EventListener {
         CUModel.communicate(Event.CARD_CHANGE, firstCard.getData()); // Notify
 
         // Give cards to players
-        for (Player p : Game.getInstance().getPlayers())
-            Actions.dealFromDeck(p, firstHandSize);
+        for (Player p : getPlayers())
+            Actions.dealFromDeck(p, instance.firstHandSize);
         CUModel.communicate(Event.GAME_START, null); // Notify
 
-        this.isInterrupted = false;
-        this.running = true;
+        instance.interrupted = false;
+        instance.running = true;
     }
 
-    public void play() {
+    public static void play() {
+        setupGame();
         setupFirstTurn();
-        timeStart = System.currentTimeMillis();
+        instance.timeStart = System.currentTimeMillis();
 
-        while (!isInterrupted && !didPlayerWin(getCurrentPlayer()))
-            state.resolve();
+        while (!isBlocked() && !didPlayerWin(getCurrentPlayer()))
+            instance.state.resolve();
 
-        endAndReset(isInterrupted);
+        endAndReset(isBlocked());
     }
 
-    // TODO aggiungere che non conta il vincitore se si interrompe il gioco
-    public void endAndReset(boolean interrupted) {
-        if (!isInterrupted) {
-            Player winner = Game.getInstance().getCurrentPlayer();
+    private static void endAndReset(boolean interrupted) {
+        if (!interrupted) {
+            Player winner = getCurrentPlayer();
             boolean humanWon = !(winner instanceof GameAI);
-            int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F) + (humanWon ? 3 : 0);
+            int xpEarned = (int) ((System.currentTimeMillis() - instance.timeStart) / 60000F) + (humanWon ? 3 : 0);
 
             UserData.addXp(xpEarned);
             UserData.addGamePlayed(humanWon);
@@ -212,17 +210,9 @@ public class Game implements EventListener {
         }
 
         // Reset everything
-        for (Player player : players)
+        for (Player player : getPlayers())
             player.getHand().clear();
+        
         instance = null;
-    }
-
-    /**
-     * Interrupts this game if it is running, otherwise it'll do nothing.
-     */
-    public void interruptGame() {
-        if (!isRunning())
-            return;
-        isInterrupted = true;
     }
 }

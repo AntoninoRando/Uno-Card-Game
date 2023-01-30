@@ -1,5 +1,7 @@
 package model.gameObjects;
 
+import java.util.List;
+
 import model.gameEntities.GameAI;
 import model.gameEntities.Player;
 import model.gameLogic.Game;
@@ -15,10 +17,10 @@ public class PickColor extends Card {
 
     @Override
     public void play() {
-        Player source = Game.getInstance().getCurrentPlayer();
+        Player source = Game.getCurrentPlayer();
 
         if (source instanceof GameAI) 
-            choice = (Card) (((GameAI) source).chooseFrom(new CardGroup(options)).getValue());
+            choice = (Card) (((GameAI) source).chooseFrom(List.of(options)).getValue());
         else
             choice = UserTurn.getInstance().chooseFrom(options);
     }

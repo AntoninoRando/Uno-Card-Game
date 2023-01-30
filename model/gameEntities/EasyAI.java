@@ -12,7 +12,6 @@ import model.gameObjects.Card;
 public class EasyAI extends GameAI {
     public EasyAI(String icon, String nickname) {
         super(icon, nickname);
-        //TODO Auto-generated constructor stub
     }
 
     @Override

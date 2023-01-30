@@ -66,7 +66,7 @@ public class AnimationHandler implements EventListener {
                 boolean said = (boolean) data.get("said");
                 animation = said ? Animations.UNO_TEXT.get() : null;
                 break;
-            case PLAYER_PLAYED_CARD:
+            case AI_PLAYED_CARD:
                 animation = Animations.CARD_PLAYED.get();
                 animation.setWillCountdown(true);
                 break;
@@ -93,10 +93,8 @@ public class AnimationHandler implements EventListener {
     @Override
     public int getEventPriority(Event event) {
         switch (event) {
-            case PLAYER_PLAYED_CARD:
+            case AI_PLAYED_CARD:
                 return 2;
-            case TURN_START:
-                return -1;
             default:
                 return 1;
         }

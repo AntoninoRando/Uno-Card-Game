@@ -65,11 +65,11 @@ public class CUView extends EventManager implements EventListener {
      * notified by this after a <code>CUModel.communicate</code> call.
      */
     private void subscribeAll() {
-        subscribe(ActionsChronology.getInstance(), Event.PLAYER_PLAYED_CARD, Event.GAME_READY);
+        subscribe(ActionsChronology.getInstance(), Event.AI_PLAYED_CARD, Event.USER_PLAYED_CARD, Event.GAME_READY);
         subscribe(SelectionPane.getInstance(), Event.USER_SELECTING_CARD, Event.SELECTION);
         subscribe(HandPane.getInstance(), Event.GAME_READY, Event.USER_PLAYED_CARD, Event.USER_DREW, Event.GAME_READY);
-        subscribe(PlayerPane.getInstance(), Event.GAME_READY, Event.PLAYER_HAND_DECREASE,
-                Event.PLAYER_HAND_INCREASE, Event.GAME_READY, Event.TURN_START);
+        subscribe(PlayerPane.getInstance(), Event.GAME_READY, Event.AI_PLAYED_CARD,
+                Event.AI_DREW, Event.GAME_READY, Event.TURN_START, Event.USER_DREW, Event.USER_PLAYED_CARD);
         subscribe(TerrainPane.getInstance(), Event.CARD_CHANGE);
         subscribe(ProfileMenu.getInstance(), Event.INFO_CHANGE);
         subscribe(GameResults.getInstance(), Event.PLAYER_WON, Event.INFO_CHANGE);

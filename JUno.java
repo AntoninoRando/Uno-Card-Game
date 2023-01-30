@@ -50,7 +50,7 @@ public class JUno extends Application implements EventListener, GUIContainer {
         Animations.CARD_PLAYED.get().load();
 
         // Serve solo per far vedere la classe
-        System.out.println(Sound.BUTTON_CLICK);
+        System.out.print("");
     }
 
     public static void main(String[] args) {

@@ -4,6 +4,7 @@ import java.io.FileReader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -23,9 +24,9 @@ import model.gameObjects.*;
 public abstract class CardBuilder {
     /* --- Fields ----------------------------- */
 
-    private static CardGroup cards;
+    private static List<Card> cards;
 
-    public static CardGroup getCards(String setName) {
+    public static List<Card> getCards(String setName) {
         if (cards == null)
             load(setName);
         return cards;
@@ -36,7 +37,7 @@ public abstract class CardBuilder {
     public static void load(String setName) {
         // parse the JSON file and save the result in the cards list
         List<Map<String, Object>> setCards = parseJson(setName);
-        CardBuilder.cards = new CardGroup();
+        CardBuilder.cards = new LinkedList<Card>();
 
         Map<String, BiFunction<Suit, Integer, Card>> constructors = Map.of(
             "simple", (suit, value) -> new SimpleCard(suit, value),

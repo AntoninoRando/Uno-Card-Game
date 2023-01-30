@@ -20,9 +20,7 @@ import controller.DropAndPlay;
 
 import events.Event;
 import events.EventListener;
-import model.gameEntities.Enemies;
-import model.gameEntities.Player;
-import model.gameLogic.GameThread;
+import model.gameLogic.GameExecuter;
 import view.CUView;
 import view.GUIContainer;
 import view.animations.Animation;
@@ -56,7 +54,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         arrangeElements();
         applyBehaviors();
         CUView.getInstance().subscribe(this, Event.INVALID_CARD, Event.GAME_START, Event.PLAYER_WON);
-        AnimationHandler.subscribe(this, Event.UNO_DECLARED, Event.PLAYER_PLAYED_CARD, Event.TURN_START, Event.TURN_BLOCKED);
+        AnimationHandler.subscribe(this, Event.UNO_DECLARED, Event.AI_PLAYED_CARD, Event.TURN_START, Event.TURN_BLOCKED);
     }
 
     /* --- Fields ----------------------------- */
@@ -103,12 +101,10 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
      * Starts a new game.
      */
     private void newGame() {
-        Player[] players = new Player[] { new Player(), Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE };
-
         SettingsMenu.getInstance().addOptions(quit, restart);
 
         closingAnimation.setDimensions(app.getScene().getWidth(), app.getScene().getHeight());
-        closingAnimation.setOnFinishAction(e -> GameThread.play(players));
+        closingAnimation.setOnFinishAction(e -> GameExecuter.play());
         closingAnimation.play(this);
 
         Sound.IN_GAME_SOUNDTRACK.play(true);
@@ -121,7 +117,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
     }
 
     private void quit() {
-        GameThread.stop(true);
+        GameExecuter.stop(true);
         Sound.IN_GAME_SOUNDTRACK.stop();
         SettingsMenu.getInstance().removeOptions();
 
@@ -130,7 +126,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
     }
 
     private void displayResults() {
-        GameThread.stop(true);
+        GameExecuter.stop(true);
         Sound.IN_GAME_SOUNDTRACK.stop();
         SettingsMenu.getInstance().removeOptions();
 
@@ -239,7 +235,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
 
         if (event.equals(Event.UNO_DECLARED))
             w = 300.0;
-        else if (event.equals(Event.PLAYER_PLAYED_CARD))
+        else if (event.equals(Event.AI_PLAYED_CARD))
             w = 400.0;
         else if (event.equals(Event.TURN_BLOCKED))
             w = 200.0;

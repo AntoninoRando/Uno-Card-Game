@@ -1,5 +1,6 @@
 package model.gameLogic;
 
+import java.util.Collections;
 import java.util.HashMap;
 
 /* --- Mine ------------------------------- */
@@ -23,10 +24,9 @@ public abstract class Actions {
      * @param card The new terrain card.
      */
     public static void changeCurrentCard(Card card) {
-        Game game = Game.getInstance();
-        if (game.getTerrainCard() != null)
-            game.getDiscardPile().add(game.getTerrainCard());
-        game.setTerrainCard(card);
+        if (Game.getTerrainCard() != null)
+            Game.getDiscardPile().add(Game.getTerrainCard());
+        Game.setTerrainCard(card);
     }
 
     /**
@@ -34,21 +34,18 @@ public abstract class Actions {
      * @return The first card in the deck pile.
      */
     public static Card takeFromDeck() {
-        Game game = Game.getInstance();
-        if (game.getDeck().isEmpty())
+        if (Game.getDeck().isEmpty())
             shuffleDeck();
-        return game.getDeck().remove(0);
+        return Game.getDeck().remove(0);
     }
 
     /**
      * Shuffles the deck.
      */
     public static void shuffleDeck() {
-        Game game = Game.getInstance();
-        // TODO potrebbe dare un problema perché modifica la lista su cui itera
-        game.getDiscardPile().forEach(card -> card.shuffleIn(game.getDeck()));
-        game.getDeck().shuffle();
-        game.getDiscardPile().clear();
+        Game.getDiscardPile().forEach(card -> card.shuffleIn(Game.getDeck()));
+        Collections.shuffle(Game.getDeck());
+        Game.getDiscardPile().clear();
     }
 
     /**
@@ -70,10 +67,22 @@ public abstract class Actions {
             if (!(player instanceof GameAI))
                 CUModel.communicate(Event.USER_DREW, data);
             else
-                CUModel.communicate(Event.PLAYER_DREW, data);
-
-            CUModel.communicate(Event.PLAYER_HAND_INCREASE, data);
+                CUModel.communicate(Event.AI_DREW, data);
         }
+    }
+
+    /**
+     * Jumps to the turn ahead by the given amount.
+     * 
+     * @param ahead The amount of turns to skip.
+     */
+    public static void advanceTurn(int ahead) {
+        int newTurn = (Game.getTurn() + ahead) % Game.countPlayers();
+        Game.setTurn(newTurn);
+    }
+
+    public static void nextPlayer() {
+
     }
 
 }

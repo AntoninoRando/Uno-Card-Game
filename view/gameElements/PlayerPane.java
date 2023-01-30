@@ -43,8 +43,8 @@ public class PlayerPane extends VBox implements EventListener {
         getChildren().setAll(title);
     }
 
-    private void addPlayerLabel(String nickname, String icon, int handSize) {
-        PlayerLabel label = new PlayerLabel(icon, nickname, handSize);
+    private void addPlayerLabel(String nickname, String icon) {
+        PlayerLabel label = new PlayerLabel(icon, nickname, 0);
         getChildren().add(label);
         labels.put(nickname, label);
     }
@@ -65,18 +65,19 @@ public class PlayerPane extends VBox implements EventListener {
             case GAME_READY:
                 String[] nicknames = (String[]) data.get("all-nicknames");
                 String[] icons = (String[]) data.get("all-icons");
-                int[] hands = (int[]) data.get("all-hand-sizes");
                 Platform.runLater(() -> {
                     initialize();
                     for (int i = 0; i < icons.length; i++)
-                        addPlayerLabel(nicknames[i], icons[i], hands[i]);
+                        addPlayerLabel(nicknames[i], icons[i]);
                 });
                 break;
-            case PLAYER_HAND_INCREASE:
-                Platform.runLater(() -> labels.get((String) data.get("nickname")).modifyHandSize(1));
-                break;
-            case PLAYER_HAND_DECREASE:
+            case AI_PLAYED_CARD:
+            case USER_PLAYED_CARD:
                 Platform.runLater(() -> labels.get((String) data.get("nickname")).modifyHandSize(-1));
+                break;
+            case AI_DREW:
+            case USER_DREW:
+                Platform.runLater(() -> labels.get((String) data.get("nickname")).modifyHandSize(1));
                 break;
             case TURN_START:
                 activePlayer = (String) data.get("nickname");

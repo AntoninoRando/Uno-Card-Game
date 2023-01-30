@@ -1,17 +1,15 @@
 package model.gameLogic;
 
-import model.gameEntities.Player;
-
 /* --- Mine ------------------------------- */
 
 /**
  * A thread that runs a single UNO game.
  */
-public abstract class GameThread {
+public abstract class GameExecuter {
     /* --- Fields ----------------------------- */
 
-    private static Thread oldGame;
-    private static Thread currentGame;
+    private static Thread dyingGame;
+    private static Thread ongoingGame;
 
     /* --- Body ------------------------------- */
 
@@ -19,32 +17,33 @@ public abstract class GameThread {
      * Sets a new thread. It is possible to instantiate only one thread at time,
      * thus if the old thread is still running, it will be interrupted.
      * 
-     * @param newThread   The new thread.
+     * @param newThread The new thread.
      */
-    private static void setThread(Thread newThread) {
-        oldGame = currentGame;
-        currentGame = newThread;
+    private static void setThread(Thread newGame) {
+        dyingGame = ongoingGame;
+        ongoingGame = newGame;
     }
 
     /**
      * Sets a new thread that runs a game and starts it.
      */
-    public static void play(Player[] players) {
+    public static void play() {
         Thread newGame = new Thread(() -> {
-            Game.getInstance().interruptGame();
-            if (oldGame != null) {
-                try {
-                    oldGame.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            if (Game.isInstantiated())
+                Game.interruptGame();
+
+            try {
+                dyingGame.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
             }
-            Game.getInstance().setupGame(players);
-            Game.getInstance().play();
+
+            Game.play();
         });
         newGame.setName("UNO-game");
         setThread(newGame);
-        currentGame.start();
+        newGame.start();
     }
 
     /**
@@ -55,18 +54,20 @@ public abstract class GameThread {
      */
     public static void stop(boolean isInterrupt) {
         Thread gameKiller = new Thread(() -> {
-            Game.getInstance().interruptGame();
-            if (oldGame != null) {
-                try {
-                    oldGame.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            if (Game.isInstantiated())
+                Game.interruptGame();
+
+            try {
+                dyingGame.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
             }
-            currentGame = null;
+
+            ongoingGame = null;
         });
         gameKiller.setName("UNO-game-killer");
         setThread(gameKiller);
-        currentGame.start();
+        ongoingGame.start();
     }
 }

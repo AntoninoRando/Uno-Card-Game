@@ -31,7 +31,6 @@ public class UserTurn implements GameState, EventListener {
     /* --- Fields ----------------------------- */
 
     private Player user;
-    private Game game;
     private Entry<Action, Object> choice;
     private Optional<Card> cardPlayed;
     private HashMap<Integer, Card> selectionCards;
@@ -67,7 +66,7 @@ public class UserTurn implements GameState, EventListener {
                     int tag = (int) choice.getValue();
                     Card card = user.getHand().stream().filter(c -> c.getTag() == tag).findAny().orElseThrow();
 
-                    if (!game.isPlayable(card)) {
+                    if (!Game.isPlayable(card)) {
                         HashMap<String, Object> data = new HashMap<>();
                         data.put("card-tag", card.getTag());
                         CUModel.communicate(Event.INVALID_CARD, data);
@@ -80,10 +79,8 @@ public class UserTurn implements GameState, EventListener {
 
                     HashMap<String, Object> data = user.getData();
                     data.putAll(card.getData());
-                    CUModel.communicate(Event.CARD_CHANGE, data);
-                    CUModel.communicate(Event.PLAYER_PLAYED_CARD, data);
-                    CUModel.communicate(Event.PLAYER_HAND_DECREASE, data);
                     CUModel.communicate(Event.USER_PLAYED_CARD, data);
+                    CUModel.communicate(Event.CARD_CHANGE, data);
                     endTurn = true;
 
                     if (unoNeed) {
@@ -111,14 +108,10 @@ public class UserTurn implements GameState, EventListener {
     }
 
     public void passTurn() {
-        if (cardPlayed.isPresent()) {
-            game.changeState(new CardTurn(game, cardPlayed.get()));
-            return;
-        }
-
-        Player following = game.getNextPlayer();
-        game.advanceTurn(1);
-        game.changeState(AITurn.getInstance(following.getNickame()));
+        if (cardPlayed.isPresent())
+            Game.changeState(new CardTurn(cardPlayed.get()));
+        else
+            Game.changeState(TransitionState.getInstance());
     }
 
     public Card chooseFrom(Card... cards) {
@@ -147,8 +140,7 @@ public class UserTurn implements GameState, EventListener {
 
     /* --- State ------------------------------ */
 
-    public void setContext(Game game, Player user) {
-        this.game = game;
+    public void setContext(Player user) {
         this.user = user;
     }
 
@@ -167,7 +159,7 @@ public class UserTurn implements GameState, EventListener {
 
         switch (event) {
             case TURN_DECISION:
-                if (!(game.getCurrentPlayer() instanceof GameAI)) {
+                if (!(Game.getCurrentPlayer() instanceof GameAI)) {
                     synchronized (this) {
                         choice = Map.entry(action, info);
                         notify();
@@ -183,7 +175,7 @@ public class UserTurn implements GameState, EventListener {
             case SELECTION:
                 CUModel.communicate(Event.SELECTION, null);
                 synchronized (this) {
-                    choice = Map.entry(action,info);
+                    choice = Map.entry(action, info);
                     notify();
                 }
                 break;

@@ -4,13 +4,11 @@ package events;
  * All notifiable events.
  */
 public enum Event {
-    PLAYER_HAND_INCREASE,
-    PLAYER_HAND_DECREASE,
     CARD_CHANGE,
     TURN_BLOCKED,
 
-    PLAYER_PLAYED_CARD,
-    PLAYER_DREW,
+    AI_PLAYED_CARD,
+    AI_DREW,
     USER_SELECTING_CARD,
     USER_DREW,
     USER_PLAYED_CARD,
