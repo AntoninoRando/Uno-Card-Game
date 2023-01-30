@@ -5,6 +5,12 @@ import java.util.Map.Entry;
 import events.Event;
 import javafx.scene.layout.Pane;
 
+/**
+ * A functional interface implemented by those UI elements that will be the
+ * layer for an animation.
+ * <p>
+ * Its functional method is <code>getPoints</code>.
+ */
 @FunctionalInterface
 public interface AnimationLayer {
     /**

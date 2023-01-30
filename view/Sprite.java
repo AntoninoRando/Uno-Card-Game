@@ -1,36 +1,39 @@
 package view;
 
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
  * Implements the <em>Flyweight</em> pattern as <b>Flyweight</b>.
+ * <p>
+ * A unique image that can be applied to multiple containers.
  */
 public class Sprite {
     private Image image;
+    private String name;
 
     /**
-     * Loads the image associated with the given string.
+     * Loads the image file in input.
+     * 
+     * @param filePath The file path.
      */
-    public Sprite(String filePath) {
-        Path file = Paths.get(filePath);
-
-        if (Files.notExists(file))
-            throw new Error("File named " + filePath + " doesn't exist.");
-
-        try {
-            image = new Image(file.toUri().toURL().toExternalForm());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+    public Sprite(String filePath, String name) {
+        image = new Image(filePath);
+        this.name = name;
     }
 
-    // operation
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Implements the <em>Flyweight</em> pattern as <b>operation</b>.
+     * <p>
+     * Applies this image to a container.
+     * 
+     * @param width     The width of the image (ratio will be preserved).
+     * @param container The container of the image.
+     */
     public void draw(double width, ImageView container) {
         container.setPreserveRatio(true);
         container.setFitWidth(width);

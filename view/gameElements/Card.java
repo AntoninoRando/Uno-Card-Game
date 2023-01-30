@@ -39,7 +39,7 @@ public class Card extends ImageView implements EventListener {
         getStyleClass().add("card");
         makeZommable(0.5);
 
-        context(tag, "resources/AllUnoCards/" + cardString + ".png");
+        context(tag, cardString);
         draw();
     }
 
@@ -51,7 +51,7 @@ public class Card extends ImageView implements EventListener {
      * @param cardString (repeating state)
      */
     public void context(int tag, String cardString) {
-        cardSprite = SpriteFactory.getSprite(cardString);
+        cardSprite = SpriteFactory.getCardSprite(cardString);
         cards.put(tag, this);
     }
 

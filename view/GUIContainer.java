@@ -1,27 +1,27 @@
 package view;
 
 /**
- * A GUI element made up of different GUI elements.
+ * A GUI element made up of severals GUI elements.
  */
 public interface GUIContainer {
     /**
-     * Instantiates all the elements laying in this, with their style and
-     * functionalities. This method <em>do not</em> arranges those elements.
+     * Instantiates all elements contained in this.
      */
     public void createElements();
 
     /**
-     * Arranges all elements in this.
+     * Arranges and styles all elements contained in this, included this container
+     * itself.
      */
     public void arrangeElements();
 
     /**
-     * Apply behaviors to the elements inside the GUI container.
+     * Applies behaviors to all elements contained in this.
      */
     public void applyBehaviors();
 
     /**
-     * TODO
+     * Makes this ready to be displayed.
      */
     default void initialize() {
         createElements();

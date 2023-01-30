@@ -7,7 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import view.CUView;
-import view.animations.ArcNodes;
+import view.prefabs.ArcNodes;
 import events.EventListener;
 import events.Event;
 
@@ -33,31 +33,20 @@ public class HandPane extends HBox implements EventListener {
 
     /* --- Fields ----------------------------- */
 
-    private final double cardW = 150.0;
+    private final double cardWidth = 150.0;
 
     /* --- Body ------------------------------- */
-
-    public void addCard(Node card) {
-        getChildren().add(card);
-        adjustCards();
-
-    }
-
-    public void removeCard(Card card) {
-        getChildren().remove(card);
-        adjustCards();
-    }
 
     private void adjustCards() {
         // Adjust card gaps
         double w = Stage.getWindows().get(0).getWidth() - 200 * 2;
-        double gap = w / getChildren().size() - cardW;
+        double gap = w / getChildren().size() - cardWidth;
         gap = Double.min(-30.0, gap);
         setSpacing(gap);
 
         // Adjust card positions
         int i = 0;
-        for (double[] xyr : new ArcNodes(getChildren().size(), 1500.0, gap, cardW)) {
+        for (double[] xyr : new ArcNodes(getChildren().size(), 1500.0, gap, cardWidth)) {
             Node node = getChildren().get(i++);
             node.setTranslateY(xyr[1]);
             node.setRotate(xyr[2]);
@@ -68,6 +57,7 @@ public class HandPane extends HBox implements EventListener {
 
     @Override
     public void update(Event event, HashMap<String, Object> data) {
+        Card card = (Card) data.get("card-node");
         switch (event) {
             case GAME_READY:
                 Platform.runLater(() -> getChildren().clear());
@@ -76,14 +66,18 @@ public class HandPane extends HBox implements EventListener {
                 CUView.communicate(event, data);
 
                 Platform.runLater(() -> {
-                    addCard((Card) data.get("card-node"));
+                    getChildren().add(card);
+                    adjustCards();
                 });
                 break;
             case USER_PLAYED_CARD:
-                Platform.runLater(() -> removeCard((Card) data.get("card-node")));
+                Platform.runLater(() -> {
+                    getChildren().remove(card);
+                    adjustCards();
+                });
                 break;
             default:
-                throwUnsupportedError(event, null);
+                throwUnsupportedError(event, data);
         }
     }
 }

@@ -2,22 +2,21 @@ package view.gameElements;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
+import view.SpriteFactory;
 
 public class PlayerLabel extends HBox {
     /* --- Fields ----------------------------- */
 
-    private Circle icon;
+    private ImageView icon;
     private Label nick;
     private Label cards;
 
     /* --- Constructors ----------------------- */
 
-    public PlayerLabel(String imagePathname, String nickname, int cardsQuantity) {
-        icon = createIcon(new Image(imagePathname));
+    public PlayerLabel(String avatarName, String nickname, int cardsQuantity) {
+        icon = createIcon(avatarName);
         nick = createNick(nickname);
         cards = createCards(cardsQuantity);
 
@@ -28,10 +27,10 @@ public class PlayerLabel extends HBox {
 
     /* --- Body ------------------------------- */
     
-    private Circle createIcon(Image img) {
-        Circle icon = new Circle(20, 20, 20);
-        icon.setFill(new ImagePattern(img));
+    private ImageView createIcon(String avatarName) {
+        ImageView icon = new ImageView();
         icon.getStyleClass().add("avatar");
+        SpriteFactory.getAvatarSprite(avatarName).draw(50.0, icon);
         return icon;
     }
 

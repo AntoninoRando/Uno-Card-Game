@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import javafx.application.Platform;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.image.ImageView;
+import view.SpriteFactory;
+import view.prefabs.Chronology;
 import events.EventListener;
 import events.Event;
 
@@ -23,23 +25,22 @@ public class ActionsChronology extends Chronology implements EventListener {
 
     @Override
     public void update(Event event, HashMap<String, Object> data) {
+        String cardString = (String) data.get("card-representation");
         switch (event) {
-            case PLAYER_PLAYED_CARD:
-                Platform.runLater(() -> {
-                    Card card = (Card) data.get("card-node");
-                    String icon = (String) data.get("icon");
-                    String nickname = (String) data.get("nickname");
-                    addMemoryInfo(card, icon, nickname);
-                    update();
-                });
-                break;
-            // TODO aggiungere anche case SELECTION così che salvo in una memoria (diversa
-            // dalla carta) il risultato della selezione
             case GAME_READY:
                 Platform.runLater(() -> {
-                    content = new HBox();
-                    ScrollPane scrollPane = (ScrollPane) getChildren().get(0);
-                    scrollPane.setContent(content);
+                    content.getChildren().clear();
+                    ((ScrollPane) getChildren().get(0)).setContent(content);
+                });
+                break;
+            case PLAYER_PLAYED_CARD:
+                Platform.runLater(() -> {
+                    ImageView cardPlayed = new ImageView();
+                    SpriteFactory.getCardSprite(cardString).draw(150.0, cardPlayed);
+                    String icon = (String) data.get("icon");
+                    String nickname = (String) data.get("nickname");
+                    addMemoryInfo(cardPlayed, icon, nickname);
+                    update();
                 });
                 break;
             default:

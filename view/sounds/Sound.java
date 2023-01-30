@@ -2,29 +2,34 @@ package view.sounds;
 
 import java.io.File;
 
-import javafx.animation.Timeline;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
-public class Sound {
-    private MediaPlayer mp3;
-    
-    public Sound(String filePath, boolean inLoop) {
-        mp3 = new MediaPlayer(new Media(new File(filePath).toURI().toString()));
-        mp3.setCycleCount(Timeline.INDEFINITE);
+public enum Sound {
+    BUTTON_CLICK("mp3"),
+    IN_GAME_SOUNDTRACK("mp3"),
+    GEAR("wav");
+
+    private static final String AUDIO_FOLDER = "resources/audio";
+    private final MediaPlayer audio;
+
+    private Sound(String extension) {
+        String filePath = AUDIO_FOLDER + "/" + toString() + "." + extension;
+        audio = new MediaPlayer(new Media(new File(filePath).toURI().toString()));
     }
 
-    public Sound(String filePath) {
-        mp3 = new MediaPlayer(new Media(new File(filePath).toURI().toString()));
-    }
+    public void play(boolean loop) {
+        if (loop)
+            audio.setCycleCount(-1);
+        else
+            audio.setCycleCount(1);
 
-    public void play() {
-        mp3.play();
-        mp3.seek(Duration.ZERO);
+        audio.play();
+        audio.seek(Duration.ZERO);
     }
 
     public void stop() {
-        mp3.stop();
+        audio.stop();
     }
 }

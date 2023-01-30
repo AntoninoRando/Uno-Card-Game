@@ -43,35 +43,6 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
     private ProgressBar xpBar;
     private Label newXp;
 
-    /* --- Body ------------------------------- */
-
-    /* --- Observer --------------------------- */
-
-    @Override
-    public void update(Event event, HashMap<String, Object> data) {
-        switch (event) {
-            case INFO_CHANGE:
-                Platform.runLater(() -> {
-                    int xp = (int) data.get("xp");
-                    int xpGap = (int) data.get("xp-gap");
-                    xpBar.setProgress(((double) xp) / ((double) xpGap));
-                    
-                    data.putIfAbsent("xp-earned", 0);
-                    int xpEarned = (int) data.get("xp-earned");
-                    newXp.setText(Integer.toString(xpEarned));
-                });
-                break;
-            case PLAYER_WON:
-                Platform.runLater(() -> {
-                    icon.setFill(new ImagePattern(new Image((String) data.get("icon"))));
-                    nick.setText((String) data.get("nickname"));
-                });
-                break;
-            default:
-                throwUnsupportedError(event, data);
-        }
-    }
-
     /* --- Visible ---------------------------- */
 
     @Override
@@ -111,5 +82,32 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
 
     @Override
     public void applyBehaviors() {
+    }
+
+    /* --- Observer --------------------------- */
+
+    @Override
+    public void update(Event event, HashMap<String, Object> data) {
+        switch (event) {
+            case INFO_CHANGE:
+                Platform.runLater(() -> {
+                    int xp = (int) data.get("xp");
+                    int xpGap = (int) data.get("xp-gap");
+                    xpBar.setProgress(((double) xp) / ((double) xpGap));
+
+                    data.putIfAbsent("xp-earned", 0);
+                    int xpEarned = (int) data.get("xp-earned");
+                    newXp.setText(Integer.toString(xpEarned));
+                });
+                break;
+            case PLAYER_WON:
+                Platform.runLater(() -> {
+                    icon.setFill(new ImagePattern(new Image((String) data.get("icon"))));
+                    nick.setText((String) data.get("nickname"));
+                });
+                break;
+            default:
+                throwUnsupportedError(event, data);
+        }
     }
 }

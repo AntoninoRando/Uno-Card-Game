@@ -1,7 +1,9 @@
 package view.gameElements;
 
 import javafx.application.Platform;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import view.SpriteFactory;
 
 import java.util.HashMap;
 
@@ -26,15 +28,23 @@ public class TerrainPane extends StackPane implements EventListener {
         getStyleClass().add("terrain");
         setMaxHeight(400);
         setMaxWidth(400);
+
+        terrainCard = new ImageView();
+        getChildren().setAll(terrainCard);
     }
-    
+
+    /* --- Fields ----------------------------- */
+
+    private ImageView terrainCard;
+
     /* --- Observer --------------------------- */
 
     @Override
     public void update(Event event, HashMap<String, Object> data) {
+        String cardString = (String) data.get("card-representation");
         switch (event) {
             case CARD_CHANGE:
-                Platform.runLater(() -> getChildren().setAll((Card) data.get("card-node")));
+                Platform.runLater(() -> SpriteFactory.getCardSprite(cardString).draw(150.0, terrainCard));
                 break;
             default:
                 throwUnsupportedError(event, data);

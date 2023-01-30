@@ -1,6 +1,5 @@
 package view.settings;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,13 +9,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
 
 /* --- Mine ------------------------------- */
 
@@ -24,7 +21,8 @@ import events.EventListener;
 import events.Event;
 
 import view.GUIContainer;
-
+import view.Sprite;
+import view.SpriteFactory;
 import controller.Controls;
 
 /**
@@ -49,7 +47,7 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
 
     private AvatarPicker avatarPicker;
     private VBox infoContainer;
-    private Circle avatar;
+    private ImageView avatar;
     private TextField nickField;
     private Label levelLabel;
     private ProgressBar xpBar;
@@ -70,7 +68,7 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
     public void createElements() {
         avatarPicker = new AvatarPicker();
         infoContainer = new VBox();
-        avatar = new Circle(20, 20, 20);
+        avatar = new ImageView();
         nickField = new TextField();
         levelLabel = new Label();
         xpBar = new ProgressBar();
@@ -136,12 +134,12 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
                 int wins = (int) data.get("wins");
 
                 nickField.setPromptText(nickname);
-                avatar.setFill(new ImagePattern(new Image(icon)));
+                SpriteFactory.getAvatarSprite(icon).draw(50.0, avatar);
                 levelLabel.setText("Level " + Integer.toString(level));
 
                 double progress = ((double) xp) / ((double) gap);
                 xpBar.setProgress(progress);
-                progressLabel.setText(Integer.toString((int) (progress*100)) + "%");
+                progressLabel.setText(Integer.toString((int) (progress * 100)) + "%");
 
                 gamesPlayedLabel.setText("Games: " + Integer.toString(games));
 
@@ -168,8 +166,7 @@ class AvatarPicker extends StackPane implements GUIContainer {
     /* --- Constructors ----------------------- */
 
     public AvatarPicker() {
-        createElements();
-        arrangeElements();
+        initialize();
     }
 
     /* --- Body ------------------------------- */
@@ -177,26 +174,18 @@ class AvatarPicker extends StackPane implements GUIContainer {
     /**
      * Set all the clickable icons.
      * 
-     * @param iconsPaths A collection of all the icons paths.
      */
-    private void addOptions(String dirPath) {
-        File directoryPath = new File(dirPath);
-        String[] icons = directoryPath.list();
+    private void addOptions() {
+        Sprite[] icons = SpriteFactory.getAllAvatars();
 
         for (int i = 0; i < icons.length; i++) {
-            String path = directoryPath.getPath() + "/" + icons[i];
-            Circle icon = createIcon(path);
+            ImageView icon = new ImageView();
+            icons[i].draw(50.0, icon);
             GridPane.setColumnIndex(icon, i % iconsPerLine);
             GridPane.setRowIndex(icon, i / iconsPerLine);
             grid.getChildren().add(icon);
-
-            Controls.INFO_CHANGE.apply(icon, Map.entry("icon", path));
+            Controls.INFO_CHANGE.apply(icon, Map.entry("icon", icons[i].getName()));
         }
-    }
-
-    private Circle createIcon(String iconPath) {
-        Circle avatar = new Circle(30, new ImagePattern(new Image(iconPath)));
-        return avatar;
     }
 
     /* --- Visible ---------------------------- */
@@ -206,8 +195,6 @@ class AvatarPicker extends StackPane implements GUIContainer {
         grid = new GridPane();
         container = new ScrollPane(grid);
         closeButton = new Button("X");
-
-        addOptions("resources/icons");
     }
 
     @Override
@@ -217,6 +204,8 @@ class AvatarPicker extends StackPane implements GUIContainer {
         setMaxWidth(400.0);
         setPrefWidth(400.0);
         setPrefHeight(400.0);
+
+        addOptions();
 
         closeButton.getStyleClass().add("button");
 

@@ -1,4 +1,4 @@
-package view.gameElements;
+package view.prefabs;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;

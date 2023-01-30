@@ -29,7 +29,6 @@ import view.animations.Animation;
 import view.animations.AnimationHandler;
 import view.animations.AnimationLayer;
 import view.animations.Animations;
-import view.animations.ResetTranslate;
 import view.gameElements.Card;
 import view.gameElements.ActionsChronology;
 import view.gameElements.HandPane;
@@ -39,7 +38,7 @@ import view.gameElements.PlayzonePane;
 import view.gameElements.SelectionPane;
 import view.gameElements.TerrainPane;
 import view.settings.SettingsMenu;
-import view.sounds.Sounds;
+import view.sounds.Sound;
 
 public class InGame extends StackPane implements AppState, EventListener, GUIContainer, AnimationLayer {
     /* --- Singleton -------------------------- */
@@ -112,18 +111,18 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         closingAnimation.setOnFinishAction(e -> GameThread.play(players));
         closingAnimation.play(this);
 
-        Sounds.IN_GAME_SOUNDTRACK.play();
+        Sound.IN_GAME_SOUNDTRACK.play(true);
     }
 
     private void restart() {
-        Sounds.IN_GAME_SOUNDTRACK.stop();
+        Sound.IN_GAME_SOUNDTRACK.stop();
         SettingsMenu.getInstance().removeOptions();
         newGame();
     }
 
     private void quit() {
         GameThread.stop(true);
-        Sounds.IN_GAME_SOUNDTRACK.stop();
+        Sound.IN_GAME_SOUNDTRACK.stop();
         SettingsMenu.getInstance().removeOptions();
 
         Home.getInstance().setContext(app);
@@ -132,7 +131,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
 
     private void displayResults() {
         GameThread.stop(true);
-        Sounds.IN_GAME_SOUNDTRACK.stop();
+        Sound.IN_GAME_SOUNDTRACK.stop();
         SettingsMenu.getInstance().removeOptions();
 
         EndGame.getInstance().setContext(app);
@@ -189,12 +188,12 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         Controls.UNO.apply(playZone);
 
         restart.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.play();
+            Sound.BUTTON_CLICK.play(false);
             SettingsMenu.getInstance().setVisible(false);
             restart();
         });
         quit.setOnMouseClicked(e -> {
-            Sounds.BUTTON_CLICK.play();
+            Sound.BUTTON_CLICK.play(false);
             SettingsMenu.getInstance().setVisible(false);
             quit();
         });
@@ -227,7 +226,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
                 Platform.runLater(() -> displayResults());
                 break;
             case INVALID_CARD:
-                Platform.runLater(() -> ResetTranslate.resetTranslate(Card.cards.get((int) data.get("card-tag"))));
+                Platform.runLater(() -> Animations.resetTranslate(Card.cards.get((int) data.get("card-tag"))));
                 break;
             default:
                 throwUnsupportedError(event, data);

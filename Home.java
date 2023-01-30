@@ -8,7 +8,7 @@ import view.GUIContainer;
 /* --- Mine ------------------------------- */
 
 import view.settings.ProfileMenu;
-import view.sounds.Sounds;
+import view.sounds.Sound;
 
 public class Home extends StackPane implements AppState, GUIContainer {
     /* --- Singleton -------------------------- */
@@ -39,7 +39,7 @@ public class Home extends StackPane implements AppState, GUIContainer {
     /* --- Body ------------------------------- */
 
     private void play() {
-        Sounds.BUTTON_CLICK.play();
+        Sound.BUTTON_CLICK.play(false);
         playButton.setDisable(false);
         InGame.getInstance().setContext(app);
         app.changeState(InGame.getInstance());
@@ -47,12 +47,12 @@ public class Home extends StackPane implements AppState, GUIContainer {
     }
 
     private void openProfile() {
-        Sounds.BUTTON_CLICK.play();
+        Sound.BUTTON_CLICK.play(false);
         profileMenu.setVisible(!profileMenu.isVisible());
     }
 
     private void exit() {
-        Sounds.BUTTON_CLICK.play();
+        Sound.BUTTON_CLICK.play(false);
         System.exit(0);
     }
 

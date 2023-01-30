@@ -23,7 +23,7 @@ public abstract class UserData implements EventListener {
 
     public static final String DEFAULT_NICKNAME = "User";
     // public static final int NICKNAME_MAX_SIZE = 22;
-    public static final String DEFAULT_ICON = "resources\\icons\\night.png";
+    public static final String DEFAULT_ICON = "night";
     public static final int[] XP_GAPS = { 5, 8, 15, 21, 24, 28, 31, 35, 39, 50 };
     public static final EventListener EVENT_LISTENER = new EventListener() {
         @Override

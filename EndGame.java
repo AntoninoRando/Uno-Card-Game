@@ -1,6 +1,5 @@
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -8,10 +7,11 @@ import javafx.scene.layout.VBox;
 /* --- Mine ------------------------------- */
 
 import view.GameResults;
+import view.SpriteFactory;
 import view.GUIContainer;
 import view.animations.Animation;
 import view.animations.Animations;
-import view.sounds.Sounds;
+import view.sounds.Sound;
 
 public class EndGame extends VBox implements AppState, GUIContainer {
     /* --- Singleton -------------------------- */
@@ -40,15 +40,13 @@ public class EndGame extends VBox implements AppState, GUIContainer {
         Animation closing = Animations.NEW_GAME.get();
         closing.setStopFrame(5);
         closing.setDimensions(app.getScene().getWidth(), app.getScene().getHeight());
-
-        Sounds.BUTTON_CLICK.play();
+        Sound.BUTTON_CLICK.play(false);
         closing.play(this);
-
         app.changeState(InGame.getInstance());
     }
 
     private void goHome() {
-        Sounds.BUTTON_CLICK.play();
+        Sound.BUTTON_CLICK.play(false);
         app.changeState(Home.getInstance());
     }
 
@@ -62,17 +60,16 @@ public class EndGame extends VBox implements AppState, GUIContainer {
 
     @Override
     public void arrangeElements() {
-        playAgain.setStyle("-fx-background-color: none");
-        backHome.setStyle("-fx-background-color: none");
+        playAgain.getStyleClass().add("button");
+        backHome.getStyleClass().add("button");
 
-        ImageView playAgainImage = new ImageView(new Image("resources\\BlueButton.png"));
-        playAgainImage.setPreserveRatio(true);
-        playAgainImage.setFitWidth(150.0);
+        ImageView playAgainImage = new ImageView();
+        SpriteFactory.getButtonSprite("playAgain").draw(150.0, playAgainImage);
         playAgain.setGraphic(playAgainImage);
 
-        ImageView backHomeImage = new ImageView(new Image("resources\\HomeButton.png"));
-        backHomeImage.setPreserveRatio(true);
-        backHomeImage.setFitWidth(150.0);
+        
+        ImageView backHomeImage = new ImageView();
+        SpriteFactory.getButtonSprite("backHome").draw(150.0, backHomeImage);
         backHome.setGraphic(backHomeImage);
 
         HBox buttonsContainer = new HBox(playAgain, backHome);

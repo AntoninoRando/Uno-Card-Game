@@ -1,4 +1,4 @@
-package view.animations;
+package view.prefabs;
 
 import java.util.Iterator;
 
@@ -20,8 +20,6 @@ public class ArcNodes implements Iterable<double[]> {
      * @param gap       The gap between each element.
      */
     public ArcNodes(int n, double r, double gap, double elementW) {
-        /* _________________ */
-
         this.n = n;
         this.r = r;
         this.gap = gap;
@@ -59,11 +57,8 @@ class ArcNodesIterator implements Iterator<double[]> {
     @Override
     public double[] next() {
         int j = i - (n % 2 == 0 ? n / 2 : (n + 1) / 2);
-        double x = (gap + elementW / 2) * j; // x = element.x
-
-        // (x-x0)^2 + (y-y0)^2 = r^2 <==> y = y0 +- sqrt{-(x-x0)^2 + r^2}
+        double x = (gap + elementW / 2) * j;
         double y = y0 - Math.sqrt(-Math.pow(x - x0, 2) + Math.pow(r, 2));
-
         double angle = Math.toDegrees(Math.atan2(-y0, x - x0) - Math.atan2(-y0, -x0));
 
         i++;
@@ -73,22 +68,21 @@ class ArcNodesIterator implements Iterator<double[]> {
 }
 
 
-    // private double findX(Node node) {
-    //     int i = getChildren().indexOf(node) + 1;
-    //     int n = getChildren().size();
-    //     int j = i - (n % 2 == 0 ? n / 2 : (n + 1) / 2);
-    //     return (gap + elementW / 2) * j;
-    // }
+// private double findX(Node node) {
+//     int i = getChildren().indexOf(node) + 1;
+//     int n = getChildren().size();
+//     int j = i - (n % 2 == 0 ? n / 2 : (n + 1) / 2);
+//     return (gap + elementW / 2) * j;
+// }
 
+// private void adjustY(Node node) {
+//     double x = findX(node);
+//     double y = y0 - Math.sqrt(-Math.pow(x - x0, 2) + Math.pow(radius, 2));
+//     node.setTranslateY(y);
+// }
 
-    // private void adjustY(Node node) {
-    //     double x = findX(node);
-    //     double y = y0 - Math.sqrt(-Math.pow(x - x0, 2) + Math.pow(radius, 2));
-    //     node.setTranslateY(y);
-    // }
-
-    // private void pointCenter(Node node) {
-    //     double x = findX(node);
-    //     double angle = Math.toDegrees(Math.atan2(-y0, x - x0) - Math.atan2(-y0, -x0));
-    //     node.setRotate(angle);
-    // }
+// private void pointCenter(Node node) {
+//     double x = findX(node);
+//     double angle = Math.toDegrees(Math.atan2(-y0, x - x0) - Math.atan2(-y0, -x0));
+//     node.setRotate(angle);
+// }
