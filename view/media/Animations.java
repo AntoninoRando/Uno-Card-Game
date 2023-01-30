@@ -1,4 +1,4 @@
-package view.animations;
+package view.media;
 
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;

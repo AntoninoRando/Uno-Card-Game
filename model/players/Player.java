@@ -1,11 +1,10 @@
-package model.gameEntities;
+package model.players;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import model.data.UserData;
-import model.gameObjects.Card;
+import model.cards.Card;
 
 /**
  * This class contains all the info about the player (user or AI) state.

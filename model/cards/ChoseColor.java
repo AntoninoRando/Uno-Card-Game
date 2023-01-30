@@ -1,4 +1,4 @@
-package model.gameObjects;
+package model.cards;
 
 import events.Event;
 import model.CUModel;

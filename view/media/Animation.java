@@ -1,4 +1,4 @@
-package view.animations;
+package view.media;
 
 import java.io.File;
 import java.net.MalformedURLException;

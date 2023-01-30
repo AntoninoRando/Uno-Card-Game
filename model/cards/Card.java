@@ -1,4 +1,4 @@
-package model.gameObjects;
+package model.cards;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -7,7 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import view.CUView;
-import view.prefabs.ArcNodes;
+import view.media.ArcNodes;
 import events.EventListener;
 import events.Event;
 

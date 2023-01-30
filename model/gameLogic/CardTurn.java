@@ -1,6 +1,6 @@
 package model.gameLogic;
 
-import model.gameObjects.Card;
+import model.cards.Card;
 
 public class CardTurn implements GameState {
     /* --- Fields ----------------------------- */

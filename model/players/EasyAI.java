@@ -1,4 +1,4 @@
-package model.gameEntities;
+package model.players;
 
 import java.util.Collection;
 import java.util.Map;
@@ -6,8 +6,8 @@ import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
+import model.cards.Card;
 import model.gameLogic.Action;
-import model.gameObjects.Card;
 
 public class EasyAI extends GameAI {
     public EasyAI(String icon, String nickname) {

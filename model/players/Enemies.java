@@ -1,4 +1,4 @@
-package model.gameEntities;
+package model.players;
 
 public abstract class Enemies {
     public static final GameAI VIEGO = new EasyAI("pirate", "Viego");

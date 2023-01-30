@@ -4,11 +4,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import view.GUIContainer;
+import view.media.Sound;
 
 /* --- Mine ------------------------------- */
 
 import view.settings.ProfileMenu;
-import view.sounds.Sound;
 
 public class Home extends StackPane implements AppState, GUIContainer {
     /* --- Singleton -------------------------- */

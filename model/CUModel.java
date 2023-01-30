@@ -5,8 +5,8 @@ import java.util.HashMap;
 import events.EventListener;
 import events.EventManager;
 import events.Event;
-import model.data.UserData;
 import model.gameLogic.UserTurn;
+import model.players.UserData;
 import view.CUView;
 
 /**

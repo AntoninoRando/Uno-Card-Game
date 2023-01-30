@@ -1,12 +1,12 @@
-package model.gameObjects;
+package model.cards;
 
 import java.util.Collection;
 
 import events.Event;
 import model.CUModel;
-import model.gameEntities.Player;
 import model.gameLogic.Actions;
 import model.gameLogic.Game;
+import model.players.Player;
 
 public class BlockCard extends Card{
     public BlockCard(Suit suit, int value) {

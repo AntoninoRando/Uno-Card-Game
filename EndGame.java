@@ -8,10 +8,10 @@ import javafx.scene.layout.VBox;
 
 import view.GameResults;
 import view.SpriteFactory;
+import view.media.Animation;
+import view.media.Animations;
+import view.media.Sound;
 import view.GUIContainer;
-import view.animations.Animation;
-import view.animations.Animations;
-import view.sounds.Sound;
 
 public class EndGame extends VBox implements AppState, GUIContainer {
     /* --- Singleton -------------------------- */

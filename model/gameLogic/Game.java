@@ -12,12 +12,11 @@ import events.EventListener;
 import events.Event;
 
 import model.CUModel;
-import model.data.CardBuilder;
-import model.data.UserData;
-import model.gameEntities.Enemies;
-import model.gameEntities.GameAI;
-import model.gameEntities.Player;
-import model.gameObjects.*;
+import model.cards.*;
+import model.players.Enemies;
+import model.players.GameAI;
+import model.players.Player;
+import model.players.UserData;
 
 /**
  * Gathers all game info and contains the logic to execute a match.

@@ -1,4 +1,4 @@
-package model.data;
+package model.players;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

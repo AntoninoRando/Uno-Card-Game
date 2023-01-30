@@ -23,10 +23,6 @@ import events.EventListener;
 import model.gameLogic.GameExecuter;
 import view.CUView;
 import view.GUIContainer;
-import view.animations.Animation;
-import view.animations.AnimationHandler;
-import view.animations.AnimationLayer;
-import view.animations.Animations;
 import view.gameElements.Card;
 import view.gameElements.ActionsChronology;
 import view.gameElements.HandPane;
@@ -35,8 +31,12 @@ import view.gameElements.PlayerPane;
 import view.gameElements.PlayzonePane;
 import view.gameElements.SelectionPane;
 import view.gameElements.TerrainPane;
+import view.media.Animation;
+import view.media.AnimationHandler;
+import view.media.AnimationLayer;
+import view.media.Animations;
+import view.media.Sound;
 import view.settings.SettingsMenu;
-import view.sounds.Sound;
 
 public class InGame extends StackPane implements AppState, EventListener, GUIContainer, AnimationLayer {
     /* --- Singleton -------------------------- */

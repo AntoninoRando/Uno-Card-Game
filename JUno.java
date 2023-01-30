@@ -7,16 +7,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
-/* --- Mine ------------------------------- */
-
-import model.data.UserData;
+import model.players.UserData;
 import view.GUIContainer;
 import view.SpriteFactory;
-import view.animations.Animations;
+import view.media.Animations;
+import view.media.Sound;
 import view.settings.SettingsMenu;
-import view.sounds.Sound;
-
 import events.EventListener;
 
 public class JUno extends Application implements EventListener, GUIContainer {

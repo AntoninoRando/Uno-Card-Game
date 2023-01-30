@@ -1,11 +1,11 @@
-package model.gameObjects;
+package model.cards;
 
 import java.util.List;
 
-import model.gameEntities.GameAI;
-import model.gameEntities.Player;
 import model.gameLogic.Game;
 import model.gameLogic.UserTurn;
+import model.players.GameAI;
+import model.players.Player;
 
 public class PickColor extends Card {
     protected Card[] options;

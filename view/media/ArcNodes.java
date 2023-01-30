@@ -1,4 +1,4 @@
-package view.prefabs;
+package view.media;
 
 import java.util.Iterator;
 

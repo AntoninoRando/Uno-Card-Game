@@ -1,4 +1,4 @@
-package view.sounds;
+package view.media;
 
 import java.io.File;
 

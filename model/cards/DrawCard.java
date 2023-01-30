@@ -1,4 +1,4 @@
-package model.gameObjects;
+package model.cards;
 
 import model.gameLogic.Actions;
 import model.gameLogic.Game;

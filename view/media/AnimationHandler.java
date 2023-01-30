@@ -1,4 +1,4 @@
-package view.animations;
+package view.media;
 
 import java.util.HashMap;
 import java.util.Map.Entry;

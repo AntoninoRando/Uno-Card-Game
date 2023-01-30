@@ -1,4 +1,4 @@
-package model.gameObjects;
+package model.cards;
 
 public class SimpleCard extends Card {
     public SimpleCard(Suit suit, int value) {

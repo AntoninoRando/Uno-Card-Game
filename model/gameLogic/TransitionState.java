@@ -2,8 +2,8 @@ package model.gameLogic;
 
 import events.Event;
 import model.CUModel;
-import model.gameEntities.GameAI;
-import model.gameEntities.Player;
+import model.players.GameAI;
+import model.players.Player;
 
 public class TransitionState implements GameState {
     /* --- Singleton -------------------------- */

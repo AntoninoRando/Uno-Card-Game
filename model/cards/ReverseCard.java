@@ -1,7 +1,7 @@
-package model.gameObjects;
+package model.cards;
 
-import model.gameEntities.Player;
 import model.gameLogic.Game;
+import model.players.Player;
 
 public class ReverseCard extends Card {
     public ReverseCard(Suit suit, int value) {

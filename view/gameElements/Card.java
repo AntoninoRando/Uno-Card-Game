@@ -5,7 +5,7 @@ import java.util.HashMap;
 import javafx.scene.image.ImageView;
 import view.Sprite;
 import view.SpriteFactory;
-import view.animations.Animations;
+import view.media.Animations;
 import events.EventListener;
 
 /**

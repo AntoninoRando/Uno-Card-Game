@@ -5,8 +5,8 @@ import java.util.Map.Entry;
 
 import events.Event;
 import model.CUModel;
-import model.gameEntities.GameAI;
-import model.gameObjects.Card;
+import model.cards.Card;
+import model.players.GameAI;
 
 public class AITurn implements GameState {
     /* --- Fields ----------------------------- */

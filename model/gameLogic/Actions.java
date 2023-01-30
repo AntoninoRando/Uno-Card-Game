@@ -8,9 +8,9 @@ import java.util.HashMap;
 import events.Event;
 
 import model.CUModel;
-import model.gameEntities.GameAI;
-import model.gameEntities.Player;
-import model.gameObjects.Card;
+import model.cards.Card;
+import model.players.GameAI;
+import model.players.Player;
 
 /**
  * A group of actions which manipulate the game.
