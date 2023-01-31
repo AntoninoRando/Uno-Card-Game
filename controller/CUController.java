@@ -2,14 +2,21 @@ package controller;
 
 import java.util.HashMap;
 
+import javafx.scene.Node;
+
+/* --- Mine ------------------------------- */
+
 import events.EventListener;
 import events.EventManager;
 import events.Event;
-import javafx.scene.Node;
+
 import model.CUModel;
 
 /**
- * TODO forse è meglio implementarlo seguendo il bridge pattern
+ * The mediator between the model and the controller. This is responsible of
+ * cuttting of direct communications between controller elements and model
+ * elements. It is also responsible of decoding data notified and manipulate
+ * those data to bring them in an accetable form for the controller elements.
  */
 public class CUController extends EventManager implements EventListener {
     /* --- Singleton -------------------------- */
@@ -23,18 +30,23 @@ public class CUController extends EventManager implements EventListener {
     }
 
     private CUController() {
-        subscribeAll();
     }
 
     /* --- Field ------------------------------ */
 
+    /**
+     * The CUModel.
+     */
     private static CUModel receiverCU = CUModel.getInstance();
 
     /* --- Body ------------------------------- */
 
-    private void subscribeAll() {
-    }
-
+    /**
+     * Notifies the receiver CU (i.e., the CUModel).
+     * 
+     * @param event The type of event to notify.
+     * @param data  The data associatd with the event.
+     */
     public static void communicate(Event event, HashMap<String, Object> data) {
         receiverCU.update(event, data);
     }

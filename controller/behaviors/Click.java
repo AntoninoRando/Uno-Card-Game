@@ -11,11 +11,6 @@ import javafx.scene.input.MouseEvent;
 public class Click extends Behavior<MouseEvent> {
     /* --- Fields ----------------------------- */
 
-    /**
-     * The lenght of the array is the quantity of clicks that must be performed to
-     * exhibite the behavior. The <code>false</code> values are left clicks, and
-     * <code>true</code> values are right clicks.
-     */
     protected boolean[] quantity;
     protected double[] intervals;
 
@@ -25,8 +20,10 @@ public class Click extends Behavior<MouseEvent> {
      * Applies the click-detect behavior to the source node.
      * 
      * @param source    The node that will hold this behavior.
-     * @param quantity  The amount of clicks to be performed and their type (false
-     *                  if left click, true if right click).
+     * @param quantity  The lenght of the array is the quantity of clicks that must
+     *                  be performed to exhibite the behavior. The
+     *                  <code>false</code> values are left clicks, and
+     *                  <code>true</code> values are right clicks.
      * @param intervals The intervals between each click.
      */
     public Click(Node source, boolean[] quantity, double[] intervals) {

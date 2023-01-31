@@ -3,37 +3,52 @@ package controller;
 import java.util.HashMap;
 
 import javafx.scene.input.MouseEvent;
+import javafx.scene.Node;
+
+/* --- Mine ------------------------------- */
 
 import controller.behaviors.BehaviorDecorator;
 import controller.behaviors.DragAndDrop;
-import javafx.scene.Node;
 
 import events.Event;
 
+/**
+ * With the left click on the card, the user will start to drag it. If then
+ * that card is realised on the play-zone, it will be also played. The playzone
+ * can be set with <code>setPlayzone</code> method.
+ */
 public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
     /* --- Fields ----------------------------- */
 
-    // wrappee
     private int sourceTag;
     private static Node playzone;
 
     /* ---.--- Getters and Setters ------------ */
 
+    /**
+     * Sets the play-zone (or drop target) in which the card dragged should be
+     * dropped to be played.
+     * 
+     * @param playzone The drop target node.
+     */
     public static void setPlayzone(Node playzone) {
         DropAndPlay.playzone = playzone;
     }
 
     /* --- Constructors ----------------------- */
 
+    /**
+     * Applies the drag-and-play control to the given card, which has the given tag.
+     * 
+     * @param source    The node representation of the card.
+     * @param sourceTag The card tag.
+     */
     public DropAndPlay(Node source, int sourceTag) {
         super(new DragAndDrop(source, playzone));
         this.sourceTag = sourceTag;
     }
 
-    /* --- Body ------------------------------- */
-
-    // Con il metodo update di eventListener si può ascoltare all'evento che faccia
-    // cambiare la playzone
+    /* --- BehaviorDecorator ------------------ */
 
     @Override
     public void onEnd(MouseEvent e) {

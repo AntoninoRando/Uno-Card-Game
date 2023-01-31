@@ -3,6 +3,7 @@ package view.gameElements;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import view.CUView;
 import view.SpriteFactory;
 
 import java.util.HashMap;
@@ -25,6 +26,8 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     private TerrainPane() {
+        CUView.getInstance().subscribe(this, Event.CARD_CHANGE);
+        
         getStyleClass().add("terrain");
         setMaxHeight(400);
         setMaxWidth(400);

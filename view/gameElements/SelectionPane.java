@@ -25,6 +25,8 @@ public class SelectionPane extends HBox implements EventListener {
     }
 
     private SelectionPane() {
+        CUView.getInstance().subscribe(this, Event.USER_SELECTING_CARD, Event.SELECTION);
+        
         getStyleClass().add("selection-pane");
         setSpacing(20.0);
         setVisible(false);

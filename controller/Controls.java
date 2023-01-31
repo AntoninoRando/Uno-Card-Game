@@ -9,7 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
-/* --- Fields ----------------------------- */
+/* --- Mine ------------------------------- */
 
 import controller.behaviors.Behavior;
 import controller.behaviors.BehaviorDecorator;

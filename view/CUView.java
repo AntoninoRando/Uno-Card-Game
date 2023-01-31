@@ -10,12 +10,6 @@ import events.EventListener;
 import events.EventManager;
 import events.Event;
 import view.gameElements.Card;
-import view.gameElements.ActionsChronology;
-import view.gameElements.HandPane;
-import view.gameElements.PlayerPane;
-import view.gameElements.SelectionPane;
-import view.gameElements.TerrainPane;
-import view.settings.ProfileMenu;
 
 /**
  * <b>C</b>ontrol <b>U</b>nit <b>View</b>. This class implements the
@@ -50,30 +44,12 @@ public class CUView extends EventManager implements EventListener {
         return instance;
     }
 
-    private CUView() {
-        subscribeAll();
-    }
-
     /* --- Fields ----------------------------- */
 
     private static CUController receiverCU = CUController.getInstance();
 
     /* --- Body ------------------------------- */
 
-    /**
-     * Subscribe all model-changes listeners to this. Thos listeners will be
-     * notified by this after a <code>CUModel.communicate</code> call.
-     */
-    private void subscribeAll() {
-        subscribe(ActionsChronology.getInstance(), Event.AI_PLAYED_CARD, Event.USER_PLAYED_CARD, Event.GAME_READY);
-        subscribe(SelectionPane.getInstance(), Event.USER_SELECTING_CARD, Event.SELECTION);
-        subscribe(HandPane.getInstance(), Event.GAME_READY, Event.USER_PLAYED_CARD, Event.USER_DREW, Event.GAME_READY);
-        subscribe(PlayerPane.getInstance(), Event.GAME_READY, Event.AI_PLAYED_CARD,
-                Event.AI_DREW, Event.GAME_READY, Event.TURN_START, Event.USER_DREW, Event.USER_PLAYED_CARD);
-        subscribe(TerrainPane.getInstance(), Event.CARD_CHANGE);
-        subscribe(ProfileMenu.getInstance(), Event.INFO_CHANGE);
-        subscribe(GameResults.getInstance(), Event.PLAYER_WON, Event.INFO_CHANGE);
-    }
 
     private Entry<Integer, Card> getCard(HashMap<String, Object> data) {
         if (data == null || !data.containsKey("card-tag"))

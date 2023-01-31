@@ -6,6 +6,7 @@ import java.util.Map;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import view.CUView;
 import events.EventListener;
 import events.Event;
 
@@ -21,6 +22,9 @@ public class PlayerPane extends VBox implements EventListener {
     }
 
     private PlayerPane() {
+        CUView.getInstance().subscribe(this, Event.GAME_READY, Event.AI_PLAYED_CARD,
+                Event.AI_DREW, Event.GAME_READY, Event.TURN_START, Event.USER_DREW, Event.USER_PLAYED_CARD);
+
         addStyle();
     }
 

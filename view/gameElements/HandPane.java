@@ -26,6 +26,8 @@ public class HandPane extends HBox implements EventListener {
     }
 
     private HandPane() {
+        CUView.getInstance().subscribe(this, Event.GAME_READY, Event.USER_PLAYED_CARD, Event.USER_DREW, Event.GAME_READY);
+        
         getStyleClass().add("hand");
         setSpacing(-30.0);
         setTranslateY(40.0);

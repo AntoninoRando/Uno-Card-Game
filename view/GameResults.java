@@ -28,6 +28,7 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
     }
 
     private GameResults() {
+        CUView.getInstance().subscribe(this, Event.PLAYER_WON, Event.INFO_CHANGE);
         initialize();
     }
 

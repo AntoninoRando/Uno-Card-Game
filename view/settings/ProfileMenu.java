@@ -19,7 +19,7 @@ import javafx.scene.layout.VBox;
 
 import events.EventListener;
 import events.Event;
-
+import view.CUView;
 import view.GUIContainer;
 import view.Sprite;
 import view.SpriteFactory;
@@ -40,6 +40,8 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
     }
 
     private ProfileMenu() {
+        CUView.getInstance().subscribe(this, Event.INFO_CHANGE);
+        
         initialize();
     }
 
@@ -80,6 +82,8 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
 
     @Override
     public void arrangeElements() {
+        setId("profile-menu");
+        
         avatarPicker.setVisible(false);
         avatar.setId("avatar");
         levelLabel.setId("level-label");
@@ -88,8 +92,6 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
         gamesPlayedLabel.setId("games-played-label");
         winRateLabel.setId("win-rate-label");
         deleteButton.setId("delete-button");
-
-        setId("profile-menu");
 
         setMaxHeight(500.0);
         setMaxWidth(700.0);

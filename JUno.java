@@ -12,6 +12,7 @@ import view.GUIContainer;
 import view.SpriteFactory;
 import view.media.Animations;
 import view.media.Sound;
+import view.settings.ProfileMenu;
 import view.settings.SettingsMenu;
 import events.EventListener;
 
@@ -33,7 +34,7 @@ public class JUno extends Application implements EventListener, GUIContainer {
     /* --- Constructors ----------------------- */
 
     public JUno() {
-        initialize();;
+        initialize();
     }
 
     /* --- Body ------------------------------- */
@@ -51,6 +52,7 @@ public class JUno extends Application implements EventListener, GUIContainer {
 
     public static void main(String[] args) {
         String userDataPath = "resources\\Data\\userInfo.txt";
+        ProfileMenu.getInstance(); // Iscrive il profile menu all'info change.
         UserData.load(userDataPath);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> UserData.write(userDataPath)));
         launch(args);

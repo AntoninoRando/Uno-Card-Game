@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 /* --- Mine ------------------------------- */
 
 import view.SpriteFactory;
+import view.CUView;
 import view.GUIContainer;
 
 import events.EventListener;
@@ -41,6 +42,8 @@ public class ActionsChronology extends StackPane implements EventListener, GUICo
     }
 
     private ActionsChronology() {
+        CUView.getInstance().subscribe(this, Event.AI_PLAYED_CARD, Event.USER_PLAYED_CARD, Event.GAME_READY);
+        
         initialize();
     }
 
