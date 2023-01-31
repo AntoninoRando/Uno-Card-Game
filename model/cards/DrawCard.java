@@ -1,7 +1,12 @@
 package model.cards;
 
+/* --- JUno ------------------------------- */
+
 import model.gameLogic.Game;
 
+/**
+ * Skips the next player turn and makes them draw cards from deck.
+ */
 public class DrawCard extends BlockCard {
     private int quantity;
 
@@ -9,7 +14,7 @@ public class DrawCard extends BlockCard {
         super(suit, value);
         this.quantity = quantity;
     }
-    
+
     @Override
     public void play(Game game) {
         super.play(game);

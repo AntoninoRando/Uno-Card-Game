@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-/* --- Mine ------------------------------- */
+/* --- JUno ------------------------------- */
 
 import events.Event;
 
@@ -15,7 +15,7 @@ import model.CUModel;
 import model.cards.Card;
 import model.cards.CardBuilder;
 import model.cards.Suit;
-import model.players.Enemies;
+import model.players.Enemy;
 import model.players.GameAI;
 import model.players.Player;
 import model.players.UserData;
@@ -27,18 +27,6 @@ import model.players.UserData;
  * Game object, instead of the same game object that resets.
  */
 public class Game {
-    public Game() {
-        discardPile = new LinkedList<>();
-        deck = new LinkedList<>(CardBuilder.getCards("resources/cards/Small.json"));
-        playCondition = card -> {
-            Suit aS = terrainCard.getSuit();
-            Suit bS = card.getSuit();
-            return aS == bS || terrainCard.getValue() == card.getValue() || aS == Suit.WILD || bS == Suit.WILD;
-        };
-        winCondition = player -> player.getHand().isEmpty();
-        players = new Player[] { new Player(), Enemies.JINX, Enemies.VIEGO, Enemies.XAYAH, Enemies.ZOE };
-    }
-
     /* --- Fields ----------------------------- */
 
     private Player[] players;
@@ -51,6 +39,25 @@ public class Game {
     private long timeStart;
     private boolean interrupted;
     private GameState state; // Context
+
+    /* --- Constructors ----------------------- */
+
+    /**
+     * Creates a new match with initial settings, but do not starts it.
+     */
+    public Game() {
+        discardPile = new LinkedList<>();
+        deck = new LinkedList<>(CardBuilder.getCards("resources/cards/Small.json"));
+        playCondition = card -> {
+            Suit aS = terrainCard.getSuit();
+            Suit bS = card.getSuit();
+            return aS == bS || terrainCard.getValue() == card.getValue() || aS == Suit.WILD || bS == Suit.WILD;
+        };
+        winCondition = player -> player.getHand().isEmpty();
+        players = Stream.concat(
+                Stream.of(new Player(UserData.getIcon(), UserData.getNickname())),
+                Stream.of(Enemy.values()).map(en -> en.get())).toArray(Player[]::new);
+    }
 
     /* ---.--- Getters and Setters ------------ */
 
@@ -74,16 +81,8 @@ public class Game {
         turn = newTurn;
     }
 
-    public boolean isBlocked() {
-        return interrupted;
-    }
-
     public Player getCurrentPlayer() {
         return players[turn];
-    }
-
-    public void block() {
-        interrupted = true;
     }
 
     /* --- State ------------------------------ */
@@ -94,7 +93,11 @@ public class Game {
 
     /* --- Game Loop -------------------------- */
 
-    public void setupGame() {
+    /**
+     * Sets the first turn, deals cards to the players, draws the first terrain card
+     * and notifies that the game is about to start.
+     */
+    private void setupGame() {
         try {
             GameAI firstPlayer = (GameAI) getCurrentPlayer();
             AITurn initialState = new AITurn();
@@ -112,9 +115,7 @@ public class Game {
         data.put("all-nicknames", Stream.of(getPlayers()).map(Player::getNickame).toArray(String[]::new));
         data.put("all-icons", Stream.of(getPlayers()).map(Player::getIcon).toArray(String[]::new));
         notifyToCU(Event.GAME_READY, data);
-    }
 
-    private void setupFirstTurn() {
         // First card
         shuffleDeck();
         Card firstCard = takeFromDeck();
@@ -129,18 +130,34 @@ public class Game {
         notifyToCU(Event.GAME_START, null); // Notify
     }
 
+    /**
+     * Setup the game and starts the game loop for this match. After someone won,
+     * ends the game.
+     */
     public void play() {
         setupGame();
-        setupFirstTurn();
         timeStart = System.currentTimeMillis();
 
-        while (!isBlocked() && !winCondition.test(getCurrentPlayer()))
+        while (!interrupted && !winCondition.test(getCurrentPlayer()))
             state.resolve();
 
-        if (!isBlocked())
+
+        if (!interrupted)
             end();
     }
 
+    /**
+     * Interrupts this match, blocking all incoming and outcoming communications and
+     * making the <code>play</code> loop end.
+     */
+    public void block() {
+        interrupted = true;
+    }
+
+    /**
+     * After the game loop ends, notifies that the game has ended and updates user
+     * info, giving him xp (additional xp if they are also the winner).
+     */
     private void end() {
         Player winner = getCurrentPlayer();
         boolean humanWon = !(winner instanceof GameAI);
@@ -234,7 +251,7 @@ public class Game {
      * @param data
      */
     public void notifyToCU(Event event, HashMap<String, Object> data) {
-        if (!isBlocked())
+        if (!interrupted)
             CUModel.communicate(event, data);
     }
 }

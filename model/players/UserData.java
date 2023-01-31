@@ -9,52 +9,46 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/* --- Mine ------------------------------- */
+/* --- JUno ------------------------------- */
 
 import events.Event;
 import events.EventListener;
+
 import model.CUModel;
 
 /**
- * A class containig player's info. It also contains static info about the user.
+ * The manager for all the user profile info. It is also responsible of updating
+ * the profile, writing the info and loading the info.
  */
-public abstract class UserData implements EventListener {
+public abstract class UserData {
     /* --- Fields ----------------------------- */
 
     private static final int NICKNAME_MAX_SIZE = 22;
-    private static final String[] INVALID_NICKNAMES = new String[] { "Jinx", "Viego", "Zoe", "Xayah" };
     private static final String DEFAULT_NICKNAME = "User";
     private static final String DEFAULT_ICON = "night";
     private static final int[] XP_GAPS = { 5, 8, 15, 21, 24, 28, 31, 35, 39, 50 };
-    public static final EventListener EVENT_LISTENER = new EventListener() {
-        @Override
-        public void update(Event event, HashMap<String, Object> data) {
-            switch (event) {
-                case INFO_CHANGE:
-                    data.keySet().forEach(key -> {
-                        switch (key) {
-                            case "nickname":
-                                setNickname((String) data.get("nickname"));
-                                break;
-                            case "icon":
-                                setIcon((String) data.get("icon"));
-                                break;
-                        }
-                    });
-                    break;
-                case INFO_RESET:
-                    nickname = DEFAULT_NICKNAME;
-                    level = 1;
-                    xp = 0;
-                    games = 0;
-                    wins = 0;
-                    setIcon(DEFAULT_ICON); // Used also to notify
-                    break;
-                default:
-                    throwUnsupportedError(event, data);
-                    break;
-            }
+    public static final EventListener EVENT_LISTENER = (event, data) -> {
+        switch (event) {
+            case INFO_CHANGE:
+                data.keySet().forEach(key -> {
+                    if (key.equals("nickname"))
+                        setNickname((String) data.get("nickname"));
+                    else if (key.equals("icon"))
+                        setIcon((String) data.get("icon"));
+                });
+                break;
+            case INFO_RESET:
+                nickname = DEFAULT_NICKNAME;
+                level = 1;
+                xp = 0;
+                games = 0;
+                wins = 0;
+                setIcon(DEFAULT_ICON); // Used also to notify
+                break;
+            default:
+                throw new Error("The UserData was listening for an unexptected event: " + event.toString());
         }
+
     };
 
     private static String nickname;
@@ -70,10 +64,16 @@ public abstract class UserData implements EventListener {
         return nickname;
     }
 
-    public static void setNickname(String nickname) {
-        if (Stream.of(INVALID_NICKNAMES).anyMatch(invalid -> invalid.equals(nickname)))
+    /**
+     * Sets the new nickname only if it pass all validity checks. Then, communicates
+     * this change (if it happened).
+     * 
+     * @param nickname The new nickname that may be set as the player new nickname.
+     */
+    private static void setNickname(String nickname) {
+        if (Stream.of(Enemy.values()).map(en -> en.toString()).anyMatch(invalid -> invalid.equals(nickname)))
             return;
-        
+
         if (nickname.length() > NICKNAME_MAX_SIZE)
             return;
 
@@ -88,7 +88,12 @@ public abstract class UserData implements EventListener {
         return icon;
     }
 
-    public static void setIcon(String icon) {
+    /**
+     * Sets the new icon and communicates the change.
+     * 
+     * @param icon The icon name.
+     */
+    private static void setIcon(String icon) {
         UserData.icon = icon;
         CUModel.communicate(Event.INFO_CHANGE, wrapData());
     }
@@ -111,6 +116,13 @@ public abstract class UserData implements EventListener {
 
     /* --- Body ------------------------------- */
 
+    /**
+     * Wraps all the user profile data in a dictionary that associate each field
+     * with its value, and then returns it.
+     * 
+     * @return A map field-value: it contains the nickname, icon, level, xp, xp-gap,
+     *         games, and wins od the player.
+     */
     public static HashMap<String, Object> wrapData() {
         HashMap<String, Object> data = new HashMap<>();
 
@@ -166,7 +178,7 @@ public abstract class UserData implements EventListener {
     }
 
     /**
-     * Resets all this fields.
+     * Resets all the user info to their default values.
      */
     public static void reset() {
         nickname = DEFAULT_NICKNAME;

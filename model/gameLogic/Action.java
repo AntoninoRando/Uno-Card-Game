@@ -1,7 +1,7 @@
 package model.gameLogic;
 
 /**
- * Action performed by players to resolve their turn.
+ * Action toke by players during their turn.
  */
 public enum Action {
     FROM_DECK_DRAW("Draw a card from the main deck."),

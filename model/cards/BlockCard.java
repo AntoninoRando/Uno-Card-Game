@@ -1,12 +1,16 @@
 package model.cards;
 
-import java.util.Collection;
+/* --- JUno ------------------------------- */
 
 import events.Event;
+
 import model.gameLogic.Game;
 import model.players.Player;
 
-public class BlockCard extends Card{
+/**
+ * Skips the next player turn.
+ */
+public class BlockCard extends Card {
     public BlockCard(Suit suit, int value) {
         super(suit, value);
     }
@@ -17,9 +21,4 @@ public class BlockCard extends Card{
         Player blocked = game.getCurrentPlayer();
         game.notifyToCU(Event.TURN_BLOCKED, blocked.getData());
     }
-
-    @Override
-    public void shuffleIn(Collection<Card> cards) {
-        cards.add(this);
-    } 
 }

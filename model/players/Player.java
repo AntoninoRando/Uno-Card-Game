@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+/* --- JUno ------------------------------- */
+
 import model.cards.Card;
 
 /**
- * This class contains all the info about the player (user or AI) state.
+ * This class contains those player info (user or AI) that are also used during
+ * the game: nickanem, icon, cards in hand.
  */
 public class Player {
     /* --- Fields ----------------------------- */
@@ -16,33 +19,13 @@ public class Player {
     private String nickname;
     private List<Card> hand;
 
-    /* ---.--- Getters and Setters ------------ */
-
-    /**
-     * @return Player nickname.
-     */
-    public String getNickame() {
-        return nickname;
-    }
-
-    /**
-     * @return The path to the image used as player icon.
-     */
-    public String getIcon() {
-        return icon;
-    }
-
-    /**
-     * @return The group of cards held by the player.
-     */
-    public List<Card> getHand() {
-        return hand;
-    }
-
     /* --- Constructors ----------------------- */
 
     /**
-     * @param data The path to the file containing player's info.
+     * Creates a new player with the given icon and nickname, and an empty hand.
+     * 
+     * @param icon     The icon of the player.
+     * @param nickname The nickname of the player.
      */
     public Player(String icon, String nickname) {
         this.icon = icon;
@@ -50,18 +33,28 @@ public class Player {
         hand = new LinkedList<Card>();
     }
 
-    /**
-     * Uses the data of the user.
-     */
-    public Player() {
-        this.icon = UserData.getIcon();
-        this.nickname = UserData.getNickname();
-        hand = new LinkedList<Card>();
+    /* --- Getters and Setters ---------------- */
+
+    public String getNickame() {
+        return nickname;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public List<Card> getHand() {
+        return hand;
     }
 
     /* --- Body ------------------------------- */
 
-
+    /**
+     * Wraps the player info and returns it.
+     * 
+     * @return The player data: "nickname" (String), "icon" (String) and "hand-size"
+     *         (int).
+     */
     public HashMap<String, Object> getData() {
         HashMap<String, Object> data = new HashMap<>();
         data.put("nickname", getNickame());

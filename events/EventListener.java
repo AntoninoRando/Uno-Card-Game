@@ -8,6 +8,7 @@ import java.util.HashMap;
  * about the type of event that occurred and the data associated. The changes
  * must be implemented on the <code>update</code> method.
  */
+@FunctionalInterface
 public interface EventListener {
     /**
      * Changes the internal state of this based on an external event.
@@ -15,7 +16,7 @@ public interface EventListener {
      * @param event The type of event that this interface should listen to.
      * @param data  The data used to gather information about the external event.
      */
-    abstract void update(Event event, HashMap<String, Object> data);
+    public void update(Event event, HashMap<String, Object> data);
 
     /**
      * Method to run inside the <code>update</code> method in case this didn't

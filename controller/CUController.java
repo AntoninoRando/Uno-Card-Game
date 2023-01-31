@@ -32,7 +32,7 @@ public class CUController extends EventManager implements EventListener {
     private CUController() {
     }
 
-    /* --- Field ------------------------------ */
+    /* --- Fields ----------------------------- */
 
     /**
      * The CUModel.

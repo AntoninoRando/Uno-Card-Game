@@ -7,7 +7,12 @@ import model.gameLogic.UserTurn;
 import model.players.GameAI;
 import model.players.Player;
 
-public class PickCard extends Card {
+/**
+ * Pick a card between multiple cards options. This class is abstract, thus the
+ * cards options, and the effect after the card has been selected, must be
+ * implemented by another class.
+ */
+public abstract class PickCard extends Card {
     protected Card[] options;
     protected Card choice;
 
@@ -19,7 +24,7 @@ public class PickCard extends Card {
     public void play(Game game) {
         Player source = game.getCurrentPlayer();
 
-        if (source instanceof GameAI) 
+        if (source instanceof GameAI)
             choice = (Card) (((GameAI) source).chooseFrom(List.of(options)).getValue());
         else
             choice = UserTurn.getInstance().chooseFrom(options);

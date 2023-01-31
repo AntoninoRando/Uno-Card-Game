@@ -14,14 +14,21 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
- * Loads all cards of a set through the <code>load</code> method. Those cards
- * are grouped by their set-name in the <code>allCards</code> field.
+ * Loads all cards of a set from a JSON file and stores them so that they can be
+ * easily fetched.
  */
 public abstract class CardBuilder {
     /* --- Fields ----------------------------- */
 
     private static List<Card> cards;
 
+    /**
+     * Gets the list of cards from the given set. If those cards have not been
+     * already loaded, loads them.
+     * 
+     * @param setName The json file name.
+     * @return The list of cards.
+     */
     public static List<Card> getCards(String setName) {
         if (cards == null)
             load(setName);
@@ -30,19 +37,23 @@ public abstract class CardBuilder {
 
     /* --- Body ------------------------------- */
 
-    public static void load(String setName) {
+    /**
+     * Loads and stores all the cards contained in the json file.
+     * 
+     * @param setName The set name (i.e., the json file).
+     */
+    private static void load(String setName) {
         // parse the JSON file and save the result in the cards list
         List<Map<String, Object>> setCards = parseJson(setName);
         CardBuilder.cards = new LinkedList<Card>();
 
         Map<String, BiFunction<Suit, Integer, Card>> constructors = Map.of(
-            "simple", (suit, value) -> new SimpleCard(suit, value),
-            "draw 4", (suit, value) -> new DrawAndColor(suit, value, 4),
-            "draw 2", (suit, value)-> new DrawCard(suit, value, 2),
-            "reverse", (suit, value) -> new ReverseCard(suit, value),
-            "block", (suit, value) -> new BlockCard(suit, value),
-            "change color", (suit, value) -> new ChoseColor(suit, value)
-        );
+                "simple", (suit, value) -> new SimpleCard(suit, value),
+                "draw 4", (suit, value) -> new DrawAndColor(suit, value, 4),
+                "draw 2", (suit, value) -> new DrawCard(suit, value, 2),
+                "reverse", (suit, value) -> new ReverseCard(suit, value),
+                "block", (suit, value) -> new BlockCard(suit, value),
+                "change color", (suit, value) -> new ChoseColor(suit, value));
 
         for (Map<String, Object> info : setCards) {
             Suit suit = Suit.valueOf((String) info.get("suit"));

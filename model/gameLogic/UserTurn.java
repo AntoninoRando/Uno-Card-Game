@@ -7,12 +7,19 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/* --- JUno ------------------------------- */
+
 import events.EventListener;
 import events.Event;
+import model.CUModel;
 import model.cards.Card;
 import model.players.GameAI;
 import model.players.Player;
 
+/**
+ * The game state in which the User will resolve its turn. After that, there
+ * will be either the TransitionState or the CardTurn state.
+ */
 public class UserTurn implements GameState, EventListener {
     /* --- Singleton -------------------------- */
 
@@ -25,11 +32,18 @@ public class UserTurn implements GameState, EventListener {
     }
 
     private UserTurn() {
+        CUModel.getInstance().subscribe(this, Event.TURN_DECISION, Event.SELECTION);
     }
 
     /* --- Fields ----------------------------- */
 
+    /**
+     * The context.
+     */
     private Player user;
+    /**
+     * The context.
+     */
     private Game game;
     private Entry<Action, Object> choice;
     private Optional<Card> cardPlayed;
@@ -37,7 +51,14 @@ public class UserTurn implements GameState, EventListener {
 
     /* --- Body ------------------------------- */
 
-    public void takeTurn() {
+    /**
+     * Resolves the turn either by drawing a card or playing a card. It is also
+     * possible to say Uno to avid the malus of drawing 2 cards.
+     * <p>
+     * It is possible to skip the turn. This option is used to complete an inactive
+     * match, that has just been quited during the user turn.
+     */
+    private void takeTurn() {
         choice = null;
         cardPlayed = Optional.empty();
         boolean endTurn = false;
@@ -107,7 +128,11 @@ public class UserTurn implements GameState, EventListener {
         }
     }
 
-    public void passTurn() {
+    /**
+     * Sets the new game stet either to the <code>CardTurn</code>, if a card has
+     * been played, or to the <code>TransitionState</code>.
+     */
+    private void passTurn() {
         if (cardPlayed.isPresent()) {
             CardTurn nextState = new CardTurn();
             nextState.setContext(cardPlayed.get(), game);
@@ -119,6 +144,12 @@ public class UserTurn implements GameState, EventListener {
         }
     }
 
+    /**
+     * Lets the user choose a card between the alternatives.
+     * 
+     * @param cards The cards choices.
+     * @return The chosen card.
+     */
     public Card chooseFrom(Card... cards) {
         selectionCards = (HashMap<Integer, Card>) Stream.of(cards).collect(Collectors.toMap(
                 card -> card.getTag(),
@@ -145,6 +176,12 @@ public class UserTurn implements GameState, EventListener {
 
     /* --- State ------------------------------ */
 
+    /**
+     * Sets the context to execute this state properly.
+     * 
+     * @param user The player object controlled by the user.
+     * @param game The current game played by the user.
+     */
     public void setContext(Player user, Game game) {
         this.user = user;
         this.game = game;

@@ -2,12 +2,19 @@ package model.cards;
 
 import java.util.List;
 
+/* --- JUno ------------------------------- */
+
 import events.Event;
+
 import model.gameLogic.Game;
 import model.gameLogic.UserTurn;
 import model.players.GameAI;
 import model.players.Player;
 
+/**
+ * Pick a card that is just a new color, then drops it on the ground. After
+ * that, skips the next player turn.
+ */
 public class DrawAndColor extends DrawCard {
     protected Card[] options;
     protected Card choice;

@@ -6,9 +6,15 @@ import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
+/* --- JUno ------------------------------- */
+
 import model.cards.Card;
 import model.gameLogic.Action;
 
+/**
+ * The easiest form of AI player: plays the first valid card in hand; if there
+ * isn't any, draws from deck.
+ */
 public class EasyAI extends GameAI {
     public EasyAI(String icon, String nickname) {
         super(icon, nickname);

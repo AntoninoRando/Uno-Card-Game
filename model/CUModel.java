@@ -2,11 +2,14 @@ package model;
 
 import java.util.HashMap;
 
+/* --- JUno ------------------------------- */
+
 import events.EventListener;
 import events.EventManager;
 import events.Event;
-import model.gameLogic.UserTurn;
+
 import model.players.UserData;
+
 import view.CUView;
 
 /**
@@ -50,27 +53,32 @@ public class CUModel extends EventManager implements EventListener {
     }
 
     private CUModel() {
-        subscribeAll();
+        subscribe(UserData.EVENT_LISTENER, Event.INFO_CHANGE, Event.INFO_RESET);
     }
 
     /* --- Fields ----------------------------- */
 
+    /**
+     * The CUView.
+     */
     private static CUView receiverCU = CUView.getInstance();
 
     /* --- Body ------------------------------- */
 
-    private void subscribeAll() {
-        subscribe(UserTurn.getInstance(), Event.TURN_DECISION, Event.SELECTION);
-        subscribe(UserData.EVENT_LISTENER, Event.INFO_CHANGE, Event.INFO_RESET);
-    }
-
+    /**
+     * Notifies the receiver CU (i.e., the CUView).
+     * 
+     * @param event The type of event to notify.
+     * @param data  The data associatd with the event.
+     */
     public static void communicate(Event event, HashMap<String, Object> data) {
         receiverCU.update(event, data);
     }
 
+    /* --- Observer --------------------------- */
+
     @Override
     public void update(Event event, HashMap<String, Object> data) {
         notify(event, data);
-
     }
 }

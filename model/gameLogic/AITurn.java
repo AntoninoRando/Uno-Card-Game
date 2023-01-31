@@ -3,18 +3,35 @@ package model.gameLogic;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+/* --- JUno ------------------------------- */
+
 import events.Event;
+
 import model.cards.Card;
 import model.players.GameAI;
 
+/**
+ * The game state in which the AI will resolve its turn. After that, there will
+ * be either the TransitionState or the CardTurn state.
+ */
 public class AITurn implements GameState {
-    /* --- Fields ----------------------------- */
-
-    private GameAI AI;
-    private Game game;
-
     /* --- State ------------------------------ */
 
+    /**
+     * The context.
+     */
+    private GameAI AI;
+    /**
+     * The context.
+     */
+    private Game game;
+
+    /**
+     * Sets the context for this state.
+     * 
+     * @param AI   The AI player that will take the turn.
+     * @param game The current match in which the AI is taking its turn.
+     */
     public void setContext(GameAI AI, Game game) {
         this.AI = AI;
         this.game = game;

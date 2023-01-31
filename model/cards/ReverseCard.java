@@ -3,6 +3,9 @@ package model.cards;
 import model.gameLogic.Game;
 import model.players.Player;
 
+/**
+ * Reverse the current turn order.
+ */
 public class ReverseCard extends Card {
     public ReverseCard(Suit suit, int value) {
         super(suit, value);
