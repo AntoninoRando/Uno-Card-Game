@@ -16,8 +16,8 @@ public class PickColor extends Card {
     }
 
     @Override
-    public void play() {
-        Player source = Game.getCurrentPlayer();
+    public void play(Game game) {
+        Player source = game.getCurrentPlayer();
 
         if (source instanceof GameAI) 
             choice = (Card) (((GameAI) source).chooseFrom(List.of(options)).getValue());

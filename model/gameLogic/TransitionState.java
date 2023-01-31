@@ -1,43 +1,35 @@
 package model.gameLogic;
 
 import events.Event;
-import model.CUModel;
 import model.players.GameAI;
 import model.players.Player;
 
 public class TransitionState implements GameState {
-    /* --- Singleton -------------------------- */
-
-    private static TransitionState instance;
-
-    public static TransitionState getInstance() {
-        if (instance == null)
-            instance = new TransitionState();
-        return instance;
-    }
-
-    private TransitionState() {
-    }
-
     /* --- State ------------------------------ */
+
+    private Game game;
+
+    public void setContext(Game game) {
+        this.game = game;
+    }
 
     @Override
     public void resolve() {
-        Player oldPlayer = Game.getCurrentPlayer();
-        CUModel.communicate(Event.TURN_END, oldPlayer.getData());
+        Player oldPlayer = game.getCurrentPlayer();
+        game.notifyToCU(Event.TURN_END, oldPlayer.getData());
 
-        Actions.advanceTurn(1);
-        Player following = Game.getCurrentPlayer();
+        game.advanceTurn(1);
+        Player following = game.getCurrentPlayer();
 
         /*
          * "In the State pattern, the particular states may be aware of each other and initiate transitions from one state to another [...]"
          */
         if (following instanceof GameAI) {
             AITurn nextState = new AITurn();
-            nextState.setContext((GameAI) following);
-            Game.changeState(nextState);
+            nextState.setContext((GameAI) following, game);
+            game.changeState(nextState);
         } else
-            Game.changeState(UserTurn.getInstance());
+            game.changeState(UserTurn.getInstance());
 
     }
 

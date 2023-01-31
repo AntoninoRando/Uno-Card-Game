@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 
 import model.cards.Card;
 import model.gameLogic.Action;
-import model.gameLogic.Game;
 
 /**
  * Implements the <em>Template Method Pattern</em>.
@@ -14,10 +13,6 @@ import model.gameLogic.Game;
 public abstract class GameAI extends Player {
     public GameAI(String icon, String nickname) {
         super(icon, nickname);
-    }
-    
-    public Entry<Action, Object> choose() {
-        return chooseFrom(getHand(), Game.getPlayCondition());
     }
 
     public abstract Entry<Action, Object> chooseFrom(Collection<Card> cards);

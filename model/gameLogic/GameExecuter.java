@@ -8,42 +8,39 @@ package model.gameLogic;
 public abstract class GameExecuter {
     /* --- Fields ----------------------------- */
 
-    private static Thread dyingGame;
-    private static Thread ongoingGame;
+    private static Game dyingGame;
+    private static Game ongoingGame;
+    private static Thread oldGameExecuter;
+    private static Thread currentGameExecuter;
 
     /* --- Body ------------------------------- */
 
-    /**
-     * Sets a new thread. It is possible to instantiate only one thread at time,
-     * thus if the old thread is still running, it will be interrupted.
-     * 
-     * @param newThread The new thread.
-     */
-    private static void setThread(Thread newGame) {
-        dyingGame = ongoingGame;
-        ongoingGame = newGame;
-    }
 
     /**
      * Sets a new thread that runs a game and starts it.
      */
-    public static void play() {
-        Thread newGame = new Thread(() -> {
-            if (Game.isInstantiated())
-                Game.interruptGame();
+    public static void playNewGame() {
+        dyingGame = ongoingGame;
+        oldGameExecuter = currentGameExecuter;
 
+        GameExecuter.ongoingGame = new Game();
+        Thread newGameExecuter = new Thread(() -> {
+            if (dyingGame != null)
+                dyingGame.block();
+            
             try {
-                dyingGame.join();
+                oldGameExecuter.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (NullPointerException e) {
             }
 
-            Game.play();
+            ongoingGame.play();
         });
-        newGame.setName("UNO-game");
-        setThread(newGame);
-        newGame.start();
+
+        GameExecuter.currentGameExecuter = newGameExecuter;
+        newGameExecuter.setName("UNO-game");
+        newGameExecuter.start();
     }
 
     /**
@@ -52,22 +49,25 @@ public abstract class GameExecuter {
      * @param isInterrupt False if the game ended internally, i.e. after someone
      *                    won, true otherwise.
      */
-    public static void stop(boolean isInterrupt) {
-        Thread gameKiller = new Thread(() -> {
-            if (Game.isInstantiated())
-                Game.interruptGame();
+    public static void stop() {
+        dyingGame = ongoingGame;
+        oldGameExecuter = currentGameExecuter;
 
+        GameExecuter.ongoingGame = null;
+        Thread gameKiller = new Thread(() -> {
+            if (dyingGame != null)
+                dyingGame.block();
+            
             try {
-                dyingGame.join();
+                oldGameExecuter.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (NullPointerException e) {
             }
-
-            ongoingGame = null;
         });
-        gameKiller.setName("UNO-game-killer");
-        setThread(gameKiller);
-        ongoingGame.start();
+
+        GameExecuter.currentGameExecuter = gameKiller;
+        gameKiller.setName("UNO-game-KILLER");
+        gameKiller.start();
     }
 }

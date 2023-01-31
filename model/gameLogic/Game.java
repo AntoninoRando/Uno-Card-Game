@@ -1,5 +1,6 @@
 package model.gameLogic;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +13,9 @@ import events.EventListener;
 import events.Event;
 
 import model.CUModel;
-import model.cards.*;
+import model.cards.Card;
+import model.cards.CardBuilder;
+import model.cards.Suit;
 import model.players.Enemies;
 import model.players.GameAI;
 import model.players.Player;
@@ -20,21 +23,14 @@ import model.players.UserData;
 
 /**
  * Gathers all game info and contains the logic to execute a match.
+ * <p>
+ * It is not a singleton, since it is easier to think of a new match like a new
+ * Game object, instead of the same game object that resets.
  */
 public class Game extends Thread implements EventListener {
-    /* --- Singleton -------------------------- */
-
-    private static Game instance;
-
-    public static void createInstance() {
-        if (instance != null)
-            return;
-        instance = new Game();
-    }
-
-    private Game() {
+    public Game() {
         discardPile = new LinkedList<>();
-        deck = new LinkedList<>(CardBuilder.getCards("resources/Cards/Small.json"));
+        deck = new LinkedList<>(CardBuilder.getCards("resources/cards/Small.json"));
         playCondition = card -> {
             Suit aS = terrainCard.getSuit();
             Suit bS = card.getSuit();
@@ -49,169 +45,197 @@ public class Game extends Thread implements EventListener {
     private Player[] players;
     private Card terrainCard;
     private final int firstHandSize = 7;
-    private List<Card> deck;
-    private List<Card> discardPile;
+    private List<Card> deck, discardPile;
     private int turn; // current turn
     private Predicate<Card> playCondition;
     private Predicate<Player> winCondition;
     private long timeStart;
     private boolean interrupted;
-    private boolean running;
     private GameState state; // Context
 
     /* ---.--- Getters and Setters ------------ */
 
-    public static boolean isInstantiated() {
-        return instance != null;
+    public Player[] getPlayers() {
+        return players;
     }
 
-    public static Player[] getPlayers() {
-        return instance.players;
+    public void setTurnOrder(Player[] newOrder) {
+        players = newOrder;
     }
 
-    public static Card getTerrainCard() {
-        return instance.terrainCard;
+    public Predicate<Card> getPlayCondition() {
+        return playCondition;
     }
 
-    public static void setTerrainCard(Card newCard) {
-        instance.terrainCard = newCard;
+    public int getTurn() {
+        return turn;
     }
 
-    public static List<Card> getDeck() {
-        return instance.deck;
+    public void setTurn(int newTurn) {
+        turn = newTurn;
     }
 
-    public static List<Card> getDiscardPile() {
-        return instance.discardPile;
+    public boolean isBlocked() {
+        return interrupted;
     }
 
-    public static void setTurnOrder(Player[] newOrder) {
-        instance.players = newOrder;
+    public Player getCurrentPlayer() {
+        return players[turn];
     }
 
-    public static Predicate<Card> getPlayCondition() {
-        return instance.playCondition;
-    }
-
-    public static int getTurn() {
-        return instance.turn;
-    }
-
-    public static void setTurn(int newTurn) {
-        instance.turn = newTurn;
-    }
-
-    public static boolean isBlocked() {
-        return instance.interrupted;
-    }
-
-    public static boolean isRunning() {
-        return instance.running;
-    }
-
-    /* --- Body ------------------------------- */
-
-    public static Player getCurrentPlayer() {
-        return instance.players[instance.turn];
-    }
-
-    public static int countPlayers() {
-        return instance.players.length;
-    }
-
-    public static boolean isPlayable(Card card) {
-        return instance.playCondition.test(card);
-    }
-
-    public static boolean didPlayerWin(Player player) {
-        return instance.winCondition.test(player);
-    }
-
-    /**
-     * Interrupts this game if it is running, otherwise it'll do nothing.
-     */
-    public static void interruptGame() {
-        if (!isRunning())
-            return;
-        instance.interrupted = true;
+    public void block() {
+        interrupted = true;
     }
 
     /* --- State ------------------------------ */
 
-    public static void changeState(GameState newState) {
-        instance.state = newState;
+    public void changeState(GameState newState) {
+        state = newState;
     }
 
     /* --- Game Loop -------------------------- */
 
-    public static void setupGame() {
-        createInstance();
-
+    public void setupGame() {
         try {
             GameAI firstPlayer = (GameAI) getCurrentPlayer();
             AITurn initialState = new AITurn();
-            initialState.setContext(firstPlayer);
+            initialState.setContext(firstPlayer, this);
             changeState(initialState);
         } catch (ClassCastException e) {
             UserTurn initialState = UserTurn.getInstance();
-            initialState.setContext(getCurrentPlayer());
+            initialState.setContext(getCurrentPlayer(), this);
             changeState(initialState);
         }
-    }
 
-    private static void setupFirstTurn() {
         // Notify
         HashMap<String, Object> data = new HashMap<>();
 
         data.put("all-nicknames", Stream.of(getPlayers()).map(Player::getNickame).toArray(String[]::new));
         data.put("all-icons", Stream.of(getPlayers()).map(Player::getIcon).toArray(String[]::new));
-        CUModel.communicate(Event.GAME_READY, data);
+        notifyToCU(Event.GAME_READY, data);
+    }
 
+    private void setupFirstTurn() {
         // First card
-        Actions.shuffleDeck();
-        Card firstCard = Actions.takeFromDeck();
-        Actions.changeCurrentCard(firstCard);
-        CUModel.communicate(Event.CARD_CHANGE, firstCard.getData()); // Notify
+        shuffleDeck();
+        Card firstCard = takeFromDeck();
+        changeCurrentCard(firstCard);
+        notifyToCU(Event.CARD_CHANGE, firstCard.getData()); // Notify
 
         // Give cards to players
-        for (Player p : getPlayers())
-            Actions.dealFromDeck(p, instance.firstHandSize);
-        CUModel.communicate(Event.GAME_START, null); // Notify
-
-        instance.interrupted = false;
-        instance.running = true;
+        for (Player player : players) {
+            player.getHand().clear();
+            dealFromDeck(player, firstHandSize);
+        }
+        notifyToCU(Event.GAME_START, null); // Notify
     }
 
-    public static void play() {
+    public void play() {
         setupGame();
         setupFirstTurn();
-        instance.timeStart = System.currentTimeMillis();
+        timeStart = System.currentTimeMillis();
 
-        while (!isBlocked() && !didPlayerWin(getCurrentPlayer()))
-            instance.state.resolve();
+        while (!isBlocked() && !winCondition.test(getCurrentPlayer()))
+            state.resolve();
 
-        endAndReset(isBlocked());
+        if (!isBlocked())
+            end();
     }
 
-    private static void endAndReset(boolean interrupted) {
-        if (!interrupted) {
-            Player winner = getCurrentPlayer();
-            boolean humanWon = !(winner instanceof GameAI);
-            int xpEarned = (int) ((System.currentTimeMillis() - instance.timeStart) / 60000F) + (humanWon ? 3 : 0);
+    private void end() {
+        Player winner = getCurrentPlayer();
+        boolean humanWon = !(winner instanceof GameAI);
+        int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F) + (humanWon ? 3 : 0);
 
-            UserData.addXp(xpEarned);
-            UserData.addGamePlayed(humanWon);
+        UserData.addXp(xpEarned);
+        UserData.addGamePlayed(humanWon);
 
-            HashMap<String, Object> data = UserData.wrapData();
-            data.put("xp-earned", xpEarned);
-            CUModel.communicate(Event.INFO_CHANGE, data);
-            CUModel.communicate(Event.PLAYER_WON, winner.getData());
+        HashMap<String, Object> data = UserData.wrapData();
+        data.put("xp-earned", xpEarned);
+        notifyToCU(Event.INFO_CHANGE, data);
+        notifyToCU(Event.PLAYER_WON, winner.getData());
+    }
+
+    /* --- Body ------------------------------- */
+
+    /**
+     * Replace the current terrain card with the given card.
+     * 
+     * @param card The new terrain card.
+     */
+    public void changeCurrentCard(Card card) {
+        if (terrainCard != null)
+            discardPile.add(terrainCard);
+        terrainCard = card;
+    }
+
+    /**
+     * 
+     * @return The first card in the deck pile.
+     */
+    public Card takeFromDeck() {
+        if (deck.isEmpty())
+            shuffleDeck();
+        return deck.remove(0);
+    }
+
+    /**
+     * Shuffles the deck.
+     */
+    public void shuffleDeck() {
+        discardPile.forEach(card -> card.shuffleIn(deck));
+        Collections.shuffle(deck);
+        discardPile.clear();
+    }
+
+    /**
+     * A player draws from deck the choosen amount of cards.
+     * 
+     * @param player The player that will draw the cards.
+     * @param times  The amount of cards to be drawn.
+     */
+    public void dealFromDeck(Player player, int times) {
+        while (times-- > 0) {
+            // Add card
+            Card card = takeFromDeck();
+            player.getHand().add(card);
+
+            // Notify
+            HashMap<String, Object> data = card.getData();
+            data.putAll(player.getData());
+
+            if (!(player instanceof GameAI))
+                notifyToCU(Event.USER_DREW, data);
+            else
+                notifyToCU(Event.AI_DREW, data);
         }
+    }
 
-        // Reset everything
-        for (Player player : getPlayers())
-            player.getHand().clear();
-        
-        instance = null;
+    /**
+     * Jumps to the turn ahead by the given amount.
+     * 
+     * @param ahead The amount of turns to skip.
+     */
+    public void advanceTurn(int ahead) {
+        int newTurn = (getTurn() + ahead) % players.length;
+        setTurn(newTurn);
+    }
+
+    /**
+     * Sends the message to the CUModel. It has the same effect of
+     * <p>
+     * 
+     * <pre>
+     * CUModel.communicate(event, data)
+     * </pre>
+     * </p>
+     * but it stops the message to be sent if the game is dead (i.e., interrupted)
+     * 
+     * @param event
+     * @param data
+     */
+    public void notifyToCU(Event event, HashMap<String, Object> data) {
+        if (!isBlocked())
+            CUModel.communicate(event, data);
     }
 }

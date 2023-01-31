@@ -1,6 +1,5 @@
 package model.cards;
 
-import model.gameLogic.Actions;
 import model.gameLogic.Game;
 
 public class DrawCard extends BlockCard {
@@ -12,8 +11,8 @@ public class DrawCard extends BlockCard {
     }
     
     @Override
-    public void play() {
-        super.play();
-        Actions.dealFromDeck(Game.getCurrentPlayer(), quantity);
+    public void play(Game game) {
+        super.play(game);
+        game.dealFromDeck(game.getCurrentPlayer(), quantity);
     }
 }

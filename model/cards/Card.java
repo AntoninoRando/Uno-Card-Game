@@ -3,6 +3,8 @@ package model.cards;
 import java.util.Collection;
 import java.util.HashMap;
 
+import model.gameLogic.Game;
+
 /* --- Mine ------------------------------- */
 
 /**
@@ -59,7 +61,7 @@ public abstract class Card implements Comparable<Card> {
      * Executes the card effect.
      * 
      */
-    public abstract void play();
+    public abstract void play(Game game);
 
     /**
      * Puts this card into the input collection in a specific way established by

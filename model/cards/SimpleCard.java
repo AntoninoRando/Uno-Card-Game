@@ -1,5 +1,7 @@
 package model.cards;
 
+import model.gameLogic.Game;
+
 public class SimpleCard extends Card {
     public SimpleCard(Suit suit, int value) {
         super(suit, value);
@@ -9,7 +11,7 @@ public class SimpleCard extends Card {
      * It does nothing.
      */
     @Override
-    public void play() {  
+    public void play(Game game) {  
     }
 
 }

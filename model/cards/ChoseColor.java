@@ -1,10 +1,9 @@
 package model.cards;
 
 import events.Event;
-import model.CUModel;
-import model.gameLogic.Actions;
+import model.gameLogic.Game;
 
-public class ChoseColor extends PickColor{
+public class ChoseColor extends PickColor {
     public ChoseColor(Suit suit, int value) {
         super(suit, value);
         
@@ -15,9 +14,9 @@ public class ChoseColor extends PickColor{
     }
     
     @Override
-    public void play() {
-        super.play();
-        Actions.changeCurrentCard(choice);
-        CUModel.communicate(Event.CARD_CHANGE, choice.getData());
+    public void play(Game game) {
+        super.play(game);
+        game.changeCurrentCard(choice);
+        game.notifyToCU(Event.CARD_CHANGE, choice.getData());
     }
 }

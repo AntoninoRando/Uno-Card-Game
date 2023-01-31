@@ -3,8 +3,6 @@ package model.cards;
 import java.util.Collection;
 
 import events.Event;
-import model.CUModel;
-import model.gameLogic.Actions;
 import model.gameLogic.Game;
 import model.players.Player;
 
@@ -14,10 +12,10 @@ public class BlockCard extends Card{
     }
 
     @Override
-    public void play() {
-        Actions.advanceTurn(1);
-        Player blocked = Game.getCurrentPlayer();
-        CUModel.communicate(Event.TURN_BLOCKED, blocked.getData());
+    public void play(Game game) {
+        game.advanceTurn(1);
+        Player blocked = game.getCurrentPlayer();
+        game.notifyToCU(Event.TURN_BLOCKED, blocked.getData());
     }
 
     @Override

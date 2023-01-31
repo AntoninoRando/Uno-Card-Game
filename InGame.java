@@ -104,7 +104,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         SettingsMenu.getInstance().addOptions(quit, restart);
 
         closingAnimation.setDimensions(app.getScene().getWidth(), app.getScene().getHeight());
-        closingAnimation.setOnFinishAction(e -> GameExecuter.play());
+        closingAnimation.setOnFinishAction(e -> GameExecuter.playNewGame());
         closingAnimation.play(this);
 
         Sound.IN_GAME_SOUNDTRACK.play(true);
@@ -117,7 +117,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
     }
 
     private void quit() {
-        GameExecuter.stop(true);
+        GameExecuter.stop();
         Sound.IN_GAME_SOUNDTRACK.stop();
         SettingsMenu.getInstance().removeOptions();
 
@@ -126,7 +126,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
     }
 
     private void displayResults() {
-        GameExecuter.stop(true);
+        GameExecuter.stop();
         Sound.IN_GAME_SOUNDTRACK.stop();
         SettingsMenu.getInstance().removeOptions();
 

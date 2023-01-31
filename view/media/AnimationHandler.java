@@ -37,29 +37,8 @@ public class AnimationHandler implements EventListener {
         }
     }
 
-    private void playAnimation(Animation animation, Pane layer) {
-        Platform.runLater(() -> animation.play(layer));
-
-        if (!animation.willCountdown())
-            return;
-
-        try {
-            animation.latch.await();
-        } catch (InterruptedException e) {
-        }
-        animation.resetLatch();
-    }
-
-    @Override
-    public void update(Event event, HashMap<String, Object> data) {
-        Entry<Pane, Double[]> points = layers.get(event).getPoints(event);
-        Pane layer = points.getKey();
-        Double x = points.getValue()[0];
-        Double y = points.getValue()[1];
-        Double w = points.getValue()[2];
-        Double h = points.getValue()[3];
-
-        Animation animation;
+    private Animation fetchAnimation(Event event, HashMap<String, Object> data) {
+        Animation animation = null;
 
         switch (event) {
             case UNO_DECLARED:
@@ -81,13 +60,35 @@ public class AnimationHandler implements EventListener {
                 break;
             default:
                 throwUnimplementedError(event);
-                return;
         }
+
+        return animation;
+    }
+
+    private void setupAndPlayAnimation(Animation animation, Event event, HashMap<String, Object> data) {
+        Entry<Pane, Double[]> points = layers.get(event).getPoints(event);
+        Pane layer = points.getKey();
+        Double x = points.getValue()[0];
+        Double y = points.getValue()[1];
+        Double w = points.getValue()[2];
+        Double h = points.getValue()[3];
 
         animation.setSceneCoordinates(x, y);
         animation.setDimensions(w, h);
+        animation.play(layer);
+    }
 
-        playAnimation(animation, layer);
+    @Override
+    public void update(Event event, HashMap<String, Object> data) {
+        Animation animation = fetchAnimation(event, data);
+
+        Platform.runLater(() -> setupAndPlayAnimation(animation, event, data));
+
+        try {
+            animation.latch.await();
+        } catch (InterruptedException e) {
+        }
+        animation.resetLatch();
     }
 
     @Override

@@ -1,387 +1,58 @@
-{
-	"RED DRAW 4": {
-		"Suit": "RED",
-		"Value": -4,
-		"Quantity": 0
-	},
-	"BLUE DRAW 4": {
-		"Suit": "BLUE",
-		"Value": -4,
-		"Quantity": 0
-	},
-	"YELLOW DRAW 4": {
-		"Suit": "YELLOW",
-		"Value": -4,
-		"Quantity": 0
-	},
-	"GREEN DRAW 4": {
-		"Suit": "GREEN",
-		"Value": -4,
-		"Quantity": 0
-	},
-	"DRAW 4": {
-		"Suit": "WILD",
-		"Value": -4,
-		"Effect": [
-			"target",
-			"1",
-			"they draw",
-			"4",
-			"they pass",
-			"select one of",
-			"Standard RED DRAW 4  Standard BLUE DRAW 4  Standard YELLOW DRAW 4  Standard GREEN DRAW 4",
-			"become target"
-		],
-		"Quantity": 4
-	},
-	"RED COLOR": {
-		"Suit": "RED",
-		"Value": -5,
-		"Quantity": 0
-	},
-	"BLUE COLOR": {
-		"Suit": "BLUE",
-		"Value": -5,
-		"Quantity": 0
-	},
-	"YELLOW COLOR": {
-		"Suit": "YELLOW",
-		"Value": -5,
-		"Quantity": 0
-	},
-	"GREEN COLOR": {
-		"Suit": "GREEN",
-		"Value": -5,
-		"Quantity": 0
-	},
-	"PICK COLOR": {
-		"Suit": "WILD",
-		"Value": -5,
-		"Effect": [
-			"select one of",
-			"Standard RED COLOR  Standard BLUE COLOR  Standard YELLOW COLOR  Standard GREEN COLOR",
-			"become target"
-		],
-		"Quantity": 4
-	},
-	"RED REVERSE TURN": {
-		"Suit": "RED",
-		"Value": -3,
-		"Effect": [
-			"reverse turn"
-		],
-		"Quantity": 2
-	},
-	"RED DRAW 2": {
-		"Suit": "RED",
-		"Value": -2,
-		"Effect": [
-			"target",
-			"1",
-			"they draw",
-			"2",
-			"they pass"
-		],
-		"Quantity": 2
-	},
-	"RED BLOCK TURN": {
-		"Suit": "RED",
-		"Value": -1,
-		"Effect": [
-			"target",
-			"1",
-			"they pass"
-		],
-		"Quantity": 2
-	},
-	"RED 0": {
-		"Suit": "RED",
-		"Value": 0,
-		"Quantity": 2
-	},
-	"RED 1": {
-		"Suit": "RED",
-		"Value": 1,
-		"Quantity": 2
-	},
-	"RED 2": {
-		"Suit": "RED",
-		"Value": 2,
-		"Quantity": 2
-	},
-	"RED 3": {
-		"Suit": "RED",
-		"Value": 3,
-		"Quantity": 2
-	},
-	"RED 4": {
-		"Suit": "RED",
-		"Value": 4,
-		"Quantity": 2
-	},
-	"RED 5": {
-		"Suit": "RED",
-		"Value": 5,
-		"Quantity": 2
-	},
-	"RED 6": {
-		"Suit": "RED",
-		"Value": 6,
-		"Quantity": 2
-	},
-	"RED 7": {
-		"Suit": "RED",
-		"Value": 7,
-		"Quantity": 2
-	},
-	"RED 8": {
-		"Suit": "RED",
-		"Value": 8,
-		"Quantity": 2
-	},
-	"RED 9": {
-		"Suit": "RED",
-		"Value": 9,
-		"Quantity": 2
-	},
-	"BLUE REVERSE TURN": {
-		"Suit": "BLUE",
-		"Value": -3,
-		"Effect": [
-			"reverse turn"
-		],
-		"Quantity": 2
-	},
-	"BLUE DRAW 2": {
-		"Suit": "BLUE",
-		"Value": -2,
-		"Effect": [
-			"target",
-			"1",
-			"they draw",
-			"2",
-			"they pass"
-		],
-		"Quantity": 2
-	},
-	"BLUE BLOCK TURN": {
-		"Suit": "BLUE",
-		"Value": -1,
-		"Effect": [
-			"target",
-			"1",
-			"they pass"
-		],
-		"Quantity": 2
-	},
-	"BLUE 0": {
-		"Suit": "BLUE",
-		"Value": 0,
-		"Quantity": 2
-	},
-	"BLUE 1": {
-		"Suit": "BLUE",
-		"Value": 1,
-		"Quantity": 2
-	},
-	"BLUE 2": {
-		"Suit": "BLUE",
-		"Value": 2,
-		"Quantity": 2
-	},
-	"BLUE 3": {
-		"Suit": "BLUE",
-		"Value": 3,
-		"Quantity": 2
-	},
-	"BLUE 4": {
-		"Suit": "BLUE",
-		"Value": 4,
-		"Quantity": 2
-	},
-	"BLUE 5": {
-		"Suit": "BLUE",
-		"Value": 5,
-		"Quantity": 2
-	},
-	"BLUE 6": {
-		"Suit": "BLUE",
-		"Value": 6,
-		"Quantity": 2
-	},
-	"BLUE 7": {
-		"Suit": "BLUE",
-		"Value": 7,
-		"Quantity": 2
-	},
-	"BLUE 8": {
-		"Suit": "BLUE",
-		"Value": 8,
-		"Quantity": 2
-	},
-	"BLUE 9": {
-		"Suit": "BLUE",
-		"Value": 9,
-		"Quantity": 2
-	},
-	"YELLOW REVERSE TURN": {
-		"Suit": "YELLOW",
-		"Value": -3,
-		"Effect": [
-			"reverse turn"
-		],
-		"Quantity": 2
-	},
-	"YELLOW DRAW 2": {
-		"Suit": "YELLOW",
-		"Value": -2,
-		"Effect": [
-			"target",
-			"1",
-			"they draw",
-			"2",
-			"they pass"
-		],
-		"Quantity": 2
-	},
-	"YELLOW BLOCK TURN": {
-		"Suit": "YELLOW",
-		"Value": -1,
-		"Effect": [
-			"target",
-			"1",
-			"they pass"
-		],
-		"Quantity": 2
-	},
-	"YELLOW 0": {
-		"Suit": "YELLOW",
-		"Value": 0,
-		"Quantity": 2
-	},
-	"YELLOW 1": {
-		"Suit": "YELLOW",
-		"Value": 1,
-		"Quantity": 2
-	},
-	"YELLOW 2": {
-		"Suit": "YELLOW",
-		"Value": 2,
-		"Quantity": 2
-	},
-	"YELLOW 3": {
-		"Suit": "YELLOW",
-		"Value": 3,
-		"Quantity": 2
-	},
-	"YELLOW 4": {
-		"Suit": "YELLOW",
-		"Value": 4,
-		"Quantity": 2
-	},
-	"YELLOW 5": {
-		"Suit": "YELLOW",
-		"Value": 5,
-		"Quantity": 2
-	},
-	"YELLOW 6": {
-		"Suit": "YELLOW",
-		"Value": 6,
-		"Quantity": 2
-	},
-	"YELLOW 7": {
-		"Suit": "YELLOW",
-		"Value": 7,
-		"Quantity": 2
-	},
-	"YELLOW 8": {
-		"Suit": "YELLOW",
-		"Value": 8,
-		"Quantity": 2
-	},
-	"YELLOW 9": {
-		"Suit": "YELLOW",
-		"Value": 9,
-		"Quantity": 2
-	},
-	"GREEN REVERSE TURN": {
-		"Suit": "GREEN",
-		"Value": -3,
-		"Effect": [
-			"reverse turn"
-		],
-		"Quantity": 2
-	},
-	"GREEN DRAW 2": {
-		"Suit": "GREEN",
-		"Value": -2,
-		"Effect": [
-			"target",
-			"1",
-			"they draw",
-			"2",
-			"they pass"
-		],
-		"Quantity": 2
-	},
-	"GREEN BLOCK TURN": {
-		"Suit": "GREEN",
-		"Value": -1,
-		"Effect": [
-			"target",
-			"1",
-			"they pass"
-		],
-		"Quantity": 2
-	},
-	"GREEN 0": {
-		"Suit": "GREEN",
-		"Value": 0,
-		"Quantity": 2
-	},
-	"GREEN 1": {
-		"Suit": "GREEN",
-		"Value": 1,
-		"Quantity": 2
-	},
-	"GREEN 2": {
-		"Suit": "GREEN",
-		"Value": 2,
-		"Quantity": 2
-	},
-	"GREEN 3": {
-		"Suit": "GREEN",
-		"Value": 3,
-		"Quantity": 2
-	},
-	"GREEN 4": {
-		"Suit": "GREEN",
-		"Value": 4,
-		"Quantity": 2
-	},
-	"GREEN 5": {
-		"Suit": "GREEN",
-		"Value": 5,
-		"Quantity": 2
-	},
-	"GREEN 6": {
-		"Suit": "GREEN",
-		"Value": 6,
-		"Quantity": 2
-	},
-	"GREEN 7": {
-		"Suit": "GREEN",
-		"Value": 7,
-		"Quantity": 2
-	},
-	"GREEN 8": {
-		"Suit": "GREEN",
-		"Value": 8,
-		"Quantity": 2
-	},
-	"GREEN 9": {
-		"Suit": "GREEN",
-		"Value": 9,
-		"Quantity": 2
-	}
-}
+[
+    {
+        "suit": "WILD",
+        "value": -5,
+        "copies": 10,
+        "type": "change color"
+    },
+    {
+        "suit": "RED",
+        "value": -1,
+        "copies": 4,
+        "type": "block"
+    },
+    {
+        "suit": "BLUE",
+        "value": -3,
+        "copies": 4,
+        "type": "reverse"
+    },
+    {
+        "suit": "GREEN",
+        "value": -2,
+        "copies": 2,
+        "type": "draw 2",
+        "amount": 2
+    },
+    {
+        "suit": "WILD",
+        "value": -4,
+        "copies": 4,
+        "type": "draw 4",
+        "amount": 4
+    },
+    {
+        "suit": "RED",
+        "value": 0,
+        "copies": 10,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 0,
+        "copies": 10,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 0,
+        "copies": 10,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 0,
+        "copies": 10,
+        "type": "simple"
+    }
+]
