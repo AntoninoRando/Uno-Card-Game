@@ -37,7 +37,7 @@ public abstract class CardBuilder {
 
         Map<String, BiFunction<Suit, Integer, Card>> constructors = Map.of(
             "simple", (suit, value) -> new SimpleCard(suit, value),
-            "draw 4", (suit, value) -> new DrawCard(suit, value, 4),
+            "draw 4", (suit, value) -> new DrawAndColor(suit, value, 4),
             "draw 2", (suit, value)-> new DrawCard(suit, value, 2),
             "reverse", (suit, value) -> new ReverseCard(suit, value),
             "block", (suit, value) -> new BlockCard(suit, value),

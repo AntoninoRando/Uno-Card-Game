@@ -3,7 +3,7 @@ package model.cards;
 import events.Event;
 import model.gameLogic.Game;
 
-public class ChoseColor extends PickColor {
+public class ChoseColor extends PickCard {
     public ChoseColor(Suit suit, int value) {
         super(suit, value);
         

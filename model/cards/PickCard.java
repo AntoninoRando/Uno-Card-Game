@@ -7,11 +7,11 @@ import model.gameLogic.UserTurn;
 import model.players.GameAI;
 import model.players.Player;
 
-public class PickColor extends Card {
+public class PickCard extends Card {
     protected Card[] options;
     protected Card choice;
 
-    public PickColor(Suit suit, int value) {
+    public PickCard(Suit suit, int value) {
         super(suit, value);
     }
 
