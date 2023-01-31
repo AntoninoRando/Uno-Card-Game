@@ -6,7 +6,6 @@ import javafx.scene.image.ImageView;
 import view.Sprite;
 import view.SpriteFactory;
 import view.media.Animations;
-import events.EventListener;
 
 /**
  * Implements the <em>Flyweight</em> pattern as <b>Context</b>.
@@ -16,7 +15,7 @@ import events.EventListener;
  * The GUI representation of a UNO card: it has an image and it is zoombale, but
  * it does not store card informations.
  */
-public class Card extends ImageView implements EventListener {
+public class Card extends ImageView {
     /* --- Fields ----------------------------- */
 
     public static HashMap<Integer, Card> cards = new HashMap<>();

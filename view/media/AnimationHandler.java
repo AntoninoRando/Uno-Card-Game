@@ -59,7 +59,7 @@ public class AnimationHandler implements EventListener {
                 animation.setWillCountdown(true);
                 break;
             default:
-                throwUnimplementedError(event);
+                throwUnsupportedError(event, data);
         }
 
         return animation;

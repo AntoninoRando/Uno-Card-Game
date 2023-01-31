@@ -7,13 +7,12 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import events.EventListener;
 
 /**
  * A GUI element containing different settings about the applications that are
  * changeable by the user.
  */
-public class SettingsMenu extends BorderPane implements EventListener {
+public class SettingsMenu extends BorderPane {
     private static SettingsMenu instance;
 
     public static SettingsMenu getInstance() {

@@ -14,9 +14,8 @@ import view.media.Animations;
 import view.media.Sound;
 import view.settings.ProfileMenu;
 import view.settings.SettingsMenu;
-import events.EventListener;
 
-public class JUno extends Application implements EventListener, GUIContainer {
+public class JUno extends Application implements GUIContainer {
     /* --- Fields ----------------------------- */
 
     private AppState state;

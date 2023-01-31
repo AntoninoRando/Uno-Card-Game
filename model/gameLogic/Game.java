@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 /* --- Mine ------------------------------- */
 
-import events.EventListener;
 import events.Event;
 
 import model.CUModel;
@@ -27,7 +26,7 @@ import model.players.UserData;
  * It is not a singleton, since it is easier to think of a new match like a new
  * Game object, instead of the same game object that resets.
  */
-public class Game extends Thread implements EventListener {
+public class Game {
     public Game() {
         discardPile = new LinkedList<>();
         deck = new LinkedList<>(CardBuilder.getCards("resources/cards/Small.json"));

@@ -1,7 +1,7 @@
 package events;
 
 /**
- * All notifiable events.
+ * A notifiable <em>type</em> of event.
  */
 public enum Event {
     CARD_CHANGE,

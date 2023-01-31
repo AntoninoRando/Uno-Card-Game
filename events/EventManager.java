@@ -6,20 +6,26 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A class storing all the <code>EventListener</code>s to update in relation to
- * the event notified. This enables to update multiple classes at once.
+ * A mediator between the <code>EventListener</code> and the objects that notify
+ * changes. This enables to update at once all <code>EventListener</code>
+ * listening for a specific event.
  */
 public class EventManager {
     /* --- Fields ----------------------------- */
 
     protected Map<Event, List<EventListener>> listeners;
 
+    /* --- Constructors ----------------------- */
+
     public EventManager() {
         listeners = new HashMap<>();
     }
 
+    /* --- Observer --------------------------- */
+
     /**
-     * Sets a listener ready for listening the events specified.
+     * From this method call on, an <code>EventListener</code> will be updated if
+     * any of the given events occur.
      * 
      * @param listener The listener that will be updated whenever one of these
      *                 events happens.
@@ -34,19 +40,23 @@ public class EventManager {
     }
 
     /**
-     * Stops the given listener to listen for the event specified.
+     * From this method call on, an <code>EventListener</code> will <em>not</em> be
+     * updated if any of the given events occur.
      * 
-     * @param event    Event that will not update the listener anymore.
      * @param listener The listener that will stop to listen for the given event.
+     * @param events   Events that will not update the listener anymore.
      */
-    public void unsubscribe(Event event, EventListener listener) {
-        listeners.get(event).remove(listener);
+    public void unsubscribe(EventListener listener, Event... events) {
+        for (Event event : events)
+            listeners.get(event).remove(listener);
     }
 
     /**
-     * Updates all the listener that were listening for the given event.
+     * Updates all the <code>EventListener</code> that were listening to the given
+     * event.
      * 
-     * @param event The event to notify.
+     * @param event The event that occurred.
+     * @param data  The data that describes the event.
      */
     public void notify(Event event, HashMap<String, Object> data) {
         if (!listeners.containsKey(event))

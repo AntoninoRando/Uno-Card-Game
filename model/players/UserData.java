@@ -77,6 +77,8 @@ public abstract class UserData implements EventListener {
         if (nickname.length() > NICKNAME_MAX_SIZE)
             return;
 
+        if (nickname.length() == 0)
+            return;
 
         UserData.nickname = nickname;
         CUModel.communicate(Event.INFO_CHANGE, wrapData());
