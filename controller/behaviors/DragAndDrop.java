@@ -9,59 +9,35 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 
 /**
- * Through this control a card can be dragged, and if it drops into a target,
- * the <code>InputListener</code> will be notified.
+ * Mouse drag and drop event. It exhibites when the user clicks on the source
+ * <em>and</em> releases the click only when the source is over a given target.
  */
 public class DragAndDrop extends Behavior<MouseEvent> {
     /* --- Fields ----------------------------- */
 
-    protected Node source;
-    protected Node target;
+    protected Node dropTarget;
     protected double mouseAnchorX;
     protected double mouseAnchorY;
-    protected boolean state; // true if the source has been dragged over the target
-
-    /* ---.--- Getters and Setters ------------ */
-
-    public boolean getState() {
-        return state;
-    }
-
-    public void setState(boolean value) {
-        state = value;
-    }
+    /**
+     * <code>true</code> only if the source has been dragged on the target.
+     */
+    protected boolean state;
 
     /* --- Constructors ----------------------- */
 
     public DragAndDrop(Node source, Node target) {
         this.source = source;
-        this.target = target;
+        this.dropTarget = target;
         applyBehavior();
     }
 
     /* --- Body ------------------------------- */
 
-    @Override
-    public boolean behave(MouseEvent e) {
-        if (e.getButton().equals(MouseButton.SECONDARY))
-            return false;
-
-        if (e.getPickResult().getIntersectedNode() != target) {
-            animateReset(e);
-            return false;
-        }
-
-        animateDrop();
-        setState(true);
-        return true;
-    }
-
-    protected void applyBehavior() {
-        source.setOnMousePressed(this::dragStart);
-        source.setOnMouseDragged(this::dragRunning);
-        source.setOnMouseReleased(this::onEnd);
-    }
-
+    /**
+     * Starts the drag gesture, detecting where the mouse clicked the node.
+     * 
+     * @param e The mouse event.
+     */
     protected void dragStart(MouseEvent e) {
         // When we drag we want the Node to be in its original size
         if (source.getScaleX() != 1.0 || source.getScaleY() != 1.0) {
@@ -73,21 +49,20 @@ public class DragAndDrop extends Behavior<MouseEvent> {
         mouseAnchorY = e.getSceneY() - source.getTranslateY();
     }
 
+    /**
+     * Translates the source node so that it follows the mouse.
+     * 
+     * @param e The mouse event.
+     */
     protected void dragRunning(MouseEvent e) {
         source.setTranslateX(e.getSceneX() - mouseAnchorX);
         source.setTranslateY(e.getSceneY() - mouseAnchorY);
     }
 
-    // TODO rendere le animazioni altre classi, magarid decorators
-
     /**
-     * Plays an animation when the drag source is dropped on the target. After that
-     * animation, an action is performed.
-     * 
-     * @param source   The drag source.
-     * @param onFinish The action to perform after the animation.
+     * Plays an animation when the drag source is dropped on the target.
      */
-    public void animateDrop() {
+    protected void animateDrop() {
         ScaleTransition zoom = new ScaleTransition(Duration.millis(150.0), source);
         zoom.setByX(0.3);
         zoom.setByY(0.3);
@@ -99,13 +74,13 @@ public class DragAndDrop extends Behavior<MouseEvent> {
         zoom.setOnFinished(e -> zoomOut.play());
 
         RotateTransition alignToTarget = new RotateTransition(Duration.millis(300.0), source);
-        alignToTarget.setByAngle(target.getRotate() - source.getRotate());
+        alignToTarget.setByAngle(dropTarget.getRotate() - source.getRotate());
 
         TranslateTransition moveToCenter = new TranslateTransition(Duration.millis(100.0), source);
         double xSource = source.localToScene(source.getBoundsInLocal()).getCenterX();
         double ySource = source.localToScene(source.getBoundsInLocal()).getCenterY();
-        double xTarget = target.localToScene(target.getBoundsInLocal()).getCenterX();
-        double yTarget = target.localToScene(target.getBoundsInLocal()).getCenterY();
+        double xTarget = dropTarget.localToScene(dropTarget.getBoundsInLocal()).getCenterX();
+        double yTarget = dropTarget.localToScene(dropTarget.getBoundsInLocal()).getCenterY();
         moveToCenter.setByX(xTarget - xSource); // xSource + translate = xPz -> translate = xPz-xSource
         moveToCenter.setByY(yTarget - ySource);
         moveToCenter.setOnFinished(e -> {
@@ -115,15 +90,40 @@ public class DragAndDrop extends Behavior<MouseEvent> {
         moveToCenter.play();
     }
 
-    public void animateReset(MouseEvent e) {
+    /**
+     * Translates the source node to its original position if the node <em>has
+     * not</em> be dropped on the target.
+     * 
+     * @param e The mouse event.
+     */
+    protected void animateReset(MouseEvent e) {
         TranslateTransition reset = new TranslateTransition(Duration.millis(300.0), source);
         reset.setByX(mouseAnchorX - e.getSceneX()); // correspond to setTranslateX(0);
         reset.setByY(mouseAnchorY - e.getSceneY()); // correspond to setTranslateY(0);
         reset.play();
     }
 
-    public void reset() {
-        // TODO fare che ripristina la transition, così che se il drag è andato a buon
-        // fine ma la carta non poteva essere giocata, basta chiamare questo metodo.
+    /* --- Behavior --------------------------- */
+
+    @Override
+    public boolean behave(MouseEvent e) {
+        if (e.getButton().equals(MouseButton.SECONDARY))
+            return false;
+
+        if (e.getPickResult().getIntersectedNode() != dropTarget) {
+            animateReset(e);
+            return false;
+        }
+
+        animateDrop();
+        state = true;
+        return true;
+    }
+
+    @Override
+    protected void applyBehavior() {
+        source.setOnMousePressed(this::dragStart);
+        source.setOnMouseDragged(this::dragRunning);
+        source.setOnMouseReleased(this::onEnd);
     }
 }

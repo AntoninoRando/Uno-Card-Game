@@ -180,8 +180,8 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
     public void applyBehaviors() {
         playZone.setOnScroll(this::scrollChronology);
         DropAndPlay.setPlayzone(playZone);
-        Controls.draw.apply(playZone);
-        Controls.UNO.apply(playZone);
+        Controls.applyDrawControl(playZone);
+        Controls.applyUnoControl(playZone);
 
         restart.setOnMouseClicked(e -> {
             Sound.BUTTON_CLICK.play(false);
@@ -194,8 +194,8 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
             quit();
         });
 
-        Controls.SKIP.apply(restart);
-        Controls.SKIP.apply(quit);
+        Controls.applySkipControl(restart);
+        Controls.applySkipControl(quit);
     }
 
     /* --- State ------------------------------ */

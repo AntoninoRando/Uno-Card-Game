@@ -21,10 +21,11 @@ import model.CUModel;
 public abstract class UserData implements EventListener {
     /* --- Fields ----------------------------- */
 
-    public static final String DEFAULT_NICKNAME = "User";
-    // public static final int NICKNAME_MAX_SIZE = 22;
-    public static final String DEFAULT_ICON = "night";
-    public static final int[] XP_GAPS = { 5, 8, 15, 21, 24, 28, 31, 35, 39, 50 };
+    private static final int NICKNAME_MAX_SIZE = 22;
+    private static final String[] INVALID_NICKNAMES = new String[] { "Jinx", "Viego", "Zoe", "Xayah" };
+    private static final String DEFAULT_NICKNAME = "User";
+    private static final String DEFAULT_ICON = "night";
+    private static final int[] XP_GAPS = { 5, 8, 15, 21, 24, 28, 31, 35, 39, 50 };
     public static final EventListener EVENT_LISTENER = new EventListener() {
         @Override
         public void update(Event event, HashMap<String, Object> data) {
@@ -70,6 +71,13 @@ public abstract class UserData implements EventListener {
     }
 
     public static void setNickname(String nickname) {
+        if (Stream.of(INVALID_NICKNAMES).anyMatch(invalid -> invalid.equals(nickname)))
+            return;
+        
+        if (nickname.length() > NICKNAME_MAX_SIZE)
+            return;
+
+
         UserData.nickname = nickname;
         CUModel.communicate(Event.INFO_CHANGE, wrapData());
     }
@@ -108,7 +116,7 @@ public abstract class UserData implements EventListener {
         data.put("icon", getIcon());
         data.put("level", getLevel());
         data.put("xp", getXp());
-        data.put("xp-gap", XP_GAPS[level-1 % XP_GAPS.length]);
+        data.put("xp-gap", XP_GAPS[level - 1 % XP_GAPS.length]);
         data.put("games", getGames());
         data.put("wins", getWins());
 
@@ -176,7 +184,7 @@ public abstract class UserData implements EventListener {
      */
     public static void addXp(int quantity) {
         while (quantity > 0) {
-            int gap = XP_GAPS[level-1 % XP_GAPS.length];
+            int gap = XP_GAPS[level - 1 % XP_GAPS.length];
 
             int toAdd = Integer.min(quantity, gap - xp);
             xp += toAdd;

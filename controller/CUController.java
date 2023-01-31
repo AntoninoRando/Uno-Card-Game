@@ -53,7 +53,7 @@ public class CUController extends EventManager implements EventListener {
                 Node[] cards = (Node[]) data.get("all-card-nodes");
                 int[] cardTags = (int[]) data.get("all-card-tags");
                 for (int i = 0; i < cards.length; i++)
-                    Controls.SELECT.apply(cards[i], cardTags[i]);
+                    Controls.applySelectControl(cards[i], cardTags[i]);
                 break;
             default:
                 notify(event, data);

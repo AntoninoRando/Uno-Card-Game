@@ -3,10 +3,13 @@ package controller.behaviors;
 import javafx.scene.Node;
 import javafx.scene.input.KeyEvent;
 
+/**
+ * A specific key pressed on the keyboard event. It exhibites as soon as the
+ * user press down a given key on the keyboard.
+ */
 public class KeyPress extends Behavior<KeyEvent> {
     /* --- Fields ----------------------------- */
 
-    protected Node source;
     protected int keyCode;
 
     /* --- Constructors ----------------------- */
@@ -19,6 +22,7 @@ public class KeyPress extends Behavior<KeyEvent> {
 
     /* --- Body ------------------------------- */
 
+    @Override
     protected void applyBehavior() {
         // Instead of setOnMouseClick, this way doesn't ovveride previous click behavior
         source.addEventHandler(KeyEvent.KEY_PRESSED, this::onEnd);

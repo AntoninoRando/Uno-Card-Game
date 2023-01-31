@@ -109,14 +109,13 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
     @Override
     public void applyBehaviors() {
         avatar.setOnMouseClicked(e -> avatarPicker.setVisible(!avatarPicker.isVisible()));
-        Controls.NICK_ENTER.apply(nickField, () -> {
+        Controls.applyNickEnter(nickField, () -> {
             String text = nickField.getText();
             nickField.clear();
-            nickField.setPromptText(text);
             requestFocus(); // Used to remove focus from the text field
             return text;
         });
-        Controls.INFO_RESET.apply(deleteButton);
+        Controls.applyInfoReset(deleteButton);
     }
 
     /* --- Observer --------------------------- */
@@ -184,7 +183,7 @@ class AvatarPicker extends StackPane implements GUIContainer {
             GridPane.setColumnIndex(icon, i % iconsPerLine);
             GridPane.setRowIndex(icon, i / iconsPerLine);
             grid.getChildren().add(icon);
-            Controls.INFO_CHANGE.apply(icon, Map.entry("icon", icons[i].getName()));
+            Controls.applyInfoChange(icon, Map.entry("icon", icons[i].getName()));
         }
     }
 

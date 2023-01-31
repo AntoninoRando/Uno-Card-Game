@@ -4,16 +4,31 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
+/**
+ * Mouse click event. It exhibites when the user performs a sequence of clicks,
+ * right or left, each within a given interval.
+ */
 public class Click extends Behavior<MouseEvent> {
     /* --- Fields ----------------------------- */
 
-    protected Node source;
-    protected boolean[] quantity; // le length of the array is the quantity of clicks to perform the action, the
-                                  // value false is the left click and true the right click.
+    /**
+     * The lenght of the array is the quantity of clicks that must be performed to
+     * exhibite the behavior. The <code>false</code> values are left clicks, and
+     * <code>true</code> values are right clicks.
+     */
+    protected boolean[] quantity;
     protected double[] intervals;
 
     /* --- Constructors ----------------------- */
 
+    /**
+     * Applies the click-detect behavior to the source node.
+     * 
+     * @param source    The node that will hold this behavior.
+     * @param quantity  The amount of clicks to be performed and their type (false
+     *                  if left click, true if right click).
+     * @param intervals The intervals between each click.
+     */
     public Click(Node source, boolean[] quantity, double[] intervals) {
         this.source = source;
         this.quantity = quantity;
@@ -21,8 +36,9 @@ public class Click extends Behavior<MouseEvent> {
         applyBehavior();
     }
 
-    /* --- Body ------------------------------- */
+    /* --- Behavior --------------------------- */
 
+    @Override
     protected void applyBehavior() {
         // Instead of setOnMouseClick, this way doesn't ovveride previous click behavior
         source.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onEnd);
