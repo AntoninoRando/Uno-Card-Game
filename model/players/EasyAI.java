@@ -16,6 +16,8 @@ import model.gameLogic.Action;
  * isn't any, draws from deck.
  */
 public class EasyAI extends GameAI {
+    private boolean unodeclared;
+
     public EasyAI(String icon, String nickname) {
         super(icon, nickname);
     }
@@ -25,8 +27,15 @@ public class EasyAI extends GameAI {
         Entry<Action, Object> choice = Map.entry(Action.FROM_DECK_DRAW, 1);
 
         Optional<Card> option = cards.stream().filter(validate).findAny();
-        if (option.isPresent())
-            choice = Map.entry(Action.FROM_HAND_PLAY_CARD, option.get());
+        if (option.isPresent()) {
+            if (cards.size() == 2 && !unodeclared) {
+                choice = Map.entry(Action.SAY_UNO, 0);
+                unodeclared = true;
+            } else {
+                choice = Map.entry(Action.FROM_HAND_PLAY_CARD, option.get());
+                unodeclared = false;
+            }
+        }
 
         return choice;
     }

@@ -18,6 +18,7 @@ import model.cards.Suit;
 import model.players.Enemy;
 import model.players.GameAI;
 import model.players.Player;
+import model.players.User;
 import model.players.UserData;
 
 /**
@@ -31,7 +32,7 @@ public class Game {
 
     private Player[] players;
     private Card terrainCard;
-    private final int firstHandSize = 7;
+    private final int firstHandSize = 2;
     private List<Card> deck, discardPile;
     private int turn; // current turn
     private Predicate<Card> playCondition;
@@ -55,7 +56,7 @@ public class Game {
         };
         winCondition = player -> player.getHand().isEmpty();
         players = Stream.concat(
-                Stream.of(new Player(UserData.getIcon(), UserData.getNickname())),
+                Stream.of(User.getInstance()),
                 Stream.of(Enemy.values()).map(en -> en.get())).toArray(Player[]::new);
     }
 
@@ -98,16 +99,10 @@ public class Game {
      * and notifies that the game is about to start.
      */
     private void setupGame() {
-        try {
-            GameAI firstPlayer = (GameAI) getCurrentPlayer();
-            AITurn initialState = new AITurn();
-            initialState.setContext(firstPlayer, this);
-            changeState(initialState);
-        } catch (ClassCastException e) {
-            UserTurn initialState = UserTurn.getInstance();
-            initialState.setContext(getCurrentPlayer(), this);
-            changeState(initialState);
-        }
+        PlayerTurn initialState = new PlayerTurn();
+        initialState.setContext(getCurrentPlayer(), this);
+        getCurrentPlayer().setState(1);
+        changeState(initialState);
 
         // Notify
         HashMap<String, Object> data = new HashMap<>();
@@ -141,7 +136,6 @@ public class Game {
         while (!interrupted && !winCondition.test(getCurrentPlayer()))
             state.resolve();
 
-
         if (!interrupted)
             end();
     }
@@ -173,6 +167,17 @@ public class Game {
     }
 
     /* --- Body ------------------------------- */
+
+    public void playerCard(Player player, Card card) {
+        changeCurrentCard(card);
+        player.getHand().remove(card);
+
+        HashMap<String, Object> data = player.getData();
+        data.putAll(card.getData());
+        boolean userTurn = getCurrentPlayer() instanceof User;
+        notifyToCU(userTurn ? Event.USER_PLAYED_CARD : Event.AI_PLAYED_CARD, data);
+        notifyToCU(Event.CARD_CHANGE, data);
+    }
 
     /**
      * Replace the current terrain card with the given card.

@@ -9,6 +9,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.players.UserData;
 import view.GUIContainer;
+import view.GameResults;
 import view.SpriteFactory;
 import view.media.Animations;
 import view.media.Sound;
@@ -46,7 +47,9 @@ public class JUno extends Application implements GUIContainer {
         Animations.CARD_PLAYED.get().load();
 
         // Serve solo per far vedere la classe
-        System.out.print("");
+        System.out.println("Loading..." + Sound.BUTTON_CLICK);
+        // Serve a caricare la schermata di fine gioco, altrimenti alla prima vittoria non si vede
+        GameResults.getInstance();
     }
 
     public static void main(String[] args) {

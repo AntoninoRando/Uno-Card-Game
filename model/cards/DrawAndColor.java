@@ -7,8 +7,6 @@ import java.util.List;
 import events.Event;
 
 import model.gameLogic.Game;
-import model.gameLogic.UserTurn;
-import model.players.GameAI;
 import model.players.Player;
 
 /**
@@ -30,10 +28,7 @@ public class DrawAndColor extends DrawCard {
     @Override
     public void play(Game game) {
         Player source = game.getCurrentPlayer();
-        if (source instanceof GameAI)
-            choice = (Card) (((GameAI) source).chooseFrom(List.of(options)).getValue());
-        else
-            choice = UserTurn.getInstance().chooseFrom(options);
+        choice = (Card) source.chooseFrom(List.of(options)).getValue();
         game.changeCurrentCard(choice);
         game.notifyToCU(Event.CARD_CHANGE, choice.getData());
 

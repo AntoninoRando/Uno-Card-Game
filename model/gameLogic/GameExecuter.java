@@ -1,6 +1,6 @@
 package model.gameLogic;
 
-/* --- Mine ------------------------------- */
+/* --- JUno ------------------------------- */
 
 /**
  * A thread holder that runs a single game math. This class makes it possible to

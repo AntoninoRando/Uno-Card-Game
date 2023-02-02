@@ -84,11 +84,13 @@ public class AnimationHandler implements EventListener {
 
         Platform.runLater(() -> setupAndPlayAnimation(animation, event, data));
 
-        try {
-            animation.latch.await();
-        } catch (InterruptedException e) {
+        if (animation.willCountdown()) {
+            try {
+                animation.latch.await();
+            } catch (InterruptedException e) {
+            }
+            animation.resetLatch();
         }
-        animation.resetLatch();
     }
 
     @Override

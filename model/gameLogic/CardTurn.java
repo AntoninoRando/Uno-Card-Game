@@ -35,7 +35,8 @@ public class CardTurn implements GameState {
 
     @Override
     public void resolve() {
-        card.play(game);
+        if (card != null)
+            card.play(game);
         TransitionState nextState = new TransitionState();
         nextState.setContext(game);
         game.changeState(nextState);

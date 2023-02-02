@@ -4,7 +4,6 @@ package model.gameLogic;
 
 import events.Event;
 
-import model.players.GameAI;
 import model.players.Player;
 
 /**
@@ -29,22 +28,23 @@ public class TransitionState implements GameState {
 
     @Override
     public void resolve() {
+        // Sets the player state to: Waiting.
         Player oldPlayer = game.getCurrentPlayer();
+        oldPlayer.setState(0);
         game.notifyToCU(Event.TURN_END, oldPlayer.getData());
 
+        // Sets the player state to: Playing.
         game.advanceTurn(1);
         Player following = game.getCurrentPlayer();
+        following.setState(1);
 
         /*
          * "In the State pattern, the particular states may be aware of each other and initiate transitions from one state to another [...]"
          */
-        if (following instanceof GameAI) {
-            AITurn nextState = new AITurn();
-            nextState.setContext((GameAI) following, game);
-            game.changeState(nextState);
-        } else
-            game.changeState(UserTurn.getInstance());
 
+        PlayerTurn nextState = new PlayerTurn();
+        nextState.setContext(following, game);
+        game.changeState(nextState);
     }
 
 }

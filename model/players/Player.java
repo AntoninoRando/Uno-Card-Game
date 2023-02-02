@@ -1,23 +1,28 @@
 package model.players;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
 
 /* --- JUno ------------------------------- */
 
 import model.cards.Card;
+import model.gameLogic.Action;
 
 /**
  * This class contains those player info (user or AI) that are also used during
  * the game: nickanem, icon, cards in hand.
  */
-public class Player {
+public abstract class Player {
     /* --- Fields ----------------------------- */
 
     private String icon;
     private String nickname;
     private List<Card> hand;
+    private int state;
 
     /* --- Constructors ----------------------- */
 
@@ -47,6 +52,14 @@ public class Player {
         return hand;
     }
 
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
     /* --- Body ------------------------------- */
 
     /**
@@ -62,4 +75,25 @@ public class Player {
         data.put("hand-size", getHand().size());
         return data;
     }
+
+    /**
+     * Given different cards options, returns the type of action to perform and the
+     * value choosen (if there is any).
+     * 
+     * @param cards The cards options.
+     * @return The type of action to perform associated with its info.
+     */
+    public abstract Entry<Action, Object> chooseFrom(Collection<Card> cards);
+
+    /**
+     * It has the same effect as the
+     * <code>chooseFrom(Collection<Card> cards)</code>, but only the cards that
+     * respect the validate conditions can be choosed.
+     * 
+     * @param cards    The cards options.
+     * @param validate The filter to reduce the card options only to the valid
+     *                 cards.
+     * @return The type of action to perform associated with its info.
+     */
+    public abstract Entry<Action, Object> chooseFrom(Collection<Card> cards, Predicate<Card> validate);
 }
