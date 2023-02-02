@@ -7,12 +7,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import view.GUIContainer;
 
 /**
  * A GUI element containing different settings about the applications that are
  * changeable by the user.
  */
-public class SettingsMenu extends BorderPane {
+public class SettingsMenu extends BorderPane implements GUIContainer {
     private static SettingsMenu instance;
 
     public static SettingsMenu getInstance() {
@@ -22,10 +23,10 @@ public class SettingsMenu extends BorderPane {
     }
 
     private SettingsMenu() {
-        getStyleClass().add("settings-menu");
         initialize();
-        arrangeElements();
     }
+
+    /* --- Fields ----------------------------- */
 
     private Label title;
     private VBox optionsMenu;
@@ -33,42 +34,7 @@ public class SettingsMenu extends BorderPane {
     private Button general;
     private Button audio;
 
-    private void initialize() {
-        newTitle();
-        newOptionsMenu();
-        newContextMenu();
-    }
-
-    private void arrangeElements() {
-        setMaxHeight(500.0);
-        setMaxWidth(700.0);
-        setPrefWidth(700.0);
-        setPrefHeight(500.0);
-
-        setTop(title);
-        setLeft(optionsMenu);
-        setBottom(contextMenu);
-    }
-
-    private void newTitle() {
-        title = new Label("Settings");
-        title.getStyleClass().add("label");
-    }
-
-    private void newOptionsMenu() {
-        general = new Button("General");
-        audio = new Button("Audio");
-        optionsMenu = new VBox(general, audio);
-
-        general.getStyleClass().add("button");
-        audio.getStyleClass().add("button");
-        optionsMenu.getStyleClass().add("VBox");
-    }
-
-    private void newContextMenu() {
-        contextMenu = new HBox();
-        contextMenu.setAlignment(Pos.CENTER);
-    }
+    /* --- Body ------------------------------- */
 
     /**
      * Set the nodes that will appear only during a game.
@@ -81,5 +47,40 @@ public class SettingsMenu extends BorderPane {
 
     public void removeOptions() {
         contextMenu.getChildren().clear();
+    }
+
+    /* --- GUIContainer ----------------------- */
+
+    @Override
+    public void createElements() {
+        title = new Label("Settings");
+        general = new Button("General");
+        audio = new Button("Audio");
+        optionsMenu = new VBox(general, audio);
+        contextMenu = new HBox();
+    }
+
+    @Override
+    public void arrangeElements() {
+        getStyleClass().add("settings-menu");
+        setMaxHeight(500.0);
+        setMaxWidth(700.0);
+        setPrefWidth(700.0);
+        setPrefHeight(500.0);
+
+        setTop(title);
+        setLeft(optionsMenu);
+        setBottom(contextMenu);
+
+        title.getStyleClass().add("label");
+        general.getStyleClass().add("button");
+        audio.getStyleClass().add("button");
+        optionsMenu.getStyleClass().add("VBox");
+
+        contextMenu.setAlignment(Pos.CENTER);
+    }
+
+    @Override
+    public void applyBehaviors() {
     }
 }

@@ -4,9 +4,16 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import view.SpriteFactory;
 
-public class PlayerLabel extends HBox {
+/* --- JUno ------------------------------- */
+
+import view.SpriteFactory;
+import view.GUIContainer;
+
+/**
+ * A box that shows the player nickname, icon and the number of remaining cards.
+ */
+public class PlayerLabel extends HBox implements GUIContainer {
     /* --- Fields ----------------------------- */
 
     private ImageView icon;
@@ -16,47 +23,47 @@ public class PlayerLabel extends HBox {
     /* --- Constructors ----------------------- */
 
     public PlayerLabel(String avatarName, String nickname, int cardsQuantity) {
-        icon = createIcon(avatarName);
-        nick = createNick(nickname);
-        cards = createCards(cardsQuantity);
+        initialize();
 
-        arrangeElements();
-
-        getStyleClass().add("player-label");
+        SpriteFactory.getAvatarSprite(avatarName).draw(50.0, icon);
+        nick.setText(nickname);
+        cards.setText(Integer.toString(cardsQuantity));
     }
 
     /* --- Body ------------------------------- */
-    
-    private ImageView createIcon(String avatarName) {
-        ImageView icon = new ImageView();
-        icon.getStyleClass().add("avatar");
-        SpriteFactory.getAvatarSprite(avatarName).draw(50.0, icon);
-        return icon;
+
+    /**
+     * Increases (or decreases) the (label) number of cards in hand by the given
+     * amount.
+     * 
+     * @param toAdd The amount to add or subtract (if negative).
+     */
+    public void modifyHandSize(int toAdd) {
+        cards.setText(Integer.toString(Integer.parseInt(cards.getText()) + toAdd));
     }
 
-    private Label createNick(String nickname) {
-        Label nick = new Label(nickname);
-        nick.getStyleClass().add("nick");
-        return nick;
+    /* --- GUIContainer ------------------------ */
+
+    @Override
+    public void createElements() {
+        icon = new ImageView();
+        nick = new Label();
+        cards = new Label();
     }
 
-    private Label createCards(int quantity) {
-        Label cards = new Label(Integer.toString(quantity));
-        cards.getStyleClass().add("cards-in-hand");
-        return cards;
-    }
-
-    private void arrangeElements() {
+    @Override
+    public void arrangeElements() {
+        getStyleClass().add("player-label");
         setSpacing(10.0);
         setAlignment(Pos.CENTER_LEFT);
         getChildren().addAll(icon, nick, cards);
+
+        icon.getStyleClass().add("avatar");
+        nick.getStyleClass().add("nick");
+        cards.getStyleClass().add("cards-in-hand");
     }
 
-    protected void changeCards(int newQuantity) {
-        cards.setText(Integer.toString(newQuantity));
-    }
-
-    public void modifyHandSize(int toAdd) {
-        cards.setText(Integer.toString(Integer.parseInt(cards.getText()) + toAdd)); 
+    @Override
+    public void applyBehaviors() {
     }
 }

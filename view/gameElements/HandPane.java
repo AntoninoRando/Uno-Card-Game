@@ -6,12 +6,16 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+
+/* --- JUno ------------------------------- */
+
 import view.CUView;
 import view.media.ArcNodes;
+
 import events.EventListener;
 import events.Event;
 
-/*
+/**
  * The section visible to the user where all their cards are gathered.
  */
 public class HandPane extends HBox implements EventListener {
@@ -35,10 +39,13 @@ public class HandPane extends HBox implements EventListener {
 
     /* --- Fields ----------------------------- */
 
-    private final double cardWidth = 150.0;
+    private double cardWidth = 150.0;
 
     /* --- Body ------------------------------- */
 
+    /**
+     * Arranges the cards in hand so that they form an arc.
+     */
     private void adjustCards() {
         // Adjust card gaps
         double w = Stage.getWindows().get(0).getWidth() - 200 * 2;

@@ -64,7 +64,7 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
         return avatarPicker;
     }
 
-    /* --- Visible ---------------------------- */
+    /* --- GUIContainer ----------------------- */
 
     @Override
     public void createElements() {
@@ -189,7 +189,7 @@ class AvatarPicker extends StackPane implements GUIContainer {
         }
     }
 
-    /* --- Visible ---------------------------- */
+    /* --- GUIContainer ----------------------- */
 
     @Override
     public void createElements() {

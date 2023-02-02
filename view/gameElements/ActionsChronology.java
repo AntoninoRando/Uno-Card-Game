@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-/* --- Mine ------------------------------- */
+/* --- JUno ------------------------------- */
 
 import view.SpriteFactory;
 import view.CUView;
@@ -43,7 +43,7 @@ public class ActionsChronology extends StackPane implements EventListener, GUICo
 
     private ActionsChronology() {
         CUView.getInstance().subscribe(this, Event.AI_PLAYED_CARD, Event.USER_PLAYED_CARD, Event.GAME_READY);
-        
+
         initialize();
     }
 
@@ -54,6 +54,14 @@ public class ActionsChronology extends StackPane implements EventListener, GUICo
 
     /* --- Body ------------------------------- */
 
+    /**
+     * Adds a graphical representation of the action performed, together with the
+     * icon and the nickname of who performed it.
+     * 
+     * @param action           The graphical representation of the action.
+     * @param performerIcon    The icon of the player who acted.
+     * @param performerNickame The nickname of the player who acted.
+     */
     public void addMemory(ImageView action, String performerIcon, String performerNickame) {
         ImageView avatar = new ImageView();
         SpriteFactory.getAvatarSprite(performerIcon).draw(50.0, avatar);
@@ -63,7 +71,7 @@ public class ActionsChronology extends StackPane implements EventListener, GUICo
     }
 
     /**
-     * Scroll through the pane to see al the chronology.
+     * Scrolls through the pane to see al the chronology.
      * 
      * @param deltaY The scroll amount: if positive it goes forward, otherwise it
      *               goes backward.
@@ -74,7 +82,7 @@ public class ActionsChronology extends StackPane implements EventListener, GUICo
     }
 
     /**
-     * Return the scroll to the rightmost end.
+     * Returns the scroll to the rightmost end.
      */
     public void bringToTheEnd() {
         ScrollPane sp = (ScrollPane) getChildren().get(0);

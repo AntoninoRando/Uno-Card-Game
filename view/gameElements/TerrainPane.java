@@ -3,13 +3,16 @@ package view.gameElements;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import view.CUView;
-import view.SpriteFactory;
+
+/* --- Mine ------------------------------- */
 
 import java.util.HashMap;
 
 import events.EventListener;
 import events.Event;
+
+import view.CUView;
+import view.SpriteFactory;
 
 /**
  * A GUI element representing the current card on the ground.

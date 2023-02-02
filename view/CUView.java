@@ -50,6 +50,9 @@ public class CUView extends EventManager implements EventListener {
 
     /* --- Body ------------------------------- */
 
+    public static void communicate(Event event, HashMap<String, Object> data) {
+        receiverCU.update(event, data);
+    }
 
     private Entry<Integer, Card> getCard(HashMap<String, Object> data) {
         if (data == null || !data.containsKey("card-tag"))
@@ -97,9 +100,5 @@ public class CUView extends EventManager implements EventListener {
             default:
                 this.notify(event, decodedData);
         }
-    }
-
-    public static void communicate(Event event, HashMap<String, Object> data) {
-        receiverCU.update(event, data);
     }
 }

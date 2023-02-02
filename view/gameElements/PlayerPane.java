@@ -6,11 +6,19 @@ import java.util.Map;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+
+/* --- JUno ------------------------------- */
+
 import view.CUView;
+import view.GUIContainer;
+
 import events.EventListener;
 import events.Event;
 
-public class PlayerPane extends VBox implements EventListener {
+/**
+ * Gathers all player labels.
+ */
+public class PlayerPane extends VBox implements EventListener, GUIContainer {
     /* --- Singleton -------------------------- */
 
     private static PlayerPane instance;
@@ -24,8 +32,7 @@ public class PlayerPane extends VBox implements EventListener {
     private PlayerPane() {
         CUView.getInstance().subscribe(this, Event.GAME_READY, Event.AI_PLAYED_CARD,
                 Event.AI_DREW, Event.GAME_READY, Event.TURN_START, Event.USER_DREW, Event.USER_PLAYED_CARD);
-
-        addStyle();
+        initialize();
     }
 
     /* --- Fields ----------------------------- */
@@ -34,18 +41,6 @@ public class PlayerPane extends VBox implements EventListener {
     private String activePlayer;
 
     /* --- Body ------------------------------- */
-
-    private void addStyle() {
-        getStyleClass().add("players");
-        setSpacing(10.0);
-    }
-
-    private void initialize() {
-        labels = new HashMap<>();
-        Label title = new Label("Players");
-        title.getStyleClass().add("title");
-        getChildren().setAll(title);
-    }
 
     private void addPlayerLabel(String nickname, String icon) {
         PlayerLabel label = new PlayerLabel(icon, nickname, 0);
@@ -59,6 +54,27 @@ public class PlayerPane extends VBox implements EventListener {
 
     public PlayerLabel getPlayerLabel() {
         return labels.get(activePlayer);
+    }
+
+    /* --- GUIContainer ------------------------ */
+
+    @Override
+    public void createElements() {
+        labels = new HashMap<>();
+    }
+
+    @Override
+    public void arrangeElements() {
+        getStyleClass().add("players");
+        setSpacing(10.0);
+
+        Label title = new Label("Players");
+        title.getStyleClass().add("title");
+        getChildren().setAll(title);
+    }
+
+    @Override
+    public void applyBehaviors() {
     }
 
     /* --- Observer --------------------------- */

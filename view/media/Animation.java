@@ -157,20 +157,8 @@ public class Animation {
 
     private Pair<Timeline, Pane> play(Pane animationLayer, Consumer<Pane> action, int index) {
         Pair<Timeline, Pane> animation = createAnimation(action);
-
         animationLayer.getChildren().add(index, animation.getValue());
-
-        // TODO anche la soluzione sotto dovrebbe andar bene, al posto di settare
-        // l'anchor per ogni immagine
-        // Node firstFrame = animation.getValue().getChildren().get(0);
-        // Bounds b = firstFrame.localToScene(firstFrame.getBoundsInLocal());
-        // sceneX.ifPresent(x -> animation.getValue().setTranslateX(x - b.getMinX()));
-        // // x = animationRealX +
-        // // translateQuantity
-        // sceneY.ifPresent(y -> animation.getValue().setTranslateY(y - b.getMinY()));
-
         animation.getKey().play();
-
         return animation;
     }
 
