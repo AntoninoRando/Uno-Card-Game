@@ -4,7 +4,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-/* --- Mine ------------------------------- */
+/* --- JUno ------------------------------- */
 
 import view.GameResults;
 import view.SpriteFactory;
@@ -50,7 +50,7 @@ public class EndGame extends VBox implements AppState, GUIContainer {
         app.changeState(Home.getInstance());
     }
 
-    /* --- Visible ---------------------------- */
+    /* --- GUIContainer ----------------------- */
 
     @Override
     public void createElements() {

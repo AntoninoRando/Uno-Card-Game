@@ -37,12 +37,11 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
     private VBox winner;
     private ImageView icon;
     private Label nick;
-
     private VBox xpEarned;
     private ProgressBar xpBar;
     private Label newXp;
 
-    /* --- Visible ---------------------------- */
+    /* --- GUIContainer ------------------------ */
 
     @Override
     public void createElements() {
