@@ -81,7 +81,6 @@ public class User extends Player implements EventListener {
         switch (choice.getKey()) {
             case FROM_DECK_DRAW:
             case SAY_UNO:
-            case SKIP:
                 return choice;
             case FROM_HAND_PLAY_TAG:
                 int tag = (int) choice.getValue();
@@ -97,7 +96,7 @@ public class User extends Player implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(events.Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         Action action = Action.valueOf((String) data.get("choice-type"));
         Object info = data.get("choice");
 
@@ -109,11 +108,6 @@ public class User extends Player implements EventListener {
                         notify();
                     }
                     break;
-                }
-
-                if (action.equals(Action.FROM_HAND_PLAY_TAG)) {
-                    data.put("card-tag", info);
-                    CUModel.communicate(Event.INVALID_CARD, data);
                 }
                 break;
             case SELECTION:

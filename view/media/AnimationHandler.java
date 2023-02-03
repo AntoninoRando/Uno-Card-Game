@@ -1,6 +1,7 @@
 package view.media;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import events.Event;
@@ -37,7 +38,7 @@ public class AnimationHandler implements EventListener {
         }
     }
 
-    private Animation fetchAnimation(Event event, HashMap<String, Object> data) {
+    private Animation fetchAnimation(Event event, Map<String, Object> data) {
         Animation animation = null;
 
         switch (event) {
@@ -47,25 +48,23 @@ public class AnimationHandler implements EventListener {
                 break;
             case AI_PLAYED_CARD:
                 animation = Animations.CARD_PLAYED.get();
-                animation.setWillCountdown(true);
                 break;
             case TURN_START:
                 animation = Animations.FOCUS_PLAYER.get();
-                animation.setWillCountdown(true);
                 animation.setWillStay(true);
                 break;
             case TURN_BLOCKED:
                 animation = Animations.BLOCK_TURN.get();
-                animation.setWillCountdown(true);
                 break;
             default:
                 throwUnsupportedError(event, data);
         }
 
+        animation.setWillCountdown(true);
         return animation;
     }
 
-    private void setupAndPlayAnimation(Animation animation, Event event, HashMap<String, Object> data) {
+    private void setupAndPlayAnimation(Animation animation, Event event, Map<String, Object> data) {
         Entry<Pane, Double[]> points = layers.get(event).getPoints(event);
         Pane layer = points.getKey();
         Double x = points.getValue()[0];
@@ -79,17 +78,20 @@ public class AnimationHandler implements EventListener {
     }
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         Animation animation = fetchAnimation(event, data);
 
         Platform.runLater(() -> setupAndPlayAnimation(animation, event, data));
 
         if (animation.willCountdown()) {
             try {
+                CUView.communicate(Event.PAUSE, Map.of("pause-value", true));
                 animation.latch.await();
             } catch (InterruptedException e) {
+                e.printStackTrace();
             }
             animation.resetLatch();
+            CUView.communicate(Event.PAUSE, Map.of("pause-value", false));
         }
     }
 

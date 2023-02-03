@@ -1,6 +1,6 @@
 package view.gameElements;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -25,7 +25,7 @@ public class SelectionPane extends HBox implements EventListener {
     }
 
     private SelectionPane() {
-        CUView.getInstance().subscribe(this, Event.USER_SELECTING_CARD, Event.SELECTION);
+        CUView.getInstance().subscribe(this, Event.USER_SELECTING_CARD, Event.SELECTION, Event.GAME_READY);
         
         getStyleClass().add("selection-pane");
         setSpacing(20.0);
@@ -48,12 +48,13 @@ public class SelectionPane extends HBox implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         switch (event) {
             case USER_SELECTING_CARD:
                 Platform.runLater(() -> newSelection((Card[]) data.get("all-card-nodes")));
                 CUView.communicate(Event.USER_SELECTING_CARD, data);
                 break;
+            case GAME_READY:
             case SELECTION:
                 Platform.runLater(() -> completeSelection());
                 break;

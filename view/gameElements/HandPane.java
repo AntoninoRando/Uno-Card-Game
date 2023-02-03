@@ -1,6 +1,6 @@
 package view.gameElements;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -65,7 +65,7 @@ public class HandPane extends HBox implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         Card card = (Card) data.get("card-node");
         switch (event) {
             case GAME_READY:

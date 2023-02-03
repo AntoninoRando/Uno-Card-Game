@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javafx.scene.Node;
 
@@ -38,6 +39,7 @@ public class CUController extends EventManager implements EventListener {
      * The CUModel.
      */
     private static CUModel receiverCU = CUModel.getInstance();
+    private static boolean paused;
 
     /* --- Body ------------------------------- */
 
@@ -48,13 +50,22 @@ public class CUController extends EventManager implements EventListener {
      * @param data  The data associatd with the event.
      */
     public static void communicate(Event event, HashMap<String, Object> data) {
-        receiverCU.update(event, data);
+        if (!paused)
+            receiverCU.update(event, data);
+    }
+
+    private static void pause(boolean state) {
+        paused = state;
+    }
+
+    public static boolean isActive() {
+        return !paused;
     }
 
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         switch (event) {
             case USER_DREW:
                 Node card = (Node) data.get("card-node");
@@ -66,6 +77,9 @@ public class CUController extends EventManager implements EventListener {
                 int[] cardTags = (int[]) data.get("all-card-tags");
                 for (int i = 0; i < cards.length; i++)
                     Controls.applySelectControl(cards[i], cardTags[i]);
+                break;
+            case PAUSE:
+                pause((boolean) data.get("pause-value"));
                 break;
             default:
                 notify(event, data);

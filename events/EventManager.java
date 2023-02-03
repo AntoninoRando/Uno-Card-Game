@@ -58,7 +58,7 @@ public class EventManager {
      * @param event The event that occurred.
      * @param data  The data that describes the event.
      */
-    public void notify(Event event, HashMap<String, Object> data) {
+    public void notify(Event event, Map<String, Object> data) {
         if (!listeners.containsKey(event))
             return;
         listeners.get(event).forEach(listener -> listener.update(event, data));

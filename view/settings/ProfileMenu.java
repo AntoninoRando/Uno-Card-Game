@@ -1,6 +1,5 @@
 package view.settings;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javafx.geometry.Pos;
@@ -123,7 +122,7 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         switch (event) {
             case INFO_CHANGE:
                 String nickname = (String) data.get("nickname");

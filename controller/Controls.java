@@ -130,22 +130,4 @@ public abstract class Controls {
             }
         };
     }
-
-    /**
-     * With the left click on the node, the user will skip its turn.
-     * 
-     * @param source The node to click.
-     */
-    public static final void applySkipControl(Node source) {
-        Behavior<MouseEvent> wrappee = new Click(source, new boolean[] { false }, null);
-        new BehaviorDecorator<>(wrappee) {
-            @Override
-            public void onEnd(MouseEvent e) {
-                HashMap<String, Object> data = new HashMap<>();
-                data.put("choice-type", "SKIP");
-                data.put("choice", 0);
-                CUController.communicate(Event.TURN_DECISION, data);
-            }
-        };
-    }
 }

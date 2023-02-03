@@ -1,6 +1,6 @@
 package events;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Any class implementing this interface is able to change its state when
@@ -16,7 +16,7 @@ public interface EventListener {
      * @param event The type of event that this interface should listen to.
      * @param data  The data used to gather information about the external event.
      */
-    public void update(Event event, HashMap<String, Object> data);
+    public void update(Event event, Map<String, Object> data);
 
     /**
      * Method to run inside the <code>update</code> method in case this didn't

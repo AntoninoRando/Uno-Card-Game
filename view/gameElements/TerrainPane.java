@@ -6,7 +6,7 @@ import javafx.scene.layout.StackPane;
 
 /* --- Mine ------------------------------- */
 
-import java.util.HashMap;
+import java.util.Map;
 
 import events.EventListener;
 import events.Event;
@@ -46,7 +46,7 @@ public class TerrainPane extends StackPane implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         String cardString = (String) data.get("card-representation");
         switch (event) {
             case CARD_CHANGE:

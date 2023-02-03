@@ -2,6 +2,7 @@ package controller.behaviors;
 
 import java.util.function.Consumer;
 
+import controller.CUController;
 import javafx.scene.Node;
 import javafx.scene.input.InputEvent;
 
@@ -43,10 +44,17 @@ public abstract class Behavior<T extends InputEvent> {
      * @param e The input event used to gather data about the behavior.
      */
     public void onEnd(T e) {
+        if (!checkStatus())
+            return;
+
         if (!behave(e))
             return;
 
         onEnd.accept(e);
+    }
+
+    public boolean checkStatus() {
+        return CUController.isActive();
     }
 
     /**
@@ -56,7 +64,7 @@ public abstract class Behavior<T extends InputEvent> {
      * @return <code>true</code> if the behavior has been exhibited, and thus the
      *         <code>onEnd</code> action should be fired.
      */
-    public abstract boolean behave(T e);
+    protected abstract boolean behave(T e);
 
     /**
      * Adds a series of event listeners to a source, that combined

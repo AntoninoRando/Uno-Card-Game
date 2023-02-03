@@ -1,4 +1,3 @@
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
@@ -193,9 +192,6 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
             SettingsMenu.getInstance().setVisible(false);
             quit();
         });
-
-        Controls.applySkipControl(restart);
-        Controls.applySkipControl(quit);
     }
 
     /* --- State ------------------------------ */
@@ -212,7 +208,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         switch (event) {
             case GAME_START:
                 openingAnimation.setDimensions(app.getScene().getWidth(), app.getScene().getHeight());

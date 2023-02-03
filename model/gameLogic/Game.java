@@ -145,6 +145,10 @@ public class Game {
      * making the <code>play</code> loop end.
      */
     public void block() {
+        synchronized (getCurrentPlayer()) {
+            getCurrentPlayer().notify(); // May be waiting for user input.
+        }
+
         interrupted = true;
     }
 

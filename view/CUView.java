@@ -1,6 +1,5 @@
 package view;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.IntStream;
@@ -50,11 +49,11 @@ public class CUView extends EventManager implements EventListener {
 
     /* --- Body ------------------------------- */
 
-    public static void communicate(Event event, HashMap<String, Object> data) {
+    public static void communicate(Event event, Map<String, Object> data) {
         receiverCU.update(event, data);
     }
 
-    private Entry<Integer, Card> getCard(HashMap<String, Object> data) {
+    private Entry<Integer, Card> getCard(Map<String, Object> data) {
         if (data == null || !data.containsKey("card-tag"))
             return null;
 
@@ -78,8 +77,8 @@ public class CUView extends EventManager implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
-        HashMap<String, Object> decodedData = data;
+    public void update(Event event, Map<String, Object> data) {
+        Map<String, Object> decodedData = data;
 
         Entry<Integer, Card> card = getCard(data);
         if (card != null) {

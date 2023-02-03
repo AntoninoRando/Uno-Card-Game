@@ -9,7 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /* --- Mine ------------------------------- */
 
@@ -84,7 +84,7 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         switch (event) {
             case INFO_CHANGE:
                 Platform.runLater(() -> {

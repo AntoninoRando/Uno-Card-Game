@@ -1,6 +1,6 @@
 package model;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /* --- JUno ------------------------------- */
 
@@ -71,14 +71,14 @@ public class CUModel extends EventManager implements EventListener {
      * @param event The type of event to notify.
      * @param data  The data associatd with the event.
      */
-    public static void communicate(Event event, HashMap<String, Object> data) {
+    public static void communicate(Event event, Map<String, Object> data) {
         receiverCU.update(event, data);
     }
 
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         notify(event, data);
     }
 }

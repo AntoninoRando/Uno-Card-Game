@@ -80,7 +80,7 @@ public class PlayerPane extends VBox implements EventListener, GUIContainer {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, HashMap<String, Object> data) {
+    public void update(Event event, Map<String, Object> data) {
         switch (event) {
             case GAME_READY:
                 String[] nicknames = (String[]) data.get("all-nicknames");

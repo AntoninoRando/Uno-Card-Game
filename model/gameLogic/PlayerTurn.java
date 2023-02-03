@@ -80,8 +80,6 @@ public class PlayerTurn implements GameState {
                     dataUno.put("said", true);
                     game.notifyToCU(Event.UNO_DECLARED, dataUno);
                     break;
-                case SKIP:
-                    return;
                 default:
                     throw new Error("player toke its turn with an unimplemented choice: " + choice.getKey());
             }
