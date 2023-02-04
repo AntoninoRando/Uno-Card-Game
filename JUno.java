@@ -16,6 +16,9 @@ import view.media.Sound;
 import view.settings.ProfileMenu;
 import view.settings.SettingsMenu;
 
+/**
+ * The application.
+ */
 public class JUno extends Application implements GUIContainer {
     /* --- Fields ----------------------------- */
 
@@ -39,6 +42,9 @@ public class JUno extends Application implements GUIContainer {
 
     /* --- Body ------------------------------- */
 
+    /**
+     * Loads animations and sounds.
+     */
     private void loadMedia() {
         Animations.FOCUS_PLAYER.get().load();
         Animations.NEW_GAME.get().load();
