@@ -1,7 +1,5 @@
 package model.cards;
 
-import java.util.List;
-
 /* --- JUno ------------------------------- */
 
 import events.Event;
@@ -28,7 +26,7 @@ public class DrawAndColor extends DrawCard {
     @Override
     public void play(Game game) {
         Player source = game.getCurrentPlayer();
-        choice = (Card) source.chooseFrom(List.of(options)).getValue();
+        choice = (Card) source.chooseFrom(options).getValue();
         game.changeCurrentCard(choice);
         game.notifyToCU(Event.CARD_CHANGE, choice.getData());
 

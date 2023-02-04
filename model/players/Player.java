@@ -1,6 +1,5 @@
 package model.players;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +10,13 @@ import java.util.function.Predicate;
 
 import model.cards.Card;
 import model.gameLogic.Action;
+
+/**
+ * Implements the <em>Template Method Pattern</em>.
+ * <p>
+ * An abstract AI player. The concrete AI must define how to choose a card among
+ * different options.
+ */
 
 /**
  * This class contains those player info (user or AI) that are also used during
@@ -83,7 +89,7 @@ public abstract class Player {
      * @param cards The cards options.
      * @return The type of action to perform associated with its info.
      */
-    public abstract Entry<Action, Object> chooseFrom(Collection<Card> cards);
+    public abstract Entry<Action, Object> chooseFrom(Card[] cards);
 
     /**
      * It has the same effect as the
@@ -95,5 +101,5 @@ public abstract class Player {
      *                 cards.
      * @return The type of action to perform associated with its info.
      */
-    public abstract Entry<Action, Object> chooseFrom(Collection<Card> cards, Predicate<Card> validate);
+    public abstract Entry<Action, Object> chooseFrom(Card[] cards, Predicate<Card> validate);
 }

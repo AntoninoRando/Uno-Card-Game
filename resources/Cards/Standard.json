@@ -1,58 +1,37 @@
 [
     {
-        "suit": "WILD",
+        "suit": "RED",
         "value": -5,
-        "copies": 10,
-        "type": "change color"
-    },
-    {
-        "suit": "RED",
-        "value": -1,
-        "copies": 4,
-        "type": "block"
+        "copies": 0,
+        "effects": [],
+        "args": []
     },
     {
         "suit": "BLUE",
-        "value": -3,
-        "copies": 4,
-        "type": "reverse"
-    },
-    {
-        "suit": "GREEN",
-        "value": -2,
-        "copies": 2,
-        "type": "draw 2",
-        "amount": 2
-    },
-    {
-        "suit": "WILD",
-        "value": -4,
-        "copies": 4,
-        "type": "draw 4",
-        "amount": 4
-    },
-    {
-        "suit": "RED",
-        "value": 0,
-        "copies": 10,
-        "type": "simple"
-    },
-    {
-        "suit": "BLUE",
-        "value": 0,
-        "copies": 10,
-        "type": "simple"
-    },
-    {
-        "suit": "GREEN",
-        "value": 0,
-        "copies": 10,
-        "type": "simple"
+        "value": -5,
+        "copies": 0,
+        "effects": [],
+        "args": []
     },
     {
         "suit": "YELLOW",
-        "value": 0,
+        "value": -5,
+        "copies": 0,
+        "effects": [],
+        "args": []
+    },
+    {
+        "suit": "GREEN",
+        "value": -5,
+        "copies": 0,
+        "effects": [],
+        "args": []
+    },
+    {
+        "suit": "WILD",
+        "value": -5,
         "copies": 10,
-        "type": "simple"
+        "effects": ["pickAndPlay", "blockTurn", "drawCards"],
+        "args": [[0,1,2,3], null, [4]]
     }
 ]

@@ -47,7 +47,7 @@ public class PlayerTurn implements GameState {
         boolean unoNeed = player.getHand().size() == 2;
 
         while (!turnEnded) {
-            Entry<Action, Object> choice = player.chooseFrom(player.getHand(), game.getPlayCondition());
+            Entry<Action, Object> choice = player.chooseFrom(player.getHand().toArray(Card[]::new), game.getPlayCondition());
             switch (choice.getKey()) {
                 case FROM_DECK_DRAW:
                     int quantity = (int) choice.getValue();
@@ -69,7 +69,7 @@ public class PlayerTurn implements GameState {
                     break;
                 case INVALID:
                     HashMap<String, Object> dataInvalid = new HashMap<>();
-                    dataInvalid.put("card-tag", ((Card) choice.getValue()).getTag());
+                    dataInvalid.put("card-identifier", ((Card) choice.getValue()).getTag());
                     game.notifyToCU(Event.INVALID_CARD, dataInvalid);
                     break;
                 case SAY_UNO:

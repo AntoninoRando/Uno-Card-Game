@@ -23,5 +23,6 @@
         "resources/JavafxPackage/javafx-sdk-19/lib/javafx.web.jar",
         "resources/JavafxPackage/javafx-sdk-19/lib/javafx-swt.jar",
         "resources/JsonPackage/json-simple-1.1.1.jar"
-    ]
+    ],
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable"
 }

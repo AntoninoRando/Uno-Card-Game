@@ -17,8 +17,8 @@ public abstract class Card {
 
     protected Suit suit;
     protected int value;
-    protected int tag;
-    protected static int tagCounter = 24;
+    protected Integer tag;
+    protected static int tagCounter;
 
     /* ---.--- Getters and Setters ------------ */
 
@@ -30,7 +30,13 @@ public abstract class Card {
         return value;
     }
 
+    /**
+     * Gets this card identifier. The card identifier is not created until it is needed.
+     * @return This card identifier.
+     */
     public int getTag() {
+        if (tag == null)
+            tag = ++tagCounter;
         return tag;
     }
 
@@ -46,7 +52,6 @@ public abstract class Card {
     public Card(Suit suit, int value) {
         this.suit = suit;
         this.value = value;
-        this.tag = ++Card.tagCounter;
     }
 
     /* --- Body ------------------------------- */
@@ -54,11 +59,11 @@ public abstract class Card {
     /**
      * Wraps the card info and returns it.
      * 
-     * @return The card data: "card-tag" (int) and "card-representation" (String).
+     * @return The card data: "card-identifier" (int) and "card-representation" (String).
      */
     public HashMap<String, Object> getData() {
         HashMap<String, Object> data = new HashMap<>();
-        data.put("card-tag", getTag());
+        data.put("card-identifier", getTag());
         data.put("card-representation", toString());
         return data;
     }

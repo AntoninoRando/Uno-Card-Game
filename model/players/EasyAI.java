@@ -1,6 +1,6 @@
 package model.players;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
@@ -15,7 +15,7 @@ import model.gameLogic.Action;
  * The easiest form of AI player: plays the first valid card in hand; if there
  * isn't any, draws from deck.
  */
-public class EasyAI extends GameAI {
+public class EasyAI extends Player {
     private boolean unodeclared;
 
     public EasyAI(String icon, String nickname) {
@@ -23,12 +23,12 @@ public class EasyAI extends GameAI {
     }
 
     @Override
-    public Entry<Action, Object> chooseFrom(Collection<Card> cards, Predicate<Card> validate) {
+    public Entry<Action, Object> chooseFrom(Card[] cards, Predicate<Card> validate) {
         Entry<Action, Object> choice = Map.entry(Action.FROM_DECK_DRAW, 1);
 
-        Optional<Card> option = cards.stream().filter(validate).findAny();
+        Optional<Card> option = Arrays.stream(cards).filter(validate).findAny();
         if (option.isPresent()) {
-            if (cards.size() == 2 && !unodeclared) {
+            if (cards.length == 2 && !unodeclared) {
                 choice = Map.entry(Action.SAY_UNO, 0);
                 unodeclared = true;
             } else {
@@ -41,9 +41,9 @@ public class EasyAI extends GameAI {
     }
 
     @Override
-    public Entry<Action, Object> chooseFrom(Collection<Card> cards) {
-        if (cards.isEmpty())
+    public Entry<Action, Object> chooseFrom(Card[] cards) {
+        if (cards.length == 0)
             return Map.entry(Action.FROM_DECK_DRAW, 1);
-        return Map.entry(Action.FROM_HAND_PLAY_CARD, cards.stream().findAny().get());
+        return Map.entry(Action.FROM_HAND_PLAY_CARD, cards[0]);
     }
 }

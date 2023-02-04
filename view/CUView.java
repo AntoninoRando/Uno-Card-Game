@@ -54,10 +54,10 @@ public class CUView extends EventManager implements EventListener {
     }
 
     private Entry<Integer, Card> getCard(Map<String, Object> data) {
-        if (data == null || !data.containsKey("card-tag"))
+        if (data == null || !data.containsKey("card-identifier"))
             return null;
 
-        int cardTag = (int) data.get("card-tag");
+        int cardTag = (int) data.get("card-identifier");
         Card node = Card.cards.get(cardTag);
 
         if (node != null)
@@ -86,8 +86,8 @@ public class CUView extends EventManager implements EventListener {
             decodedData.put("card-node", card.getValue());
         }
 
-        if (data != null && data.containsKey("all-card-tags")) {
-            int[] cardTags = (int[]) data.get("all-card-tags");
+        if (data != null && data.containsKey("all-card-identifiers")) {
+            int[] cardTags = (int[]) data.get("all-card-identifiers");
             String[] cardReprs = (String[]) data.get("all-card-representations");
             for (int i = 0; i < cardTags.length; i++)
                 Card.cards.putIfAbsent(cardTags[i], new Card(cardTags[i], cardReprs[i]));

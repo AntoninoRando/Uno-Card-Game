@@ -1,7 +1,5 @@
 package model.cards;
 
-import java.util.List;
-
 import model.gameLogic.Game;
 import model.players.Player;
 
@@ -21,6 +19,6 @@ public abstract class PickCard extends Card {
     @Override
     public void play(Game game) {
         Player source = game.getCurrentPlayer();
-        choice = (Card) source.chooseFrom(List.of(options)).getValue();
+        choice = (Card) source.chooseFrom(options).getValue();
     }
 }

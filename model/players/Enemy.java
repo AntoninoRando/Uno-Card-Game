@@ -10,7 +10,7 @@ public enum Enemy {
     Zoe("queen", "easy"),
     Xayah("night", "easy");
 
-    private GameAI player;
+    private Player player;
 
     /**
      * Instantiates a new <code>GameAI</code> object with this nickname, the given
@@ -29,7 +29,7 @@ public enum Enemy {
      * 
      * @return The <code>GameAI</code> object with this nickname.
      */
-    public GameAI get() {
+    public Player get() {
         return player;
     }
 }

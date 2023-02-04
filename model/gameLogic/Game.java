@@ -16,7 +16,6 @@ import model.cards.Card;
 import model.cards.CardBuilder;
 import model.cards.Suit;
 import model.players.Enemy;
-import model.players.GameAI;
 import model.players.Player;
 import model.players.User;
 import model.players.UserData;
@@ -32,7 +31,7 @@ public class Game {
 
     private Player[] players;
     private Card terrainCard;
-    private final int firstHandSize = 2;
+    private final int firstHandSize = 7;
     private List<Card> deck, discardPile;
     private int turn; // current turn
     private Predicate<Card> playCondition;
@@ -158,7 +157,7 @@ public class Game {
      */
     private void end() {
         Player winner = getCurrentPlayer();
-        boolean humanWon = !(winner instanceof GameAI);
+        boolean humanWon = winner instanceof User;
         int xpEarned = (int) ((System.currentTimeMillis() - timeStart) / 60000F) + (humanWon ? 3 : 0);
 
         UserData.addXp(xpEarned);
@@ -229,7 +228,7 @@ public class Game {
             HashMap<String, Object> data = card.getData();
             data.putAll(player.getData());
 
-            if (!(player instanceof GameAI))
+            if (player instanceof User)
                 notifyToCU(Event.USER_DREW, data);
             else
                 notifyToCU(Event.AI_DREW, data);
