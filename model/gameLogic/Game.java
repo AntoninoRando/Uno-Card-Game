@@ -1,9 +1,11 @@
 package model.gameLogic;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -37,7 +39,7 @@ public class Game {
     private Predicate<Card> playCondition;
     private Predicate<Player> winCondition;
     private long timeStart;
-    private boolean interrupted;
+    private boolean dead;
     private GameState state; // Context
 
     /* --- Constructors ----------------------- */
@@ -46,8 +48,12 @@ public class Game {
      * Creates a new match with initial settings, but do not starts it.
      */
     public Game() {
-        discardPile = new LinkedList<>();
-        deck = new LinkedList<>(CardBuilder.getCards("resources/cards/Small.json"));
+        // All cards are initially put in the discard pile, so that they will be
+        // shuffled in the deck.
+        deck = new LinkedList<>();
+        discardPile = Arrays.asList(CardBuilder.getCards("resources/cards/Small.json"));
+        discardPile = new LinkedList<>(discardPile);
+
         playCondition = card -> {
             Suit aS = terrainCard.getSuit();
             Suit bS = card.getSuit();
@@ -111,8 +117,7 @@ public class Game {
         notifyToCU(Event.GAME_READY, data);
 
         // First card
-        shuffleDeck();
-        Card firstCard = takeFromDeck();
+        Card firstCard = takeFromDeck(); // This also shuffles the deck;
         changeCurrentCard(firstCard);
         notifyToCU(Event.CARD_CHANGE, firstCard.getData()); // Notify
 
@@ -132,23 +137,25 @@ public class Game {
         setupGame();
         timeStart = System.currentTimeMillis();
 
-        while (!interrupted && !winCondition.test(getCurrentPlayer()))
+        while (!dead && !winCondition.test(getCurrentPlayer()))
             state.resolve();
 
-        if (!interrupted)
+        if (!dead)
             end();
+
+        clean();
     }
 
     /**
      * Interrupts this match, blocking all incoming and outcoming communications and
      * making the <code>play</code> loop end.
      */
-    public void block() {
+    public void kill() {
         synchronized (getCurrentPlayer()) {
             getCurrentPlayer().notify(); // May be waiting for user input.
         }
 
-        interrupted = true;
+        dead = true;
     }
 
     /**
@@ -167,6 +174,14 @@ public class Game {
         data.put("xp-earned", xpEarned);
         notifyToCU(Event.INFO_CHANGE, data);
         notifyToCU(Event.PLAYER_WON, winner.getData());
+    }
+
+    private void clean() {
+        deck.clear();
+        discardPile.clear();
+        for (Player player : getPlayers())
+            player.getHand().clear();
+        players = null;
     }
 
     /* --- Body ------------------------------- */
@@ -198,18 +213,13 @@ public class Game {
      * @return The first card in the deck pile.
      */
     public Card takeFromDeck() {
-        if (deck.isEmpty())
-            shuffleDeck();
+        // If empty, shuffle the discard pile.
+        if (deck.isEmpty()) {
+            discardPile.forEach(card -> card.shuffleIn(deck));
+            Collections.shuffle(deck);
+            discardPile.clear();
+        }
         return deck.remove(0);
-    }
-
-    /**
-     * Shuffles the deck.
-     */
-    public void shuffleDeck() {
-        discardPile.forEach(card -> card.shuffleIn(deck));
-        Collections.shuffle(deck);
-        discardPile.clear();
     }
 
     /**
@@ -225,7 +235,7 @@ public class Game {
             player.getHand().add(card);
 
             // Notify
-            HashMap<String, Object> data = card.getData();
+            Map<String, Object> data = card.getData();
             data.putAll(player.getData());
 
             if (player instanceof User)
@@ -233,16 +243,6 @@ public class Game {
             else
                 notifyToCU(Event.AI_DREW, data);
         }
-    }
-
-    /**
-     * Jumps to the turn ahead by the given amount.
-     * 
-     * @param ahead The amount of turns to skip.
-     */
-    public void advanceTurn(int ahead) {
-        int newTurn = (getTurn() + ahead) % players.length;
-        setTurn(newTurn);
     }
 
     /**
@@ -258,8 +258,8 @@ public class Game {
      * @param event
      * @param data
      */
-    public void notifyToCU(Event event, HashMap<String, Object> data) {
-        if (!interrupted)
+    public void notifyToCU(Event event, Map<String, Object> data) {
+        if (!dead)
             CUModel.communicate(event, data);
     }
 }

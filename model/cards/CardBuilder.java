@@ -20,7 +20,7 @@ import org.json.simple.parser.JSONParser;
 public abstract class CardBuilder {
     /* --- Fields ----------------------------- */
 
-    private static List<Card> cards;
+    private static Card[] cards;
 
     /**
      * Gets the list of cards from the given set. If those cards have not been
@@ -29,7 +29,7 @@ public abstract class CardBuilder {
      * @param setName The json file name.
      * @return The list of cards.
      */
-    public static List<Card> getCards(String setName) {
+    public static Card[] getCards(String setName) {
         if (cards == null)
             load(setName);
         return cards;
@@ -45,7 +45,7 @@ public abstract class CardBuilder {
     private static void load(String setName) {
         // parse the JSON file and save the result in the cards list
         List<Map<String, Object>> setCards = parseJson(setName);
-        CardBuilder.cards = new LinkedList<Card>();
+        List<Card> cards = new LinkedList<Card>();
 
         Map<String, BiFunction<Suit, Integer, Card>> constructors = Map.of(
                 "simple", (suit, value) -> new SimpleCard(suit, value),
@@ -65,6 +65,8 @@ public abstract class CardBuilder {
                 cards.add(card);
             }
         }
+
+        CardBuilder.cards = cards.toArray(Card[]::new);
     }
 
     private static List<Map<String, Object>> parseJson(String fileName) {

@@ -10,7 +10,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -25,7 +24,6 @@ import view.GUIContainer;
 import view.Sprite;
 import view.SpriteFactory;
 import controller.Controls;
-import controller.behaviors.Behavior;
 import controller.behaviors.Click;
 import controller.behaviors.KeyPress;
 

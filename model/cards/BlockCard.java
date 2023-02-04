@@ -17,7 +17,9 @@ public class BlockCard extends Card {
 
     @Override
     public void play(Game game) {
-        game.advanceTurn(1);
+        // Advance turn
+        int newTurn = (game.getTurn() + 1) % game.getPlayers().length;
+        game.setTurn(newTurn);
         Player blocked = game.getCurrentPlayer();
         game.notifyToCU(Event.TURN_BLOCKED, blocked.getData());
     }

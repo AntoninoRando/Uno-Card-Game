@@ -33,8 +33,12 @@ public class TransitionState implements GameState {
         oldPlayer.setState(0);
         game.notifyToCU(Event.TURN_END, oldPlayer.getData());
 
+
+        // Advance turn
+        int newTurn = (game.getTurn() + 1) % game.getPlayers().length;
+        game.setTurn(newTurn);
+
         // Sets the player state to: Playing.
-        game.advanceTurn(1);
         Player following = game.getCurrentPlayer();
         following.setState(1);
 

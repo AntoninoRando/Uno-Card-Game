@@ -39,7 +39,7 @@ public abstract class GameExecuter {
         GameExecuter.ongoingGame = new Game();
         Thread newGameExecuter = new Thread(() -> {
             if (dyingGame != null) 
-                dyingGame.block();
+                dyingGame.kill();
 
             try {
                 oldGameExecuter.join();
@@ -66,7 +66,7 @@ public abstract class GameExecuter {
         GameExecuter.ongoingGame = null;
         Thread gameKiller = new Thread(() -> {
             if (dyingGame != null) 
-                dyingGame.block();
+                dyingGame.kill();
 
             try {
                 oldGameExecuter.join();

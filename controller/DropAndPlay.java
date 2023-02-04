@@ -20,7 +20,7 @@ import events.Event;
 public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
     /* --- Fields ----------------------------- */
 
-    private int sourceTag;
+    private Object sourceID;
     private static Node playzone;
 
     /* ---.--- Getters and Setters ------------ */
@@ -40,13 +40,13 @@ public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
     /**
      * Applies the drag-and-play control to the given card, which has the given tag.
      * 
-     * @param source    The node representation of the card.
-     * @param sourceTag The card tag.
+     * @param source   The node representation of the card.
+     * @param sourceID The card identifier.
      */
-    public DropAndPlay(Node source, int sourceTag) {
+    public DropAndPlay(Node source, Object sourceID) {
         super(new DragAndDrop(source, playzone));
         wrappee.setStatusCheck(x -> CUController.isActive());
-        this.sourceTag = sourceTag;
+        this.sourceID = sourceID;
     }
 
     /* --- BehaviorDecorator ------------------ */
@@ -55,7 +55,7 @@ public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
     public void onEnd(MouseEvent e) {
         HashMap<String, Object> data = new HashMap<>();
         data.put("choice-type", "FROM_HAND_PLAY_TAG");
-        data.put("choice", this.sourceTag);
+        data.put("choice", this.sourceID);
         CUController.communicate(Event.TURN_DECISION, data);
     }
 }

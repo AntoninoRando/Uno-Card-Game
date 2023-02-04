@@ -2,6 +2,7 @@ package model.cards;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 /* --- JUno ------------------------------- */
 
@@ -61,8 +62,8 @@ public abstract class Card {
      * 
      * @return The card data: "card-ID" (int) and "card-representation" (String).
      */
-    public HashMap<String, Object> getData() {
-        HashMap<String, Object> data = new HashMap<>();
+    public Map<String, Object> getData() {
+        Map<String, Object> data = new HashMap<>();
         data.put("card-ID", getTag());
         data.put("card-representation", toString());
         return data;
