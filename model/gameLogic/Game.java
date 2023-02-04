@@ -106,6 +106,7 @@ public class Game {
      * and notifies that the game is about to start.
      */
     private void setupGame() {
+        User.getInstance().updateInfo();
         PlayerTurn initialState = new PlayerTurn();
         initialState.setContext(getCurrentPlayer(), this);
         getCurrentPlayer().setPlayingState(true);

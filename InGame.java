@@ -21,14 +21,8 @@ import events.EventListener;
 import model.gameLogic.GameExecuter;
 import view.CUView;
 import view.GUIContainer;
-import view.gameElements.Card;
-import view.gameElements.ActionsChronology;
-import view.gameElements.HandPane;
-import view.gameElements.PlayerLabel;
-import view.gameElements.PlayerPane;
-import view.gameElements.PlayzonePane;
-import view.gameElements.SelectionPane;
-import view.gameElements.TerrainPane;
+import view.gameElements.*;
+
 import view.media.Animation;
 import view.media.AnimationHandler;
 import view.media.AnimationLayer;
@@ -36,6 +30,9 @@ import view.media.Animations;
 import view.media.Sound;
 import view.settings.SettingsMenu;
 
+/**
+ * The app state in which a match is occurring.
+ */
 public class InGame extends StackPane implements AppState, EventListener, GUIContainer, AnimationLayer {
     /* --- Singleton -------------------------- */
 
@@ -73,7 +70,6 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
 
     /* --- Body ------------------------------- */
 
-    // TODO rendere lo scroll un control, con tanto di timer
     private void scrollChronology(ScrollEvent e) {
         if (scrollTimer != null) {
             scrollTimer.cancel();

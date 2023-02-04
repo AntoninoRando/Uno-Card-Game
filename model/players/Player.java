@@ -24,10 +24,10 @@ import model.cards.Card;
 public abstract class Player {
     /* --- Fields ----------------------------- */
 
-    private String icon;
-    private String nickname;
-    private List<Card> hand;
-    private boolean playing;
+    protected String icon;
+    protected String nickname;
+    protected List<Card> hand;
+    protected boolean playing;
 
     /* --- Constructors ----------------------- */
 

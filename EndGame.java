@@ -13,6 +13,9 @@ import view.media.Animations;
 import view.media.Sound;
 import view.GUIContainer;
 
+/**
+ * The game scene in which is shown the just-played match recap.
+ */
 public class EndGame extends VBox implements AppState, GUIContainer {
     /* --- Singleton -------------------------- */
 

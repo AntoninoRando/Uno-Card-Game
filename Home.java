@@ -10,6 +10,9 @@ import view.media.Sound;
 
 import view.settings.ProfileMenu;
 
+/**
+ * The home page of the application.
+ */
 public class Home extends StackPane implements AppState, GUIContainer {
     /* --- Singleton -------------------------- */
 
@@ -56,10 +59,6 @@ public class Home extends StackPane implements AppState, GUIContainer {
         System.exit(0);
     }
 
-    private void initializeProfileMenu() {
-        profileMenu.setVisible(false);
-    }
-
     /* --- Visible ---------------------------- */
 
     @Override
@@ -69,8 +68,7 @@ public class Home extends StackPane implements AppState, GUIContainer {
         profile = new Button("Profile");
         exit = new Button("Exit");
         profileMenu = ProfileMenu.getInstance();
-
-        initializeProfileMenu();
+        profileMenu.setVisible(false);
 
         title.getStyleClass().add("title");
         playButton.getStyleClass().add("button");

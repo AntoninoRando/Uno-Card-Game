@@ -36,6 +36,15 @@ public class User extends Player implements EventListener {
 
     /* --- Fields ----------------------------- */
 
+    /**
+     * Updates the user <em>player</em> info so that they are the same stored in the
+     * <code>UserData</code> fields.
+     */
+    public void updateInfo() {
+        this.icon = UserData.getIcon();
+        this.nickname = UserData.getNickname();
+    }
+
     private Entry<String, Object> choice;
 
     /* --- Player ----------------------------- */
