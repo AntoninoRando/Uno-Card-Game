@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 /* --- JUno ------------------------------- */
 
-import events.Event;
 import events.EventListener;
 
 import model.CUModel;
@@ -27,7 +26,7 @@ public class User extends Player implements EventListener {
 
     private User() {
         super(UserData.getIcon(), UserData.getNickname());
-        CUModel.getInstance().subscribe(this, Event.TURN_DECISION, Event.SELECTION);
+        CUModel.getInstance().subscribe(this, "TURN_DECISION", "SELECTION");
     }
 
     /* --- Fields ----------------------------- */
@@ -44,7 +43,7 @@ public class User extends Player implements EventListener {
         HashMap<String, Object> data = new HashMap<>();
         data.put("all-card-IDs", Arrays.stream(cards).mapToInt(card -> card.getTag()).toArray());
         data.put("all-card-representations", Arrays.stream(cards).map(card -> card.toString()).toArray(String[]::new));
-        CUModel.communicate(Event.USER_SELECTING_CARD, data);
+        CUModel.communicate("USER_SELECTING_CARD", data);
 
         synchronized (this) {
             try {
@@ -90,12 +89,12 @@ public class User extends Player implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         Action action = Action.valueOf((String) data.get("choice-type"));
         Object info = data.get("choice");
 
         switch (event) {
-            case TURN_DECISION:
+            case "TURN_DECISION":
                 // If it's not user turn, ignore choice.
                 if (getState() != 1)
                     return;
@@ -105,8 +104,8 @@ public class User extends Player implements EventListener {
                     notify();
                 }
                 break;
-            case SELECTION:
-                CUModel.communicate(Event.SELECTION, null);
+            case "SELECTION":
+                CUModel.communicate("SELECTION", null);
                 synchronized (this) {
                     choice = Map.entry(action, info);
                     notify();

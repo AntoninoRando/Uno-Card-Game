@@ -6,7 +6,6 @@ import java.util.Map;
 
 import events.EventListener;
 import events.EventManager;
-import events.Event;
 
 import model.players.UserData;
 
@@ -53,7 +52,7 @@ public class CUModel extends EventManager implements EventListener {
     }
 
     private CUModel() {
-        subscribe(UserData.EVENT_LISTENER, Event.INFO_CHANGE, Event.INFO_RESET);
+        subscribe(UserData.EVENT_LISTENER, "INFO_CHANGE", "INFO_RESET");
     }
 
     /* --- Fields ----------------------------- */
@@ -71,14 +70,14 @@ public class CUModel extends EventManager implements EventListener {
      * @param event The type of event to notify.
      * @param data  The data associatd with the event.
      */
-    public static void communicate(Event event, Map<String, Object> data) {
+    public static void communicate(String event, Map<String, Object> data) {
         receiverCU.update(event, data);
     }
 
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         notify(event, data);
     }
 }

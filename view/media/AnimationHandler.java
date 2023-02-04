@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import events.Event;
 import events.EventListener;
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
@@ -27,33 +26,33 @@ public class AnimationHandler implements EventListener {
 
     /* --- Fields ----------------------------- */
 
-    private HashMap<Event, AnimationLayer> layers;
+    private HashMap<String, AnimationLayer> layers;
 
     /* --- Body ------------------------------- */
 
-    public static void subscribe(AnimationLayer animationLayer, Event... events) {
-        for (Event event : events) {
+    public static void subscribe(AnimationLayer animationLayer, String... events) {
+        for (String event : events) {
             getInstance().layers.put(event, animationLayer); // Subscribe AnimationLayer to this
             CUView.getInstance().subscribe(getInstance(), event); // Subssribe this to CUView
         }
     }
 
-    private Animation fetchAnimation(Event event, Map<String, Object> data) {
+    private Animation fetchAnimation(String event, Map<String, Object> data) {
         Animation animation = null;
 
         switch (event) {
-            case UNO_DECLARED:
+            case "UNO_DECLARED":
                 boolean said = (boolean) data.get("said");
                 animation = said ? Animations.UNO_TEXT.get() : null;
                 break;
-            case AI_PLAYED_CARD:
+            case "AI_PLAYED_CARD":
                 animation = Animations.CARD_PLAYED.get();
                 break;
-            case TURN_START:
+            case "TURN_START":
                 animation = Animations.FOCUS_PLAYER.get();
                 animation.setWillStay(true);
                 break;
-            case TURN_BLOCKED:
+            case "TURN_BLOCKED":
                 animation = Animations.BLOCK_TURN.get();
                 break;
             default:
@@ -64,7 +63,7 @@ public class AnimationHandler implements EventListener {
         return animation;
     }
 
-    private void setupAndPlayAnimation(Animation animation, Event event, Map<String, Object> data) {
+    private void setupAndPlayAnimation(Animation animation, String event, Map<String, Object> data) {
         Entry<Pane, Double[]> points = layers.get(event).getPoints(event);
         Pane layer = points.getKey();
         Double x = points.getValue()[0];
@@ -78,27 +77,27 @@ public class AnimationHandler implements EventListener {
     }
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         Animation animation = fetchAnimation(event, data);
 
         Platform.runLater(() -> setupAndPlayAnimation(animation, event, data));
 
         if (animation.willCountdown()) {
             try {
-                CUView.communicate(Event.PAUSE, Map.of("pause-value", true));
+                CUView.communicate("PAUSE", Map.of("pause-value", true));
                 animation.latch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             animation.resetLatch();
-            CUView.communicate(Event.PAUSE, Map.of("pause-value", false));
+            CUView.communicate("PAUSE", Map.of("pause-value", false));
         }
     }
 
     @Override
-    public int getEventPriority(Event event) {
+    public int getEventPriority(String event) {
         switch (event) {
-            case AI_PLAYED_CARD:
+            case "AI_PLAYED_CARD":
                 return 2;
             default:
                 return 1;

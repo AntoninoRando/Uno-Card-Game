@@ -2,8 +2,6 @@ package model.gameLogic;
 
 /* --- JUno ------------------------------- */
 
-import events.Event;
-
 import model.players.Player;
 
 /**
@@ -31,7 +29,7 @@ public class TransitionState implements GameState {
         // Sets the player state to: Waiting.
         Player oldPlayer = game.getCurrentPlayer();
         oldPlayer.setState(0);
-        game.notifyToCU(Event.TURN_END, oldPlayer.getData());
+        game.notifyToCU("TURN_END", oldPlayer.getData());
 
 
         // Advance turn

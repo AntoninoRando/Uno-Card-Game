@@ -7,7 +7,6 @@ import java.util.stream.IntStream;
 import controller.CUController;
 import events.EventListener;
 import events.EventManager;
-import events.Event;
 import view.gameElements.Card;
 
 /**
@@ -49,7 +48,7 @@ public class CUView extends EventManager implements EventListener {
 
     /* --- Body ------------------------------- */
 
-    public static void communicate(Event event, Map<String, Object> data) {
+    public static void communicate(String event, Map<String, Object> data) {
         receiverCU.update(event, data);
     }
 
@@ -77,7 +76,7 @@ public class CUView extends EventManager implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         Map<String, Object> decodedData = data;
 
         Entry<Integer, Card> card = getCard(data);

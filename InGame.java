@@ -17,7 +17,6 @@ import javafx.scene.layout.StackPane;
 import controller.Controls;
 import controller.DropAndPlay;
 
-import events.Event;
 import events.EventListener;
 import model.gameLogic.GameExecuter;
 import view.CUView;
@@ -52,8 +51,8 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
         createElements();
         arrangeElements();
         applyBehaviors();
-        CUView.getInstance().subscribe(this, Event.INVALID_CARD, Event.GAME_START, Event.PLAYER_WON);
-        AnimationHandler.subscribe(this, Event.UNO_DECLARED, Event.AI_PLAYED_CARD, Event.TURN_START, Event.TURN_BLOCKED);
+        CUView.getInstance().subscribe(this, "INVALID_CARD", "GAME_START", "PLAYER_WON");
+        AnimationHandler.subscribe(this, "UNO_DECLARED", "AI_PLAYED_CARD", "TURN_START", "TURN_BLOCKED");
     }
 
     /* --- Fields ----------------------------- */
@@ -208,16 +207,16 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         switch (event) {
-            case GAME_START:
+            case "GAME_START":
                 openingAnimation.setDimensions(app.getScene().getWidth(), app.getScene().getHeight());
                 Platform.runLater(() -> openingAnimation.play(this));
                 break;
-            case PLAYER_WON:
+            case "PLAYER_WON":
                 Platform.runLater(() -> displayResults());
                 break;
-            case INVALID_CARD:
+            case "INVALID_CARD":
                 Platform.runLater(() -> Animations.resetTranslate(Card.cards.get((int) data.get("card-ID"))));
                 break;
             default:
@@ -226,16 +225,16 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
     }
 
     @Override
-    public Entry<Pane, Double[]> getPoints(Event event) {
+    public Entry<Pane, Double[]> getPoints(String event) {
         Double x = null, y = null, w = null, h = null;
 
-        if (event.equals(Event.UNO_DECLARED))
+        if (event.equals("UNO_DECLARED"))
             w = 300.0;
-        else if (event.equals(Event.AI_PLAYED_CARD))
+        else if (event.equals("AI_PLAYED_CARD"))
             w = 400.0;
-        else if (event.equals(Event.TURN_BLOCKED))
+        else if (event.equals("TURN_BLOCKED"))
             w = 200.0;
-        else if (event.equals(Event.TURN_START)) {
+        else if (event.equals("TURN_START")) {
             PlayerLabel playerLabel = PlayerPane.getInstance().getPlayerLabel();
             Bounds labelBounds = playerLabel.localToScene(playerLabel.getBoundsInLocal());
 

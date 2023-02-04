@@ -13,7 +13,7 @@ import java.util.Map;
 public class EventManager {
     /* --- Fields ----------------------------- */
 
-    protected Map<Event, List<EventListener>> listeners;
+    protected Map<String, List<EventListener>> listeners;
 
     /* --- Constructors ----------------------- */
 
@@ -31,8 +31,15 @@ public class EventManager {
      *                 events happens.
      * @param events   All the events that the listener is listening.
      */
-    public void subscribe(EventListener listener, Event... events) {
-        for (Event event : events) {
+    public void subscribe(EventListener listener, String... events) {
+        for (String event : events) {
+            // Validate event
+            try {
+                Event.valueOf(event);
+            } catch (IllegalArgumentException e) {
+                System.out.println(listener + " subscribed for " + event + ", but such event has no native support.");
+            }
+
             listeners.putIfAbsent(event, new ArrayList<>());
             listeners.get(event).add(listener);
             listeners.get(event).sort((e1, e2) -> e1.compareTo(event, e2));
@@ -46,8 +53,8 @@ public class EventManager {
      * @param listener The listener that will stop to listen for the given event.
      * @param events   Events that will not update the listener anymore.
      */
-    public void unsubscribe(EventListener listener, Event... events) {
-        for (Event event : events)
+    public void unsubscribe(EventListener listener, String... events) {
+        for (String event : events)
             listeners.get(event).remove(listener);
     }
 
@@ -58,9 +65,40 @@ public class EventManager {
      * @param event The event that occurred.
      * @param data  The data that describes the event.
      */
-    public void notify(Event event, Map<String, Object> data) {
+    public void notify(String event, Map<String, Object> data) {
         if (!listeners.containsKey(event))
             return;
         listeners.get(event).forEach(listener -> listener.update(event, data));
     }
+}
+
+/**
+ * All notifiable events.
+ */
+enum Event {
+    CARD_CHANGE,
+    TURN_BLOCKED,
+
+    AI_PLAYED_CARD,
+    AI_DREW,
+    USER_SELECTING_CARD,
+    USER_DREW,
+    USER_PLAYED_CARD,
+    UNO_DECLARED,
+    INVALID_CARD,
+
+    INFO_CHANGE,
+    INFO_RESET,
+
+    PLAYER_WON,
+
+    TURN_START,
+    TURN_END,
+    TURN_DECISION,
+    SELECTION,
+
+    GAME_READY,
+    GAME_START,
+
+    PAUSE;
 }

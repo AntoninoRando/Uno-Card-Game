@@ -14,7 +14,6 @@ import java.util.Map;
 /* --- Mine ------------------------------- */
 
 import events.EventListener;
-import events.Event;
 
 public class GameResults extends VBox implements EventListener, GUIContainer {
     /* --- Singleton -------------------------- */
@@ -28,7 +27,7 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
     }
 
     private GameResults() {
-        CUView.getInstance().subscribe(this, Event.PLAYER_WON, Event.INFO_CHANGE);
+        CUView.getInstance().subscribe(this, "PLAYER_WON", "INFO_CHANGE");
         initialize();
     }
 
@@ -84,9 +83,9 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         switch (event) {
-            case INFO_CHANGE:
+            case "INFO_CHANGE":
                 Platform.runLater(() -> {
                     int xp = (int) data.get("xp");
                     int xpGap = (int) data.get("xp-gap");
@@ -97,7 +96,7 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
                     newXp.setText(Integer.toString(xpEarned));
                 });
                 break;
-            case PLAYER_WON:
+            case "PLAYER_WON":
                 Platform.runLater(() -> {
                     SpriteFactory.getAvatarSprite((String) data.get("icon")).draw(100.0, icon);
                     nick.setText((String) data.get("nickname"));

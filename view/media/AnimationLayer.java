@@ -2,7 +2,6 @@ package view.media;
 
 import java.util.Map.Entry;
 
-import events.Event;
 import javafx.scene.layout.Pane;
 
 /**
@@ -23,5 +22,5 @@ public interface AnimationLayer {
      *         containig x coordinate, y coordinate, width and height of the
      *         animation.
      */
-    public Entry<Pane, Double[]> getPoints(Event event);
+    public Entry<Pane, Double[]> getPoints(String event);
 }

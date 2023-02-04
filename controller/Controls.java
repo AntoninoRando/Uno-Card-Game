@@ -13,8 +13,6 @@ import controller.behaviors.Behavior;
 import controller.behaviors.BehaviorDecorator;
 import controller.behaviors.Click;
 
-import events.Event;
-
 /**
  * Some important <code>BehaviorDecorator</code> objects.
  */
@@ -32,7 +30,7 @@ public abstract class Controls {
                 HashMap<String, Object> data = new HashMap<>();
                 data.put("choice-type", "FROM_DECK_DRAW");
                 data.put("choice", 1);
-                CUController.communicate(Event.TURN_DECISION, data);
+                CUController.communicate("TURN_DECISION", data);
             }
         };
     }
@@ -50,7 +48,7 @@ public abstract class Controls {
                 HashMap<String, Object> data = new HashMap<>();
                 data.put("choice-type", "SAY_UNO");
                 data.put("choice", 0);
-                CUController.communicate(Event.TURN_DECISION, data);
+                CUController.communicate("TURN_DECISION", data);
             }
         };
     }
@@ -69,7 +67,7 @@ public abstract class Controls {
                 HashMap<String, Object> data = new HashMap<>();
                 data.put("choice-type", "SELECTION_COMPLETED");
                 data.put("choice", cardID);
-                CUController.communicate(Event.SELECTION, data);
+                CUController.communicate("SELECTION", data);
             }
         };
     }
@@ -89,7 +87,7 @@ public abstract class Controls {
             public void onEnd(T e) {
                 HashMap<String, Object> data = new HashMap<>();
                 data.put(field.get(), value.get());
-                CUController.communicate(Event.INFO_CHANGE, data);
+                CUController.communicate("INFO_CHANGE", data);
             }
         };
     }

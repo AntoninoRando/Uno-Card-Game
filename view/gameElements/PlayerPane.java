@@ -13,7 +13,6 @@ import view.CUView;
 import view.GUIContainer;
 
 import events.EventListener;
-import events.Event;
 
 /**
  * Gathers all player labels.
@@ -30,8 +29,8 @@ public class PlayerPane extends VBox implements EventListener, GUIContainer {
     }
 
     private PlayerPane() {
-        CUView.getInstance().subscribe(this, Event.GAME_READY, Event.AI_PLAYED_CARD,
-                Event.AI_DREW, Event.GAME_READY, Event.TURN_START, Event.USER_DREW, Event.USER_PLAYED_CARD);
+        CUView.getInstance().subscribe(this, "GAME_READY", "AI_PLAYED_CARD",
+                "AI_DREW", "GAME_READY", "TURN_START", "USER_DREW", "USER_PLAYED_CARD");
         initialize();
     }
 
@@ -80,9 +79,9 @@ public class PlayerPane extends VBox implements EventListener, GUIContainer {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         switch (event) {
-            case GAME_READY:
+            case "GAME_READY":
                 String[] nicknames = (String[]) data.get("all-nicknames");
                 String[] icons = (String[]) data.get("all-icons");
                 Platform.runLater(() -> {
@@ -91,15 +90,15 @@ public class PlayerPane extends VBox implements EventListener, GUIContainer {
                         addPlayerLabel(nicknames[i], icons[i]);
                 });
                 break;
-            case AI_PLAYED_CARD:
-            case USER_PLAYED_CARD:
+            case "AI_PLAYED_CARD":
+            case "USER_PLAYED_CARD":
                 Platform.runLater(() -> labels.get((String) data.get("nickname")).modifyHandSize(-1));
                 break;
-            case AI_DREW:
-            case USER_DREW:
+            case "AI_DREW":
+            case "USER_DREW":
                 Platform.runLater(() -> labels.get((String) data.get("nickname")).modifyHandSize(1));
                 break;
-            case TURN_START:
+            case "TURN_START":
                 activePlayer = (String) data.get("nickname");
                 break;
             default:
@@ -108,7 +107,7 @@ public class PlayerPane extends VBox implements EventListener, GUIContainer {
     }
 
     @Override
-    public int getEventPriority(Event event) {
-        return event.equals(Event.TURN_START) ? 2 : 1;
+    public int getEventPriority(String event) {
+        return equals("TURN_START") ? 2 : 1;
     }
 }

@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 
 /* --- JUno ------------------------------- */
 
-import events.Event;
 import events.EventListener;
 
 import model.CUModel;
@@ -60,7 +59,7 @@ public abstract class UserData {
             return;
 
         UserData.nickname = nickname;
-        CUModel.communicate(Event.INFO_CHANGE, wrapData());
+        CUModel.communicate("INFO_CHANGE", wrapData());
     }
 
     public static String getIcon() {
@@ -74,7 +73,7 @@ public abstract class UserData {
      */
     private static void setIcon(String icon) {
         UserData.icon = icon;
-        CUModel.communicate(Event.INFO_CHANGE, wrapData());
+        CUModel.communicate("INFO_CHANGE", wrapData());
     }
 
     public static int getLevel() {
@@ -135,7 +134,7 @@ public abstract class UserData {
         } catch (IOException e) {
         }
 
-        CUModel.communicate(Event.INFO_CHANGE, wrapData());
+        CUModel.communicate("INFO_CHANGE", wrapData());
     }
 
     /**
@@ -167,7 +166,7 @@ public abstract class UserData {
         UserData.games = 0;
         UserData.wins = 0;
 
-        CUModel.communicate(Event.INFO_CHANGE, wrapData());
+        CUModel.communicate("INFO_CHANGE", wrapData());
     }
 
     /**
@@ -189,7 +188,7 @@ public abstract class UserData {
             }
         }
 
-        CUModel.communicate(Event.INFO_CHANGE, wrapData());
+        CUModel.communicate("INFO_CHANGE", wrapData());
     }
 
     /**
@@ -202,11 +201,11 @@ public abstract class UserData {
         if (win)
             wins++;
 
-        CUModel.communicate(Event.INFO_CHANGE, wrapData());
+        CUModel.communicate("INFO_CHANGE", wrapData());
     }
 
-    public static void update(Event event, Map<String, Object> data) {
-        if (!event.equals(Event.INFO_CHANGE))
+    public static void update(String event, Map<String, Object> data) {
+        if (!event.equals("INFO_CHANGE"))
             throw new Error("The UserData was listening for an unexptected event: " + event.toString());
 
         data.keySet().forEach(key -> {

@@ -2,8 +2,6 @@ package model.cards;
 
 /* --- JUno ------------------------------- */
 
-import events.Event;
-
 import model.gameLogic.Game;
 import model.players.Player;
 
@@ -21,6 +19,6 @@ public class BlockCard extends Card {
         int newTurn = (game.getTurn() + 1) % game.getPlayers().length;
         game.setTurn(newTurn);
         Player blocked = game.getCurrentPlayer();
-        game.notifyToCU(Event.TURN_BLOCKED, blocked.getData());
+        game.notifyToCU("TURN_BLOCKED", blocked.getData());
     }
 }

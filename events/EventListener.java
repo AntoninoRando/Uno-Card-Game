@@ -16,7 +16,7 @@ public interface EventListener {
      * @param event The type of event that this interface should listen to.
      * @param data  The data used to gather information about the external event.
      */
-    public void update(Event event, Map<String, Object> data);
+    public void update(String event, Map<String, Object> data);
 
     /**
      * Method to run inside the <code>update</code> method in case this didn't
@@ -26,7 +26,7 @@ public interface EventListener {
      * @param data  The data associated to the event not expected.
      * @throws Error
      */
-    default void throwUnsupportedError(Event event, Object data) throws Error {
+    default void throwUnsupportedError(String event, Object data) throws Error {
         throw new Error(this + " was listening for " + event + " with " + data
                 + " as data, but it does not support this event!");
     }
@@ -38,7 +38,7 @@ public interface EventListener {
      * @return The priority of the event notified; the bigger the number, the
      *         greater is the priority.
      */
-    default int getEventPriority(Event event) {
+    default int getEventPriority(String event) {
         return 1;
     }
 
@@ -49,7 +49,7 @@ public interface EventListener {
      * @param otherListener The other listener used to perform the comparison.
      * @return An integer that tells which event listener as a greater priority.
      */
-    default int compareTo(Event event, EventListener otherListener) {
+    default int compareTo(String event, EventListener otherListener) {
         return -Integer.compare(getEventPriority(event), otherListener.getEventPriority(event));
     }
 }

@@ -2,7 +2,6 @@ package model.cards;
 
 /* --- JUno ------------------------------- */
 
-import events.Event;
 import model.gameLogic.Game;
 
 /**
@@ -22,6 +21,6 @@ public class ChoseColor extends PickCard {
     public void play(Game game) {
         super.play(game);
         game.changeCurrentCard(choice);
-        game.notifyToCU(Event.CARD_CHANGE, choice.getData());
+        game.notifyToCU("CARD_CHANGE", choice.getData());
     }
 }

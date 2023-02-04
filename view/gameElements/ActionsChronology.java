@@ -18,7 +18,6 @@ import view.CUView;
 import view.GUIContainer;
 
 import events.EventListener;
-import events.Event;
 
 /**
  * Implements the <em>Singleton</em> pattern.
@@ -42,7 +41,7 @@ public class ActionsChronology extends StackPane implements EventListener, GUICo
     }
 
     private ActionsChronology() {
-        CUView.getInstance().subscribe(this, Event.AI_PLAYED_CARD, Event.USER_PLAYED_CARD, Event.GAME_READY);
+        CUView.getInstance().subscribe(this, "AI_PLAYED_CARD", "USER_PLAYED_CARD", "GAME_READY");
 
         initialize();
     }
@@ -121,14 +120,14 @@ public class ActionsChronology extends StackPane implements EventListener, GUICo
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         String cardString = (String) data.get("card-representation");
         switch (event) {
-            case GAME_READY:
+            case "GAME_READY":
                 Platform.runLater(() -> memories.getChildren().clear());
                 break;
-            case AI_PLAYED_CARD:
-            case USER_PLAYED_CARD:
+            case "AI_PLAYED_CARD":
+            case "USER_PLAYED_CARD":
                 Platform.runLater(() -> {
                     ImageView cardPlayed = new ImageView();
                     SpriteFactory.getCardSprite(cardString).draw(150.0, cardPlayed);

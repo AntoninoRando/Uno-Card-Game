@@ -5,8 +5,6 @@ import java.util.Map.Entry;
 
 /* --- JUno ------------------------------- */
 
-import events.Event;
-
 import model.cards.Card;
 import model.players.Player;
 
@@ -40,7 +38,7 @@ public class PlayerTurn implements GameState {
 
     @Override
     public void resolve() {
-        game.notifyToCU(Event.TURN_START, player.getData());
+        game.notifyToCU("TURN_START", player.getData());
 
         Card cardPlayed = null;
         boolean turnEnded = false;
@@ -61,7 +59,7 @@ public class PlayerTurn implements GameState {
                     if (unoNeed) {
                         HashMap<String, Object> dataUno = new HashMap<>();
                         dataUno.put("said", false);
-                        game.notifyToCU(Event.UNO_DECLARED, dataUno);
+                        game.notifyToCU("UNO_DECLARED", dataUno);
                         game.dealFromDeck(player, 2);
                     }
 
@@ -70,7 +68,7 @@ public class PlayerTurn implements GameState {
                 case INVALID:
                     HashMap<String, Object> dataInvalid = new HashMap<>();
                     dataInvalid.put("card-ID", ((Card) choice.getValue()).getTag());
-                    game.notifyToCU(Event.INVALID_CARD, dataInvalid);
+                    game.notifyToCU("INVALID_CARD", dataInvalid);
                     break;
                 case SAY_UNO:
                     if (!unoNeed)
@@ -78,7 +76,7 @@ public class PlayerTurn implements GameState {
                     unoNeed = false;
                     HashMap<String, Object> dataUno = new HashMap<>();
                     dataUno.put("said", true);
-                    game.notifyToCU(Event.UNO_DECLARED, dataUno);
+                    game.notifyToCU("UNO_DECLARED", dataUno);
                     break;
                 default:
                     throw new Error("player toke its turn with an unimplemented choice: " + choice.getKey());

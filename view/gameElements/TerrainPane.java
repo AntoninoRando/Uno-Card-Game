@@ -9,7 +9,6 @@ import javafx.scene.layout.StackPane;
 import java.util.Map;
 
 import events.EventListener;
-import events.Event;
 
 import view.CUView;
 import view.SpriteFactory;
@@ -29,7 +28,7 @@ public class TerrainPane extends StackPane implements EventListener {
     }
 
     private TerrainPane() {
-        CUView.getInstance().subscribe(this, Event.CARD_CHANGE);
+        CUView.getInstance().subscribe(this, "CARD_CHANGE");
         
         getStyleClass().add("terrain");
         setMaxHeight(400);
@@ -46,10 +45,10 @@ public class TerrainPane extends StackPane implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         String cardString = (String) data.get("card-representation");
         switch (event) {
-            case CARD_CHANGE:
+            case "CARD_CHANGE":
                 Platform.runLater(() -> SpriteFactory.getCardSprite(cardString).draw(150.0, terrainCard));
                 break;
             default:

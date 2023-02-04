@@ -18,7 +18,6 @@ import javafx.scene.layout.VBox;
 /* --- Mine ------------------------------- */
 
 import events.EventListener;
-import events.Event;
 import view.CUView;
 import view.GUIContainer;
 import view.Sprite;
@@ -42,8 +41,8 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
     }
 
     private ProfileMenu() {
-        CUView.getInstance().subscribe(this, Event.INFO_CHANGE);
-        
+        CUView.getInstance().subscribe(this, "INFO_CHANGE");
+
         initialize();
     }
 
@@ -85,7 +84,7 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
     @Override
     public void arrangeElements() {
         setId("profile-menu");
-        
+
         avatarPicker.setVisible(false);
         avatar.setId("avatar");
         levelLabel.setId("level-label");
@@ -122,40 +121,37 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
             return text;
         });
 
-        Click deleteClick = new Click(deleteButton, new boolean[] {false}, null);
+        Click deleteClick = new Click(deleteButton, new boolean[] { false }, null);
         Controls.applyInfoChange(deleteClick, () -> "reset", () -> null);
     }
 
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
-        switch (event) {
-            case INFO_CHANGE:
-                String nickname = (String) data.get("nickname");
-                String icon = (String) data.get("icon");
-                int level = (int) data.get("level");
-                int xp = (int) data.get("xp");
-                int gap = (int) data.get("xp-gap");
-                int games = (int) data.get("games");
-                int wins = (int) data.get("wins");
+    public void update(String event, Map<String, Object> data) {
+        if (!event.equals("INFO_CHANGE"))
+            throwUnsupportedError(event, data);
 
-                nickField.setPromptText(nickname);
-                SpriteFactory.getAvatarSprite(icon).draw(50.0, avatar);
-                levelLabel.setText("Level " + Integer.toString(level));
+        String nickname = (String) data.get("nickname");
+        String icon = (String) data.get("icon");
+        int level = (int) data.get("level");
+        int xp = (int) data.get("xp");
+        int gap = (int) data.get("xp-gap");
+        int games = (int) data.get("games");
+        int wins = (int) data.get("wins");
 
-                double progress = ((double) xp) / ((double) gap);
-                xpBar.setProgress(progress);
-                progressLabel.setText(Integer.toString((int) (progress * 100)) + "%");
+        nickField.setPromptText(nickname);
+        SpriteFactory.getAvatarSprite(icon).draw(50.0, avatar);
+        levelLabel.setText("Level " + Integer.toString(level));
 
-                gamesPlayedLabel.setText("Games: " + Integer.toString(games));
+        double progress = ((double) xp) / ((double) gap);
+        xpBar.setProgress(progress);
+        progressLabel.setText(Integer.toString((int) (progress * 100)) + "%");
 
-                int winRate = (int) ((((double) wins) / ((double) games)) * 100);
-                winRateLabel.setText("Win rate: " + Integer.toString(winRate) + "%");
-                break;
-            default:
-                throwUnsupportedError(event, data);
-        }
+        gamesPlayedLabel.setText("Games: " + Integer.toString(games));
+
+        int winRate = (int) ((((double) wins) / ((double) games)) * 100);
+        winRateLabel.setText("Win rate: " + Integer.toString(winRate) + "%");
     }
 }
 
@@ -192,8 +188,8 @@ class AvatarPicker extends StackPane implements GUIContainer {
             GridPane.setColumnIndex(icon, i % iconsPerLine);
             GridPane.setRowIndex(icon, i / iconsPerLine);
             grid.getChildren().add(icon);
-            
-            Click iconClick = new Click(icon, new boolean[] {false}, null);
+
+            Click iconClick = new Click(icon, new boolean[] { false }, null);
             Controls.applyInfoChange(iconClick, () -> "icon", () -> sprite.getName());
         }
     }

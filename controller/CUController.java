@@ -9,7 +9,6 @@ import javafx.scene.Node;
 
 import events.EventListener;
 import events.EventManager;
-import events.Event;
 
 import model.CUModel;
 
@@ -49,7 +48,7 @@ public class CUController extends EventManager implements EventListener {
      * @param event The type of event to notify.
      * @param data  The data associatd with the event.
      */
-    public static void communicate(Event event, HashMap<String, Object> data) {
+    public static void communicate(String event, HashMap<String, Object> data) {
         if (!paused)
             receiverCU.update(event, data);
     }
@@ -65,20 +64,20 @@ public class CUController extends EventManager implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         switch (event) {
-            case USER_DREW:
+            case "USER_DREW":
                 Node card = (Node) data.get("card-node");
                 int cardTag = (int) data.get("card-ID");
                 new DropAndPlay(card, cardTag);
                 break;
-            case USER_SELECTING_CARD:
+            case "USER_SELECTING_CARD":
                 Node[] cards = (Node[]) data.get("all-card-nodes");
                 int[] cardTags = (int[]) data.get("all-card-IDs");
                 for (int i = 0; i < cards.length; i++)
                     Controls.applySelectControl(cards[i], cardTags[i]);
                 break;
-            case PAUSE:
+            case "PAUSE":
                 pause((boolean) data.get("pause-value"));
                 break;
             default:

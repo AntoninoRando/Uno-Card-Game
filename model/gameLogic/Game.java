@@ -11,8 +11,6 @@ import java.util.stream.Stream;
 
 /* --- JUno ------------------------------- */
 
-import events.Event;
-
 import model.CUModel;
 import model.cards.Card;
 import model.cards.CardBuilder;
@@ -114,19 +112,19 @@ public class Game {
 
         data.put("all-nicknames", Stream.of(getPlayers()).map(Player::getNickame).toArray(String[]::new));
         data.put("all-icons", Stream.of(getPlayers()).map(Player::getIcon).toArray(String[]::new));
-        notifyToCU(Event.GAME_READY, data);
+        notifyToCU("GAME_READY", data);
 
         // First card
         Card firstCard = takeFromDeck(); // This also shuffles the deck;
         changeCurrentCard(firstCard);
-        notifyToCU(Event.CARD_CHANGE, firstCard.getData()); // Notify
+        notifyToCU("CARD_CHANGE", firstCard.getData()); // Notify
 
         // Give cards to players
         for (Player player : players) {
             player.getHand().clear();
             dealFromDeck(player, firstHandSize);
         }
-        notifyToCU(Event.GAME_START, null); // Notify
+        notifyToCU("GAME_START", null); // Notify
     }
 
     /**
@@ -172,8 +170,8 @@ public class Game {
 
         HashMap<String, Object> data = UserData.wrapData();
         data.put("xp-earned", xpEarned);
-        notifyToCU(Event.INFO_CHANGE, data);
-        notifyToCU(Event.PLAYER_WON, winner.getData());
+        notifyToCU("INFO_CHANGE", data);
+        notifyToCU("PLAYER_WON", winner.getData());
     }
 
     private void clean() {
@@ -193,8 +191,9 @@ public class Game {
         HashMap<String, Object> data = player.getData();
         data.putAll(card.getData());
         boolean userTurn = getCurrentPlayer() instanceof User;
-        notifyToCU(userTurn ? Event.USER_PLAYED_CARD : Event.AI_PLAYED_CARD, data);
-        notifyToCU(Event.CARD_CHANGE, data);
+        String event = userTurn ? "USER_PLAYED_CARD" : "AI_PLAYED_CARD";
+        notifyToCU(event, data);
+        notifyToCU("CARD_CHANGE", data);
     }
 
     /**
@@ -239,9 +238,9 @@ public class Game {
             data.putAll(player.getData());
 
             if (player instanceof User)
-                notifyToCU(Event.USER_DREW, data);
+                notifyToCU("USER_DREW", data);
             else
-                notifyToCU(Event.AI_DREW, data);
+                notifyToCU("AI_DREW", data);
         }
     }
 
@@ -258,7 +257,7 @@ public class Game {
      * @param event
      * @param data
      */
-    public void notifyToCU(Event event, Map<String, Object> data) {
+    public void notifyToCU(String event, Map<String, Object> data) {
         if (!dead)
             CUModel.communicate(event, data);
     }

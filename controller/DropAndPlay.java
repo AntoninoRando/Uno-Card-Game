@@ -10,8 +10,6 @@ import javafx.scene.Node;
 import controller.behaviors.BehaviorDecorator;
 import controller.behaviors.DragAndDrop;
 
-import events.Event;
-
 /**
  * With the left click on the card, the user will start to drag it. If then
  * that card is realised on the play-zone, it will be also played. The playzone
@@ -56,6 +54,6 @@ public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
         HashMap<String, Object> data = new HashMap<>();
         data.put("choice-type", "FROM_HAND_PLAY_TAG");
         data.put("choice", this.sourceID);
-        CUController.communicate(Event.TURN_DECISION, data);
+        CUController.communicate("TURN_DECISION", data);
     }
 }

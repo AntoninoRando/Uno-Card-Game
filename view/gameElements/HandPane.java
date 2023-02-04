@@ -13,7 +13,6 @@ import view.CUView;
 import view.media.ArcNodes;
 
 import events.EventListener;
-import events.Event;
 
 /**
  * The section visible to the user where all their cards are gathered.
@@ -30,7 +29,7 @@ public class HandPane extends HBox implements EventListener {
     }
 
     private HandPane() {
-        CUView.getInstance().subscribe(this, Event.GAME_READY, Event.USER_PLAYED_CARD, Event.USER_DREW, Event.GAME_READY);
+        CUView.getInstance().subscribe(this, "GAME_READY", "USER_PLAYED_CARD", "USER_DREW", "GAME_READY");
         
         getStyleClass().add("hand");
         setSpacing(-30.0);
@@ -65,13 +64,13 @@ public class HandPane extends HBox implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         Card card = (Card) data.get("card-node");
         switch (event) {
-            case GAME_READY:
+            case "GAME_READY":
                 Platform.runLater(() -> getChildren().clear());
                 break;
-            case USER_DREW:
+            case "USER_DREW":
                 CUView.communicate(event, data);
 
                 Platform.runLater(() -> {
@@ -79,7 +78,7 @@ public class HandPane extends HBox implements EventListener {
                     adjustCards();
                 });
                 break;
-            case USER_PLAYED_CARD:
+            case "USER_PLAYED_CARD":
                 Platform.runLater(() -> {
                     getChildren().remove(card);
                     adjustCards();

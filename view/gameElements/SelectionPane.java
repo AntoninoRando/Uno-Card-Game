@@ -11,7 +11,6 @@ import javafx.scene.layout.HBox;
 import view.CUView;
 
 import events.EventListener;
-import events.Event;
 
 public class SelectionPane extends HBox implements EventListener {
     /* --- Singleton -------------------------- */
@@ -25,7 +24,7 @@ public class SelectionPane extends HBox implements EventListener {
     }
 
     private SelectionPane() {
-        CUView.getInstance().subscribe(this, Event.USER_SELECTING_CARD, Event.SELECTION, Event.GAME_READY);
+        CUView.getInstance().subscribe(this, "USER_SELECTING_CARD", "SELECTION", "GAME_READY");
         
         getStyleClass().add("selection-pane");
         setSpacing(20.0);
@@ -48,14 +47,14 @@ public class SelectionPane extends HBox implements EventListener {
     /* --- Observer --------------------------- */
 
     @Override
-    public void update(Event event, Map<String, Object> data) {
+    public void update(String event, Map<String, Object> data) {
         switch (event) {
-            case USER_SELECTING_CARD:
+            case "USER_SELECTING_CARD":
                 Platform.runLater(() -> newSelection((Card[]) data.get("all-card-nodes")));
-                CUView.communicate(Event.USER_SELECTING_CARD, data);
+                CUView.communicate("USER_SELECTING_CARD", data);
                 break;
-            case GAME_READY:
-            case SELECTION:
+            case "GAME_READY":
+            case "SELECTION":
                 Platform.runLater(() -> completeSelection());
                 break;
             default:
