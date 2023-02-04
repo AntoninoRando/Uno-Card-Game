@@ -11,7 +11,7 @@ import view.SpriteFactory;
 import view.GUIContainer;
 
 /**
- * A box that shows the player nickname, icon and the number of remaining cards.
+ * A GUI element that shows the player nickname, icon and the number of remaining cards.
  */
 public class PlayerLabel extends HBox implements GUIContainer {
     /* --- Fields ----------------------------- */

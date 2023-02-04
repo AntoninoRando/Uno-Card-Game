@@ -11,10 +11,13 @@ import javafx.scene.layout.VBox;
 
 import java.util.Map;
 
-/* --- Mine ------------------------------- */
+/* --- JUno ------------------------------- */
 
 import events.EventListener;
 
+/**
+ * A GUI element showing the just-played match recap.
+ */
 public class GameResults extends VBox implements EventListener, GUIContainer {
     /* --- Singleton -------------------------- */
 
