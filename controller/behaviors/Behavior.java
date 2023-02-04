@@ -44,8 +44,8 @@ public abstract class Behavior<T extends InputEvent> {
         this.onEnd = onEnd;
     }
 
-    public void setStatusCheck(Predicate<T> statuscheck) {
-        this.statusCheck = statuscheck;
+    public void setStatusCheck(Predicate<T> statusCheck) {
+        this.statusCheck = statusCheck;
     }
 
     /**

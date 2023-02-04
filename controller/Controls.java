@@ -1,12 +1,10 @@
 package controller;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import javafx.scene.Node;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.InputEvent;
 import javafx.scene.input.MouseEvent;
 
 /* --- JUno ------------------------------- */
@@ -14,12 +12,11 @@ import javafx.scene.input.MouseEvent;
 import controller.behaviors.Behavior;
 import controller.behaviors.BehaviorDecorator;
 import controller.behaviors.Click;
-import controller.behaviors.KeyPress;
 
 import events.Event;
 
 /**
- * Some important <code>BehaviorDecorator</code> instances.
+ * Some important <code>BehaviorDecorator</code> objects.
  */
 public abstract class Controls {
     /**
@@ -64,14 +61,14 @@ public abstract class Controls {
      * @param source  Card to click.
      * @param cardTag The tag of the card.
      */
-    public static final void applySelectControl(Node source, int cardTag) {
+    public static final void applySelectControl(Node source, Object cardID) {
         Behavior<MouseEvent> wrappee = new Click(source, new boolean[] { false }, null);
         new BehaviorDecorator<>(wrappee) {
             @Override
             public void onEnd(MouseEvent e) {
                 HashMap<String, Object> data = new HashMap<>();
                 data.put("choice-type", "SELECTION_COMPLETED");
-                data.put("choice", cardTag);
+                data.put("choice", cardID);
                 CUController.communicate(Event.SELECTION, data);
             }
         };
@@ -80,52 +77,18 @@ public abstract class Controls {
     /**
      * With the left click on the node, the user will change an info on its profile.
      * 
-     * @param source The node to click.
-     * @param field  The type of the profile info to change, associated with the new
-     *               value.
+     * @param behavior The behavior (or input, gesture, action) the user must
+     *                 perform to execute this.
+     * @param field    A getter for the field to change (e.g., nickname, icon)
+     * @param value    The value of the field supplied.
      */
-    public static final void applyInfoChange(Node source, Entry<String, String> field) {
-        Behavior<MouseEvent> wrappee = new Click(source, new boolean[] { false }, null);
-        new BehaviorDecorator<>(wrappee) {
+    public static final <T extends InputEvent> void applyInfoChange(Behavior<T> behavior,
+            Supplier<String> field, Supplier<Object> value) {
+        new BehaviorDecorator<>(behavior) {
             @Override
-            public void onEnd(MouseEvent e) {
+            public void onEnd(T e) {
                 HashMap<String, Object> data = new HashMap<>();
-                data.put(field.getKey(), field.getValue());
-                CUController.communicate(Event.INFO_CHANGE, data);
-            }
-        };
-    }
-
-    /**
-     * With the left click on the node, the user will reset all the info on its
-     * profile.
-     * 
-     * @param source The node to click.
-     */
-    public static final void applyInfoReset(Node source) {
-        Behavior<MouseEvent> wrappee = new Click(source, new boolean[] { false }, null);
-        new BehaviorDecorator<>(wrappee) {
-            @Override
-            public void onEnd(MouseEvent e) {
-                CUController.communicate(Event.INFO_RESET, null);
-            }
-        };
-    }
-
-    /**
-     * When pressing the enter key upon writing on the source node, the user will
-     * change its nickname.
-     * 
-     * @param source The node in which the user write, specifically the enter key.
-     * @param nick   A supplier for the new nickname.
-     */
-    public static final void applyNickEnter(Node source, Supplier<String> nick) {
-        Behavior<KeyEvent> wrappee = new KeyPress(source, KeyCode.ENTER.getCode());
-        new BehaviorDecorator<>(wrappee) {
-            @Override
-            public void onEnd(KeyEvent e) {
-                HashMap<String, Object> data = new HashMap<>();
-                data.put("nickname", nick.get());
+                data.put(field.get(), value.get());
                 CUController.communicate(Event.INFO_CHANGE, data);
             }
         };

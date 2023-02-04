@@ -218,7 +218,7 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
                 Platform.runLater(() -> displayResults());
                 break;
             case INVALID_CARD:
-                Platform.runLater(() -> Animations.resetTranslate(Card.cards.get((int) data.get("card-identifier"))));
+                Platform.runLater(() -> Animations.resetTranslate(Card.cards.get((int) data.get("card-ID"))));
                 break;
             default:
                 throwUnsupportedError(event, data);

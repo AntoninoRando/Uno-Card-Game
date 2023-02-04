@@ -9,6 +9,8 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -23,6 +25,9 @@ import view.GUIContainer;
 import view.Sprite;
 import view.SpriteFactory;
 import controller.Controls;
+import controller.behaviors.Behavior;
+import controller.behaviors.Click;
+import controller.behaviors.KeyPress;
 
 /**
  * A GUI element that displays user info and provides ways of changing them.
@@ -110,13 +115,17 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
     @Override
     public void applyBehaviors() {
         avatar.setOnMouseClicked(e -> avatarPicker.setVisible(!avatarPicker.isVisible()));
-        Controls.applyNickEnter(nickField, () -> {
+
+        KeyPress nickEnter = new KeyPress(nickField, KeyCode.ENTER.getCode());
+        Controls.applyInfoChange(nickEnter, () -> "nickname", () -> {
             String text = nickField.getText();
             nickField.clear();
             requestFocus(); // Used to remove focus from the text field
             return text;
         });
-        Controls.applyInfoReset(deleteButton);
+
+        Click deleteClick = new Click(deleteButton, new boolean[] {false}, null);
+        Controls.applyInfoChange(deleteClick, () -> "reset", () -> null);
     }
 
     /* --- Observer --------------------------- */
@@ -176,15 +185,18 @@ class AvatarPicker extends StackPane implements GUIContainer {
      * 
      */
     private void addOptions() {
-        Sprite[] icons = SpriteFactory.getAllAvatars();
+        Sprite[] sprites = SpriteFactory.getAllAvatars();
 
-        for (int i = 0; i < icons.length; i++) {
+        for (int i = 0; i < sprites.length; i++) {
+            Sprite sprite = sprites[i];
             ImageView icon = new ImageView();
-            icons[i].draw(50.0, icon);
+            sprite.draw(50.0, icon);
             GridPane.setColumnIndex(icon, i % iconsPerLine);
             GridPane.setRowIndex(icon, i / iconsPerLine);
             grid.getChildren().add(icon);
-            Controls.applyInfoChange(icon, Map.entry("icon", icons[i].getName()));
+            
+            Click iconClick = new Click(icon, new boolean[] {false}, null);
+            Controls.applyInfoChange(iconClick, () -> "icon", () -> sprite.getName());
         }
     }
 

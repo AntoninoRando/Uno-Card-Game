@@ -40,9 +40,9 @@ public class User extends Player implements EventListener {
     public Entry<Action, Object> chooseFrom(Card[] cards) {
         choice = null;
 
-        // We use as identifiers the position in the selection.
+        // We use as IDs the position in the selection.
         HashMap<String, Object> data = new HashMap<>();
-        data.put("all-card-identifiers", Arrays.stream(cards).mapToInt(card -> card.getTag()).toArray());
+        data.put("all-card-IDs", Arrays.stream(cards).mapToInt(card -> card.getTag()).toArray());
         data.put("all-card-representations", Arrays.stream(cards).map(card -> card.toString()).toArray(String[]::new));
         CUModel.communicate(Event.USER_SELECTING_CARD, data);
 
@@ -53,8 +53,8 @@ public class User extends Player implements EventListener {
             }
         }
 
-        Object identifier = choice.getValue();
-        Card card = Arrays.stream(cards).filter(c -> identifier.equals(c.getTag())).findAny().orElseThrow();
+        Object ID = choice.getValue();
+        Card card = Arrays.stream(cards).filter(c -> ID.equals(c.getTag())).findAny().orElseThrow();
         return Map.entry(Action.SELECTION_COMPLETED, card);
     }
 
@@ -77,8 +77,8 @@ public class User extends Player implements EventListener {
             case SAY_UNO:
                 return choice;
             case FROM_HAND_PLAY_TAG:
-                Object identifier = choice.getValue();
-                Card card = getHand().stream().filter(c -> identifier.equals(c.getTag())).findAny().orElseThrow();
+                Object ID = choice.getValue();
+                Card card = getHand().stream().filter(c -> ID.equals(c.getTag())).findAny().orElseThrow();
                 return validate.test(card) ? Map.entry(Action.FROM_HAND_PLAY_CARD, card)
                         : Map.entry(Action.INVALID, card);
             default:
@@ -96,6 +96,7 @@ public class User extends Player implements EventListener {
 
         switch (event) {
             case TURN_DECISION:
+                // If it's not user turn, ignore choice.
                 if (getState() != 1)
                     return;
 

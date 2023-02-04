@@ -69,7 +69,7 @@ public class PlayerTurn implements GameState {
                     break;
                 case INVALID:
                     HashMap<String, Object> dataInvalid = new HashMap<>();
-                    dataInvalid.put("card-identifier", ((Card) choice.getValue()).getTag());
+                    dataInvalid.put("card-ID", ((Card) choice.getValue()).getTag());
                     game.notifyToCU(Event.INVALID_CARD, dataInvalid);
                     break;
                 case SAY_UNO:

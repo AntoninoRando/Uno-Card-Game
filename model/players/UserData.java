@@ -40,7 +40,7 @@ public abstract class UserData {
     /* ---.--- Getters and Setters ------------ */
 
     public static String getNickname() {
-        return nickname;
+        return UserData.nickname;
     }
 
     /**
@@ -64,7 +64,7 @@ public abstract class UserData {
     }
 
     public static String getIcon() {
-        return icon;
+        return UserData.icon;
     }
 
     /**
@@ -78,19 +78,19 @@ public abstract class UserData {
     }
 
     public static int getLevel() {
-        return level;
+        return UserData.level;
     }
 
     public static int getXp() {
-        return xp;
+        return UserData.xp;
     }
 
     public static int getGames() {
-        return games;
+        return UserData.games;
     }
 
     public static int getWins() {
-        return wins;
+        return UserData.wins;
     }
 
     /* --- Body ------------------------------- */
@@ -160,12 +160,12 @@ public abstract class UserData {
      * Resets all the user info to their default values.
      */
     public static void reset() {
-        nickname = DEFAULT_NICKNAME;
-        icon = DEFAULT_ICON;
-        level = 0;
-        xp = 0;
-        games = 0;
-        wins = 0;
+        UserData.nickname = DEFAULT_NICKNAME;
+        UserData.icon = DEFAULT_ICON;
+        UserData.level = 1;
+        UserData.xp = 0;
+        UserData.games = 0;
+        UserData.wins = 0;
 
         CUModel.communicate(Event.INFO_CHANGE, wrapData());
     }
@@ -206,25 +206,17 @@ public abstract class UserData {
     }
 
     public static void update(Event event, Map<String, Object> data) {
-        switch (event) {
-            case INFO_CHANGE:
-                data.keySet().forEach(key -> {
-                    if (key.equals("nickname"))
-                        setNickname((String) data.get("nickname"));
-                    else if (key.equals("icon"))
-                        setIcon((String) data.get("icon"));
-                });
-                break;
-            case INFO_RESET:
-                nickname = DEFAULT_NICKNAME;
-                level = 1;
-                xp = 0;
-                games = 0;
-                wins = 0;
-                setIcon(DEFAULT_ICON); // Used also to notify
-                break;
-            default:
-                throw new Error("The UserData was listening for an unexptected event: " + event.toString());
-        }
+        if (!event.equals(Event.INFO_CHANGE))
+            throw new Error("The UserData was listening for an unexptected event: " + event.toString());
+
+        data.keySet().forEach(key -> {
+            if (key.equals("nickname"))
+                setNickname((String) data.get("nickname"));
+            else if (key.equals("icon"))
+                setIcon((String) data.get("icon"));
+            else if (key.equals("reset"))
+                reset();
+        });
+
     }
 }
