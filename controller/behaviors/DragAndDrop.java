@@ -39,7 +39,7 @@ public class DragAndDrop extends Behavior<MouseEvent> {
      * @param e The mouse event.
      */
     protected void dragStart(MouseEvent e) {
-        if (!checkStatus())
+        if (!statusCheck.test(e))
             return;
 
         // When we drag we want the Node to be in its original size
@@ -58,7 +58,7 @@ public class DragAndDrop extends Behavior<MouseEvent> {
      * @param e The mouse event.
      */
     protected void dragRunning(MouseEvent e) {
-        if (!checkStatus())
+        if (!statusCheck.test(e))
             return;
 
         source.setTranslateX(e.getSceneX() - mouseAnchorX);

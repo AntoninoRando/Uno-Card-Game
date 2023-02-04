@@ -1,10 +1,12 @@
 package controller.behaviors;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
-import controller.CUController;
 import javafx.scene.Node;
 import javafx.scene.input.InputEvent;
+
+/* --- JUno ------------------------------- */
 
 /**
  * A <code>class</code> representation of an input behavior or event, like mouse
@@ -25,6 +27,11 @@ public abstract class Behavior<T extends InputEvent> {
      * The action to perform after this behavior has been exhibited.
      */
     protected Consumer<T> onEnd = this::onEnd;
+    /**
+     * Returns the status of this behavior, that is whether the behavior is free to
+     * exhibit.
+     */
+    protected Predicate<T> statusCheck = x -> true;
 
     /* --- Body ------------------------------- */
 
@@ -37,6 +44,10 @@ public abstract class Behavior<T extends InputEvent> {
         this.onEnd = onEnd;
     }
 
+    public void setStatusCheck(Predicate<T> statuscheck) {
+        this.statusCheck = statuscheck;
+    }
+
     /**
      * If this object exhibited the behavior (i.e., <code>behave</code> returns
      * <code>true</code>), performs the action implemented in this method.
@@ -44,17 +55,13 @@ public abstract class Behavior<T extends InputEvent> {
      * @param e The input event used to gather data about the behavior.
      */
     public void onEnd(T e) {
-        if (!checkStatus())
+        if (!statusCheck.test(e))
             return;
 
         if (!behave(e))
             return;
 
         onEnd.accept(e);
-    }
-
-    public boolean checkStatus() {
-        return CUController.isActive();
     }
 
     /**

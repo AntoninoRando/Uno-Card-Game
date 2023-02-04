@@ -45,6 +45,7 @@ public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
      */
     public DropAndPlay(Node source, int sourceTag) {
         super(new DragAndDrop(source, playzone));
+        wrappee.setStatusCheck(x -> CUController.isActive());
         this.sourceTag = sourceTag;
     }
 
