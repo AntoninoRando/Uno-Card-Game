@@ -38,11 +38,13 @@ public abstract class GameExecuter {
 
         GameExecuter.ongoingGame = new Game();
         Thread newGameExecuter = new Thread(() -> {
-            if (dyingGame != null) 
+            if (dyingGame != null)
                 dyingGame.kill();
 
             try {
                 oldGameExecuter.join();
+                dyingGame = null;
+                oldGameExecuter = null;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (NullPointerException e) {
@@ -70,6 +72,8 @@ public abstract class GameExecuter {
 
             try {
                 oldGameExecuter.join();
+                dyingGame = null;
+                oldGameExecuter = null;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (NullPointerException e) {

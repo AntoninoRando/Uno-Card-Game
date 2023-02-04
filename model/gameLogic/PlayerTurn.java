@@ -2,11 +2,13 @@ package model.gameLogic;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 /* --- JUno ------------------------------- */
 
 import model.cards.Card;
 import model.players.Player;
+import model.players.User;
 
 /**
  * The game state in which the player will resolve its turn. After that, there
@@ -36,6 +38,16 @@ public class PlayerTurn implements GameState {
         this.game = game;
     }
 
+    private void playerPlayedCard(Card card) {
+        player.getHand().remove(card);
+        HashMap<String, Object> data = player.getData();
+        data.putAll(card.getData());
+        boolean userTurn = game.getCurrentPlayer() instanceof User;
+        String event = userTurn ? "USER_PLAYED_CARD" : "AI_PLAYED_CARD";
+        game.notifyToCU(event, data);
+        game.changeCurrentCard(card);
+    }
+
     @Override
     public void resolve() {
         game.notifyToCU("TURN_START", player.getData());
@@ -45,16 +57,16 @@ public class PlayerTurn implements GameState {
         boolean unoNeed = player.getHand().size() == 2;
 
         while (!turnEnded) {
-            Entry<Action, Object> choice = player.chooseFrom(player.getHand().toArray(Card[]::new), game.getPlayCondition());
+            Entry<String, Object> choice = player.chooseFrom(player.getHand().toArray(Card[]::new), game.getPlayCondition());
             switch (choice.getKey()) {
-                case FROM_DECK_DRAW:
+                case "FROM_DECK_DRAW":
                     int quantity = (int) choice.getValue();
                     game.dealFromDeck(player, quantity);
                     turnEnded = true;
                     break;
-                case FROM_HAND_PLAY_CARD:
+                case "FROM_HAND_PLAY_CARD":
                     cardPlayed = (Card) choice.getValue();
-                    game.playerCard(player, cardPlayed);
+                    playerPlayedCard(cardPlayed);
 
                     if (unoNeed) {
                         HashMap<String, Object> dataUno = new HashMap<>();
@@ -65,12 +77,12 @@ public class PlayerTurn implements GameState {
 
                     turnEnded = true;
                     break;
-                case INVALID:
+                case "INVALID":
                     HashMap<String, Object> dataInvalid = new HashMap<>();
                     dataInvalid.put("card-ID", ((Card) choice.getValue()).getTag());
                     game.notifyToCU("INVALID_CARD", dataInvalid);
                     break;
-                case SAY_UNO:
+                case "SAY_UNO":
                     if (!unoNeed)
                         break;
                     unoNeed = false;

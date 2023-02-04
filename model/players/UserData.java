@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 /* --- JUno ------------------------------- */
 
 import events.EventListener;
-
 import model.CUModel;
 
 /**
@@ -27,7 +26,7 @@ public abstract class UserData {
     private static final String DEFAULT_NICKNAME = "User";
     private static final String DEFAULT_ICON = "night";
     private static final int[] XP_GAPS = { 5, 8, 15, 21, 24, 28, 31, 35, 39, 50 };
-    public static final EventListener EVENT_LISTENER = (event, data) -> update(event, data);
+    private static final EventListener EVENT_LISTENER = (event, data) -> update(event, data);
 
     private static String nickname;
     private static String icon;
@@ -90,6 +89,10 @@ public abstract class UserData {
 
     public static int getWins() {
         return UserData.wins;
+    }
+
+    public static EventListener getEventListener() {
+        return UserData.EVENT_LISTENER;
     }
 
     /* --- Body ------------------------------- */
@@ -158,7 +161,7 @@ public abstract class UserData {
     /**
      * Resets all the user info to their default values.
      */
-    public static void reset() {
+    private static void reset() {
         UserData.nickname = DEFAULT_NICKNAME;
         UserData.icon = DEFAULT_ICON;
         UserData.level = 1;
@@ -204,7 +207,7 @@ public abstract class UserData {
         CUModel.communicate("INFO_CHANGE", wrapData());
     }
 
-    public static void update(String event, Map<String, Object> data) {
+    private static void update(String event, Map<String, Object> data) {
         if (!event.equals("INFO_CHANGE"))
             throw new Error("The UserData was listening for an unexptected event: " + event.toString());
 

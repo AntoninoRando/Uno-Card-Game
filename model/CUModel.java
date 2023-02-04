@@ -52,7 +52,7 @@ public class CUModel extends EventManager implements EventListener {
     }
 
     private CUModel() {
-        subscribe(UserData.EVENT_LISTENER, "INFO_CHANGE", "INFO_RESET");
+        subscribe(UserData.getEventListener(), "INFO_CHANGE", "INFO_RESET");
     }
 
     /* --- Fields ----------------------------- */

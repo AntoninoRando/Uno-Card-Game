@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 /* --- JUno ------------------------------- */
 
 import model.cards.Card;
-import model.gameLogic.Action;
 
 /**
  * Implements the <em>Template Method Pattern</em>.
@@ -28,7 +27,7 @@ public abstract class Player {
     private String icon;
     private String nickname;
     private List<Card> hand;
-    private int state;
+    private boolean playing;
 
     /* --- Constructors ----------------------- */
 
@@ -58,12 +57,12 @@ public abstract class Player {
         return hand;
     }
 
-    public int getState() {
-        return state;
+    public boolean isPlaying() {
+        return playing;
     }
 
-    public void setState(int state) {
-        this.state = state;
+    public void setPlayingState(boolean isPlaying) {
+        this.playing = isPlaying;
     }
 
     /* --- Body ------------------------------- */
@@ -89,7 +88,7 @@ public abstract class Player {
      * @param cards The cards options.
      * @return The type of action to perform associated with its info.
      */
-    public abstract Entry<Action, Object> chooseFrom(Card[] cards);
+    public abstract Entry<String, Object> chooseFrom(Card[] cards);
 
     /**
      * It has the same effect as the
@@ -101,5 +100,5 @@ public abstract class Player {
      *                 cards.
      * @return The type of action to perform associated with its info.
      */
-    public abstract Entry<Action, Object> chooseFrom(Card[] cards, Predicate<Card> validate);
+    public abstract Entry<String, Object> chooseFrom(Card[] cards, Predicate<Card> validate);
 }

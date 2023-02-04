@@ -1,11 +1,11 @@
 package model.gameLogic;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -29,13 +29,15 @@ import model.players.UserData;
 public class Game {
     /* --- Fields ----------------------------- */
 
-    private Player[] players;
-    private Card terrainCard;
     private final int firstHandSize = 7;
-    private List<Card> deck, discardPile;
-    private int turn; // current turn
     private Predicate<Card> playCondition;
     private Predicate<Player> winCondition;
+
+    private Player[] players;
+    private List<Card> deck;
+    private Stack<Card> discardPile;
+    private int turn; // current turn
+
     private long timeStart;
     private boolean dead;
     private GameState state; // Context
@@ -49,10 +51,12 @@ public class Game {
         // All cards are initially put in the discard pile, so that they will be
         // shuffled in the deck.
         deck = new LinkedList<>();
-        discardPile = Arrays.asList(CardBuilder.getCards("resources/cards/Small.json"));
-        discardPile = new LinkedList<>(discardPile);
+        discardPile = new Stack<>();
+        for (Card card : CardBuilder.getCards("resources/cards/Small.json"))
+            discardPile.push(card);
 
         playCondition = card -> {
+            Card terrainCard = discardPile.peek();
             Suit aS = terrainCard.getSuit();
             Suit bS = card.getSuit();
             return aS == bS || terrainCard.getValue() == card.getValue() || aS == Suit.WILD || bS == Suit.WILD;
@@ -104,7 +108,7 @@ public class Game {
     private void setupGame() {
         PlayerTurn initialState = new PlayerTurn();
         initialState.setContext(getCurrentPlayer(), this);
-        getCurrentPlayer().setState(1);
+        getCurrentPlayer().setPlayingState(true);
         changeState(initialState);
 
         // Notify
@@ -184,27 +188,14 @@ public class Game {
 
     /* --- Body ------------------------------- */
 
-    public void playerCard(Player player, Card card) {
-        changeCurrentCard(card);
-        player.getHand().remove(card);
-
-        HashMap<String, Object> data = player.getData();
-        data.putAll(card.getData());
-        boolean userTurn = getCurrentPlayer() instanceof User;
-        String event = userTurn ? "USER_PLAYED_CARD" : "AI_PLAYED_CARD";
-        notifyToCU(event, data);
-        notifyToCU("CARD_CHANGE", data);
-    }
-
     /**
      * Replace the current terrain card with the given card.
      * 
      * @param card The new terrain card.
      */
     public void changeCurrentCard(Card card) {
-        if (terrainCard != null)
-            discardPile.add(terrainCard);
-        terrainCard = card;
+        discardPile.add(card);
+        notifyToCU("CARD_CHANGE", card.getData());
     }
 
     /**

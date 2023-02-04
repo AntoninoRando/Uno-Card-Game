@@ -5,14 +5,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
+
 /* --- JUno ------------------------------- */
 
 import events.EventListener;
 
 import model.CUModel;
 import model.cards.Card;
-import model.gameLogic.Action;
 
+/**
+ * A singleton instance of the Player representing the user. This player is able
+ * to fetch the user input to perform actions on the game. Before the input is
+ * given, this player is also able to make the game wait.
+ */
 public class User extends Player implements EventListener {
     /* --- Singleton -------------------------- */
 
@@ -31,12 +36,12 @@ public class User extends Player implements EventListener {
 
     /* --- Fields ----------------------------- */
 
-    private Entry<Action, Object> choice;
+    private Entry<String, Object> choice;
 
     /* --- Player ----------------------------- */
 
     @Override
-    public Entry<Action, Object> chooseFrom(Card[] cards) {
+    public Entry<String, Object> chooseFrom(Card[] cards) {
         choice = null;
 
         // We use as IDs the position in the selection.
@@ -54,11 +59,11 @@ public class User extends Player implements EventListener {
 
         Object ID = choice.getValue();
         Card card = Arrays.stream(cards).filter(c -> ID.equals(c.getTag())).findAny().orElseThrow();
-        return Map.entry(Action.SELECTION_COMPLETED, card);
+        return Map.entry("SELECTION_COMPLETED", card);
     }
 
     @Override
-    public Entry<Action, Object> chooseFrom(Card[] cards, Predicate<Card> validate) {
+    public Entry<String, Object> chooseFrom(Card[] cards, Predicate<Card> validate) {
         choice = null;
 
         // Waits for the user input.
@@ -72,14 +77,14 @@ public class User extends Player implements EventListener {
 
         // Decode the user input.
         switch (choice.getKey()) {
-            case FROM_DECK_DRAW:
-            case SAY_UNO:
+            case "FROM_DECK_DRAW":
+            case "SAY_UNO":
                 return choice;
-            case FROM_HAND_PLAY_TAG:
+            case "FROM_HAND_PLAY_TAG":
                 Object ID = choice.getValue();
                 Card card = getHand().stream().filter(c -> ID.equals(c.getTag())).findAny().orElseThrow();
-                return validate.test(card) ? Map.entry(Action.FROM_HAND_PLAY_CARD, card)
-                        : Map.entry(Action.INVALID, card);
+                return validate.test(card) ? Map.entry("FROM_HAND_PLAY_CARD", card)
+                        : Map.entry("INVALID", card);
             default:
                 throw new Error("User turn resolved with an unimplemented choice: " + choice.getKey());
         }
@@ -90,13 +95,13 @@ public class User extends Player implements EventListener {
 
     @Override
     public void update(String event, Map<String, Object> data) {
-        Action action = Action.valueOf((String) data.get("choice-type"));
+        String action = (String) data.get("choice-type");
         Object info = data.get("choice");
 
         switch (event) {
             case "TURN_DECISION":
                 // If it's not user turn, ignore choice.
-                if (getState() != 1)
+                if (!isPlaying())
                     return;
 
                 synchronized (this) {

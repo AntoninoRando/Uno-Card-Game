@@ -28,7 +28,7 @@ public class TransitionState implements GameState {
     public void resolve() {
         // Sets the player state to: Waiting.
         Player oldPlayer = game.getCurrentPlayer();
-        oldPlayer.setState(0);
+        oldPlayer.setPlayingState(false);
         game.notifyToCU("TURN_END", oldPlayer.getData());
 
 
@@ -38,7 +38,7 @@ public class TransitionState implements GameState {
 
         // Sets the player state to: Playing.
         Player following = game.getCurrentPlayer();
-        following.setState(1);
+        following.setPlayingState(true);
 
         /*
          * "In the State pattern, the particular states may be aware of each other and initiate transitions from one state to another [...]"
