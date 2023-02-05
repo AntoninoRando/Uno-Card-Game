@@ -2,19 +2,19 @@
     {
         "suit": "WILD",
         "value": -5,
-        "copies": 10,
+        "copies": 8,
         "type": "change color"
     },
     {
         "suit": "RED",
         "value": -1,
-        "copies": 4,
+        "copies": 2,
         "type": "block"
     },
     {
         "suit": "BLUE",
         "value": -3,
-        "copies": 4,
+        "copies": 2,
         "type": "reverse"
     },
     {
@@ -32,6 +32,30 @@
         "amount": 4
     },
     {
+        "suit": "RED",
+        "value": 0,
+        "copies": 10,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 0,
+        "copies": 10,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 0,
+        "copies": 10,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 0,
+        "copies": 10,
+        "type": "simple"
+    },
+       {
         "suit": "RED",
         "value": 0,
         "copies": 10,
