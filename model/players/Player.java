@@ -43,12 +43,20 @@ public abstract class Player {
         hand = new LinkedList<Card>();
     }
 
+    
+    /** 
+     * @return String
+     */
     /* --- Getters and Setters ---------------- */
 
     public String getNickame() {
         return nickname;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getIcon() {
         return icon;
     }

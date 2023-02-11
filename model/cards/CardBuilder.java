@@ -69,6 +69,11 @@ public abstract class CardBuilder {
         CardBuilder.cards = cards.toArray(Card[]::new);
     }
 
+    
+    /** 
+     * @param fileName
+     * @return List<Map<String, Object>>
+     */
     private static List<Map<String, Object>> parseJson(String fileName) {
         // create a new JSON parser
         JSONParser parser = new JSONParser();

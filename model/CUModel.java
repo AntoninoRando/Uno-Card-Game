@@ -16,6 +16,10 @@ public class CUModel extends EventManager implements EventListener {
 
     private static CUModel instance;
 
+    
+    /** 
+     * @return CUModel
+     */
     public static CUModel getInstance() {
         if (instance == null)
             instance = new CUModel();
@@ -45,6 +49,11 @@ public class CUModel extends EventManager implements EventListener {
         receiverCU.update(event, data);
     }
 
+    
+    /** 
+     * @param event
+     * @param data
+     */
     /* --- Observer --------------------------- */
 
     @Override

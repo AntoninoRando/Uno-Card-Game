@@ -38,6 +38,10 @@ public class InGame extends StackPane implements AppState, EventListener, GUICon
 
     private static InGame instance;
 
+    
+    /** 
+     * @return InGame
+     */
     public static InGame getInstance() {
         if (instance == null)
             instance = new InGame();

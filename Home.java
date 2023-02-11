@@ -18,6 +18,10 @@ public class Home extends StackPane implements AppState, GUIContainer {
 
     private static Home instance;
 
+    
+    /** 
+     * @return Home
+     */
     public static Home getInstance() {
         if (instance == null)
             instance = new Home();

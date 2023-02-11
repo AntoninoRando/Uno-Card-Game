@@ -22,6 +22,10 @@ public class HandPane extends HBox implements EventListener {
 
     private static HandPane instance;
 
+    
+    /** 
+     * @return HandPane
+     */
     public static HandPane getInstance() {
         if (instance == null)
             instance = new HandPane();

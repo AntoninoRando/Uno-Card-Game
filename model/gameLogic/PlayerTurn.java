@@ -37,6 +37,10 @@ public class PlayerTurn implements GameState {
         this.game = game;
     }
 
+    
+    /** 
+     * @param card
+     */
     private void playerPlayedCard(Card card) {
         player.getHand().remove(card);
         HashMap<String, Object> data = player.getData();

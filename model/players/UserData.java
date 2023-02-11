@@ -35,6 +35,10 @@ public abstract class UserData {
     private static int games;
     private static int wins;
 
+    
+    /** 
+     * @return String
+     */
     /* ---.--- Getters and Setters ------------ */
 
     public static String getNickname() {
@@ -61,6 +65,10 @@ public abstract class UserData {
         CUModel.communicate("INFO_CHANGE", wrapData());
     }
 
+    
+    /** 
+     * @return String
+     */
     public static String getIcon() {
         return UserData.icon;
     }

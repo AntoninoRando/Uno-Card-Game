@@ -18,6 +18,10 @@ public class CUView extends EventManager implements EventListener {
 
     private static CUView instance;
 
+    
+    /** 
+     * @return CUView
+     */
     public static CUView getInstance() {
         if (instance == null)
             instance = new CUView();
@@ -28,6 +32,11 @@ public class CUView extends EventManager implements EventListener {
 
     private static CUController receiverCU = CUController.getInstance();
 
+    
+    /** 
+     * @param event
+     * @param data
+     */
     /* --- Body ------------------------------- */
 
     public static void communicate(String event, Map<String, Object> data) {

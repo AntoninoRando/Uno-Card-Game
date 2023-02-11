@@ -27,6 +27,12 @@ public abstract class SpriteFactory {
         return sprites.get(filePath);
     }
 
+    
+    /** 
+     * @param filePath
+     * @param name
+     * @return Sprite
+     */
     private static Sprite getSprite(String filePath, String name) {
         if (!sprites.containsKey(filePath))
             sprites.put(filePath, new Sprite(filePath, name));
@@ -68,6 +74,10 @@ public abstract class SpriteFactory {
         return getSprite(AVATARS_PATH + "/" + avatarName + ".png", avatarName);
     }
 
+    
+    /** 
+     * @return Sprite[]
+     */
     public static Sprite[] getAllAvatars() {
         String[] files = new File(AVATARS_PATH).list();
         Sprite[] sprites = new Sprite[files.length];

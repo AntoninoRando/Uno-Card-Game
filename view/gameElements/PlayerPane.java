@@ -22,6 +22,10 @@ public class PlayerPane extends VBox implements EventListener, GUIContainer {
 
     private static PlayerPane instance;
 
+    
+    /** 
+     * @return PlayerPane
+     */
     public static PlayerPane getInstance() {
         if (instance == null)
             instance = new PlayerPane();
@@ -108,6 +112,6 @@ public class PlayerPane extends VBox implements EventListener, GUIContainer {
 
     @Override
     public int getEventPriority(String event) {
-        return equals("TURN_START") ? 2 : 1;
+        return event.equals("TURN_START") ? 2 : 1;
     }
 }

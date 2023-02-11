@@ -21,6 +21,10 @@ public class TerrainPane extends StackPane implements EventListener {
 
     private static TerrainPane instance;
 
+    
+    /** 
+     * @return TerrainPane
+     */
     public static TerrainPane getInstance() {
         if (instance == null)
             instance = new TerrainPane();
@@ -42,6 +46,11 @@ public class TerrainPane extends StackPane implements EventListener {
 
     private ImageView terrainCard;
 
+    
+    /** 
+     * @param event
+     * @param data
+     */
     /* --- Observer --------------------------- */
 
     @Override

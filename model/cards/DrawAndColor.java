@@ -13,6 +13,10 @@ public class DrawAndColor extends DrawCard {
         super(suit, value, quantity);
     }
 
+    
+    /** 
+     * @param game
+     */
     @Override
     public void play(Game game) {
         new ChoseColor(null, 0).play(game);

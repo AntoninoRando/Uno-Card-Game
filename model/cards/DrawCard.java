@@ -15,6 +15,10 @@ public class DrawCard extends BlockCard {
         this.quantity = quantity;
     }
 
+    
+    /** 
+     * @param game
+     */
     @Override
     public void play(Game game) {
         super.play(game);

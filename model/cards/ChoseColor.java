@@ -17,6 +17,10 @@ public class ChoseColor extends PickCard {
         }
     }
 
+    
+    /** 
+     * @param game
+     */
     @Override
     public void play(Game game) {
         super.play(game);

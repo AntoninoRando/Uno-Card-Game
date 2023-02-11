@@ -7,6 +7,10 @@ public class PlayzonePane extends Pane {
     
     private static PlayzonePane instance;
 
+    
+    /** 
+     * @return PlayzonePane
+     */
     public static PlayzonePane getInstance() {
         if (instance == null)
             instance = new PlayzonePane();

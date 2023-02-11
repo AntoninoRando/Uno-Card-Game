@@ -117,6 +117,11 @@ public class ActionsChronology extends StackPane implements EventListener, GUICo
         scrollPane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
     }
 
+    
+    /** 
+     * @param event
+     * @param data
+     */
     /* --- Observer --------------------------- */
 
     @Override

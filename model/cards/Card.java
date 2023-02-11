@@ -21,12 +21,20 @@ public abstract class Card {
     protected Integer tag;
     protected static int tagCounter;
 
+    
+    /** 
+     * @return Suit
+     */
     /* ---.--- Getters and Setters ------------ */
 
     public Suit getSuit() {
         return suit;
     }
 
+    
+    /** 
+     * @return int
+     */
     public int getValue() {
         return value;
     }

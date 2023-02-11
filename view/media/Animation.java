@@ -54,10 +54,19 @@ public class Animation {
         this.frameDuration = frameDuration;
     }
 
+    
+    /** 
+     * @param onFinishAction
+     */
     public void setOnFinishAction(EventHandler<ActionEvent> onFinishAction) {
         this.onFinishAction = onFinishAction;
     }
 
+    
+    /** 
+     * @param width
+     * @param height
+     */
     public void setDimensions(Double width, Double height) {
         if (width != null)
             resizeW = Optional.of(width);

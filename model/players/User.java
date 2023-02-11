@@ -23,6 +23,10 @@ public class User extends Player implements EventListener {
 
     private static User instance;
 
+    
+    /** 
+     * @return User
+     */
     public static User getInstance() {
         if (instance == null)
             instance = new User();
@@ -47,6 +51,11 @@ public class User extends Player implements EventListener {
 
     private Entry<String, Object> choice;
 
+    
+    /** 
+     * @param cards
+     * @return Entry<String, Object>
+     */
     /* --- Player ----------------------------- */
 
     @Override

@@ -28,6 +28,10 @@ public class JUno extends Application implements GUIContainer {
     private SettingsMenu settings;
     private Button settingsButton;
 
+    
+    /** 
+     * @return Scene
+     */
     /* ---.--- Getters and Setters ------------ */
 
     public Scene getScene() {

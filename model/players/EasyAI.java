@@ -21,6 +21,12 @@ public class EasyAI extends Player {
         super(icon, nickname);
     }
 
+    
+    /** 
+     * @param cards
+     * @param validate
+     * @return Entry<String, Object>
+     */
     @Override
     public Entry<String, Object> chooseFrom(Card[] cards, Predicate<Card> validate) {
         Entry<String, Object> choice = Map.entry("FROM_DECK_DRAW", 1);

@@ -14,6 +14,10 @@ public class AnimationHandler implements EventListener {
 
     private static AnimationHandler instance;
 
+    
+    /** 
+     * @return AnimationHandler
+     */
     public static AnimationHandler getInstance() {
         if (instance == null)
             instance = new AnimationHandler();
@@ -28,6 +32,11 @@ public class AnimationHandler implements EventListener {
 
     private HashMap<String, AnimationLayer> layers;
 
+    
+    /** 
+     * @param animationLayer
+     * @param events
+     */
     /* --- Body ------------------------------- */
 
     public static void subscribe(AnimationLayer animationLayer, String... events) {

@@ -34,6 +34,10 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
 
     private static ProfileMenu instance;
 
+    
+    /** 
+     * @return ProfileMenu
+     */
     public static ProfileMenu getInstance() {
         if (instance == null)
             instance = new ProfileMenu();
@@ -59,6 +63,10 @@ public class ProfileMenu extends StackPane implements EventListener, GUIContaine
     private Label winRateLabel;
     private Button deleteButton;
 
+    
+    /** 
+     * @return AvatarPicker
+     */
     /* ---.--- Getters and Setters ------------ */
 
     public AvatarPicker getAvatarPicker() {

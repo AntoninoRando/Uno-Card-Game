@@ -21,6 +21,10 @@ public class EndGame extends VBox implements AppState, GUIContainer {
 
     private static EndGame instance;
 
+    
+    /** 
+     * @return EndGame
+     */
     public static EndGame getInstance() {
         if (instance == null)
             instance = new EndGame();

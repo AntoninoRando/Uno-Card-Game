@@ -43,7 +43,6 @@ public class Click extends Behavior<MouseEvent> {
 
     @Override
     public boolean behave(MouseEvent e) {
-        // TODO implementare quantity e intervals per esteso
         // When we drag we want the Node to be in its original size
         if (!e.getButton().equals(!quantity[0] ? MouseButton.PRIMARY : MouseButton.SECONDARY))
             return false;

@@ -47,6 +47,10 @@ public class DropAndPlay extends BehaviorDecorator<MouseEvent> {
         this.sourceID = sourceID;
     }
 
+    
+    /** 
+     * @param e
+     */
     /* --- BehaviorDecorator ------------------ */
 
     @Override

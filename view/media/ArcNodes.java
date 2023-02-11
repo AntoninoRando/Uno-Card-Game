@@ -26,6 +26,10 @@ public class ArcNodes implements Iterable<double[]> {
         this.elementW = elementW;
     }
 
+    
+    /** 
+     * @return Iterator<double[]>
+     */
     @Override
     public Iterator<double[]> iterator() {
         return new ArcNodesIterator(n, r, gap, elementW);

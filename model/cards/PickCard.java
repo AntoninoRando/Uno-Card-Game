@@ -16,6 +16,10 @@ public abstract class PickCard extends Card {
         super(suit, value);
     }
 
+    
+    /** 
+     * @param game
+     */
     @Override
     public void play(Game game) {
         Player source = game.getCurrentPlayer();

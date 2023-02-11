@@ -28,6 +28,11 @@ public class KeyPress extends Behavior<KeyEvent> {
         source.addEventHandler(KeyEvent.KEY_PRESSED, this::onEnd);
     }
 
+    
+    /** 
+     * @param e
+     * @return boolean
+     */
     @Override
     public boolean behave(KeyEvent e) {
         return e.getCode().getCode() == keyCode;

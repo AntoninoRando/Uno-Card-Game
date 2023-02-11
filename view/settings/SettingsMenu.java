@@ -16,6 +16,10 @@ import view.GUIContainer;
 public class SettingsMenu extends BorderPane implements GUIContainer {
     private static SettingsMenu instance;
 
+    
+    /** 
+     * @return SettingsMenu
+     */
     public static SettingsMenu getInstance() {
         if (instance == null)
             instance = new SettingsMenu();

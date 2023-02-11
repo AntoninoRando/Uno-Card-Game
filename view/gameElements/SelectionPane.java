@@ -17,6 +17,10 @@ public class SelectionPane extends HBox implements EventListener {
 
     private static SelectionPane instance;
 
+    
+    /** 
+     * @return SelectionPane
+     */
     public static SelectionPane getInstance() {
         if (instance == null)
             instance = new SelectionPane();

@@ -67,12 +67,20 @@ public class Game {
                 Stream.of(Enemy.values()).map(en -> en.get())).toArray(Player[]::new);
     }
 
+    
+    /** 
+     * @return Player[]
+     */
     /* ---.--- Getters and Setters ------------ */
 
     public Player[] getPlayers() {
         return players;
     }
 
+    
+    /** 
+     * @param newOrder
+     */
     public void setTurnOrder(Player[] newOrder) {
         players = newOrder;
     }

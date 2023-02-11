@@ -13,6 +13,10 @@ public class BlockCard extends Card {
         super(suit, value);
     }
 
+    
+    /** 
+     * @param game
+     */
     @Override
     public void play(Game game) {
         // Advance turn

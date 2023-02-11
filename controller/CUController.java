@@ -23,6 +23,10 @@ public class CUController extends EventManager implements EventListener {
 
     private static CUController instance;
 
+    
+    /** 
+     * @return CUController
+     */
     public static CUController getInstance() {
         if (instance == null)
             instance = new CUController();

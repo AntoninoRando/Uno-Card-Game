@@ -23,6 +23,10 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
 
     private static GameResults instance;
 
+    
+    /** 
+     * @return GameResults
+     */
     public static GameResults getInstance() {
         if (instance == null)
             instance = new GameResults();
@@ -83,6 +87,11 @@ public class GameResults extends VBox implements EventListener, GUIContainer {
     public void applyBehaviors() {
     }
 
+    
+    /** 
+     * @param event
+     * @param data
+     */
     /* --- Observer --------------------------- */
 
     @Override
