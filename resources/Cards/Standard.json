@@ -1,37 +1,264 @@
 [
     {
-        "suit": "RED",
-        "value": -5,
-        "copies": 0,
-        "effects": [],
-        "args": []
-    },
-    {
-        "suit": "BLUE",
-        "value": -5,
-        "copies": 0,
-        "effects": [],
-        "args": []
-    },
-    {
-        "suit": "YELLOW",
-        "value": -5,
-        "copies": 0,
-        "effects": [],
-        "args": []
-    },
-    {
-        "suit": "GREEN",
-        "value": -5,
-        "copies": 0,
-        "effects": [],
-        "args": []
-    },
-    {
         "suit": "WILD",
         "value": -5,
         "copies": 10,
-        "effects": ["pickAndPlay", "blockTurn", "drawCards"],
-        "args": [[0,1,2,3], null, [4]]
+        "type": "change color"
+    },
+    {
+        "suit": "RED",
+        "value": -1,
+        "copies": 4,
+        "type": "block"
+    },
+    {
+        "suit": "BLUE",
+        "value": -3,
+        "copies": 4,
+        "type": "reverse"
+    },
+    {
+        "suit": "GREEN",
+        "value": -2,
+        "copies": 2,
+        "type": "draw 2"
+    },
+    {
+        "suit": "WILD",
+        "value": -4,
+        "copies": 4,
+        "type": "draw 4"
+    },
+    {
+        "suit": "RED",
+        "value": 0,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 0,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 0,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 0,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "RED",
+        "value": 1,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 1,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 1,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 1,
+        "copies": 4,
+        "type": "simple"
+    },    {
+        "suit": "RED",
+        "value": 2,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 2,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 2,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 2,
+        "copies": 4,
+        "type": "simple"
+    },    {
+        "suit": "RED",
+        "value": 3,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 3,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 3,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 3,
+        "copies": 4,
+        "type": "simple"
+    },    {
+        "suit": "RED",
+        "value": 4,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 4,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 4,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 4,
+        "copies": 4,
+        "type": "simple"
+    },    {
+        "suit": "RED",
+        "value": 5,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 5,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 5,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 5,
+        "copies": 4,
+        "type": "simple"
+    },    {
+        "suit": "RED",
+        "value": 6,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 6,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 6,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 6,
+        "copies": 4,
+        "type": "simple"
+    },    {
+        "suit": "RED",
+        "value": 7,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 7,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 7,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 7,
+        "copies": 4,
+        "type": "simple"
+    },    {
+        "suit": "RED",
+        "value": 8,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 8,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 8,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 8,
+        "copies": 4,
+        "type": "simple"
+    },    {
+        "suit": "RED",
+        "value": 9,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "BLUE",
+        "value": 9,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "GREEN",
+        "value": 9,
+        "copies": 4,
+        "type": "simple"
+    },
+    {
+        "suit": "YELLOW",
+        "value": 9,
+        "copies": 4,
+        "type": "simple"
     }
 ]

@@ -52,7 +52,7 @@ public class Game {
         // shuffled in the deck.
         deck = new LinkedList<>();
         discardPile = new Stack<>();
-        for (Card card : CardBuilder.getCards("resources/cards/Small.json"))
+        for (Card card : CardBuilder.getCards("resources/cards/Standard.json"))
             discardPile.push(card);
 
         playCondition = card -> {
